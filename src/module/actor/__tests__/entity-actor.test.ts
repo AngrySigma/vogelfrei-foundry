@@ -918,12 +918,14 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.delete();
     });
 
-    it("calculates the amount with negative amount", async () => {
+    it("treats a negative rolled amount as no damage, not healing", async () => {
+      // A damage roll that totals below zero deals nothing. Healing is reached
+      // through the multiplier, never by a negative amount.
       const actor = (await createMockActor("character")) as OseActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(-3);
-      expect(actor.system.wounds.value).equal(4);
+      expect(actor.system.wounds.value).equal(1);
       await actor.delete();
     });
 

@@ -597,7 +597,11 @@ export default class OseActor extends Actor {
    * @returns {Promise<Actor>}
    */
   async applyDamage(amount = 0, multiplier = 1, { critical = false } = {}) {
-    const damage = Math.floor(Number.parseInt(amount, 10) * multiplier);
+    // A rolled amount is never negative: a damage roll that totals below zero
+    // deals nothing, it does not heal. Direction is the multiplier's job alone,
+    // so healing stays reachable via multiplier -1 and only via that.
+    const rolled = Math.max(0, Number.parseInt(amount, 10) || 0);
+    const damage = Math.floor(rolled * multiplier);
 
     const { wounds, stamina } = applyDamageToPools(
       {
