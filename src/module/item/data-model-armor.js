@@ -16,16 +16,11 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
         initial: "light",
         choices: Object.keys(OseDataModelArmor.ArmorTypes),
       }),
-      ac: new SchemaField({
-        value: new NumberField({
-          initial: 9,
-        }),
-      }),
-      aac: new SchemaField({
-        value: new NumberField({
-          initial: 10,
-        }),
-      }),
+      // Bonuses added to AC, not replacements for it. Body armour sets both to
+      // its Armour Rating; shields are asymmetric -- a buckler helps only in
+      // melee, a pavise only at range, a shield both by different amounts.
+      acMelee: new NumberField({ integer: true, initial: 0 }),
+      acRanged: new NumberField({ integer: true, initial: 0 }),
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),

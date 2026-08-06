@@ -66,6 +66,8 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
       details: new ObjectField(),
       ac: new ObjectField(),
       aac: new ObjectField(),
+      ws: new NumberField({ integer: true, initial: 0 }),
+      bs: new NumberField({ integer: true, initial: 0 }),
       encumbrance: new SchemaField({
         value: new NumberField({ integer: false }),
         max: new NumberField({ integer: false }),

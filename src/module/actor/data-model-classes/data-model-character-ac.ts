@@ -1,130 +1,172 @@
 /**
- * @file A class to handle the nested AC/AAC props on OseDataModelCharacter.
+ * @file Vogelfrei armour class: the several static AC numbers a character
+ *       carries, and the formulas that produce them.
+ *
+ * Vogelfrei is ascending-only and has no THAC0. A defender does not have one
+ * AC but several, and the attacker picks which applies -- melee or ranged,
+ * against a human or a beast, surprised or not. Each is a plain sum of the same
+ * components, so they live in one table: to add, remove or change a variant,
+ * edit ARMOUR_CLASS_VARIANTS and nothing else.
+ *
+ * Rules: docs/Encounters/Combat Actions.md#attack, docs/Equipment/Armor.md
  */
+
+/** The parts every AC formula draws on. */
+export type ArmourClassComponents = {
+  /** Agility modifier, -3 to +3. */
+  agility: number;
+
+  /** Weapon Skill. Defends against opponents who fight with skill. */
+  weaponSkill: number;
+
+  /** Armour Rating of worn armour, as it applies in melee. */
+  armourMelee: number;
+
+  /** Armour Rating of worn armour, as it applies at range. */
+  armourRanged: number;
+
+  /** Melee bonus from an equipped shield, buckler or pavise. */
+  shieldMelee: number;
+
+  /** Ranged bonus from an equipped shield, buckler or pavise. */
+  shieldRanged: number;
+
+  /** Free-form modifier for anything the rules do not model: grown scales, a lost leg. */
+  mod: number;
+};
+
+export type ArmourClassVariant = {
+  /** Stable key, used by the attack dialog to select a variant. */
+  key: string;
+
+  /** Localization key for the label. */
+  label: string;
+
+  /** Whether this variant answers a ranged attack. Melee otherwise. */
+  ranged: boolean;
+
+  formula: (components: ArmourClassComponents) => number;
+};
+
+/** Base AC before any component is added. Melee opens lower than ranged. */
+export const MELEE_BASE = 8;
+export const RANGED_BASE = 11;
 
 /**
- * A character's armour class, broken into its component parts. Which numbering
- * convention `base` follows depends on whether ascending or descending AC is in
- * use for the world.
+ * Every AC a character carries. Order is the order they appear on the sheet and
+ * in the attack dialog.
  */
-export interface CharacterAC {
-  /** Starting AC before armour, shield, or modifiers are applied. */
-  readonly base: number;
+export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
+  {
+    key: "melee",
+    label: "VF.ac.melee",
+    ranged: false,
+    formula: (c) => MELEE_BASE + c.agility + c.weaponSkill + c.armourMelee + c.shieldMelee + c.mod,
+  },
+  {
+    // A dragon is not put off by a skilled blade, so Weapon Skill does not
+    // defend against it.
+    key: "meleeMonster",
+    label: "VF.ac.meleeMonster",
+    ranged: false,
+    formula: (c) => MELEE_BASE + c.agility + c.armourMelee + c.shieldMelee + c.mod,
+  },
+  {
+    key: "ranged",
+    label: "VF.ac.ranged",
+    ranged: true,
+    formula: (c) => RANGED_BASE + c.agility + c.armourRanged + c.shieldRanged + c.mod,
+  },
+  {
+    // An unaware target keeps only what it is wearing.
+    key: "surprised",
+    label: "VF.ac.surprised",
+    ranged: false,
+    formula: (c) => MELEE_BASE + c.armourMelee + c.mod,
+  },
+  {
+    key: "noShield",
+    label: "VF.ac.noShield",
+    ranged: false,
+    formula: (c) => MELEE_BASE + c.agility + c.weaponSkill + c.armourMelee + c.mod,
+  },
+] as const;
 
-  /** AC with no armour or shield equipped. */
-  readonly naked: number;
+type ArmourItem = {
+  system: {
+    type: string;
+    acMelee?: number;
+    acRanged?: number;
+  };
+};
 
-  /** Bonus contributed by an equipped shield, if any. */
-  readonly shield: number;
+/**
+ * Assembles a character's AC numbers from their equipped armour, Agility,
+ * Weapon Skill and free-form modifier.
+ */
+export default class OseDataModelCharacterAC {
+  #armour: ArmourItem[];
 
-  /** Effective armour class, combining armour, shield, and modifiers. */
-  value: number;
+  #agility: number;
 
-  /** Miscellaneous flat modifier applied to AC. */
-  mod: number;
-}
+  #weaponSkill: number;
 
-export default class OseDataModelCharacterAC implements CharacterAC {
-  static baseAscending = 10;
-
-  static baseDescending = 9;
-
-  static propAscending = "aac";
-
-  static propDescending = "ac";
-
-  #armor;
-
-  #dexMod;
-
-  #mod;
-
-  #acProp;
-
-  #isAscending;
+  #mod: number;
 
   /**
-   * AC Constructor
-   *
-   * @param {boolean} isAscending - Is this meant to represent ascending or descending AC?
-   * @param {Item} armor - Currently equipped Items with type of armor
-   * @param {number} dexMod - The bonus/penalty, from -3 to +3, applied to AC.
-   * @param {number} mod - Miscellaneous modifier to AC
+   * @param armour - Equipped Items of type armor. At most one body armour and
+   *   one shield are expected; equipping enforces that.
+   * @param agility - The Agility modifier.
+   * @param weaponSkill - The character's Weapon Skill.
+   * @param mod - Free-form AC modifier.
    */
-  constructor(isAscending = false, armor: Item[] = [], dexMod = 0, mod = 0) {
-    this.#isAscending = isAscending;
-    this.#armor = armor;
-    this.#dexMod = dexMod;
+  constructor(armour: ArmourItem[] = [], agility = 0, weaponSkill = 0, mod = 0) {
+    this.#armour = armour;
+    this.#agility = agility;
+    this.#weaponSkill = weaponSkill;
     this.#mod = mod;
-    this.#acProp = this.#isAscending ? OseDataModelCharacterAC.propAscending : OseDataModelCharacterAC.propDescending;
   }
 
-  #getShieldBonus(): number {
-    return this.#armor.find(({ system: { type } }: Item) => type === "shield")?.system[this.#acProp].value || 0;
+  #sum(isShield: boolean, field: "acMelee" | "acRanged"): number {
+    return this.#armour
+      .filter(({ system: { type } }) => (type === "shield") === isShield)
+      .reduce((total, { system }) => total + (system[field] ?? 0), 0);
   }
 
-  /**
-   * The base AC value for a character, depending on
-   * if we're using ascending or descending AC
-   *
-   * @returns {number} - The base AC value
-   */
-  get base(): number {
-    return this.#isAscending ? OseDataModelCharacterAC.baseAscending : OseDataModelCharacterAC.baseDescending;
+  get components(): ArmourClassComponents {
+    return {
+      agility: this.#agility,
+      weaponSkill: this.#weaponSkill,
+      armourMelee: this.#sum(false, "acMelee"),
+      armourRanged: this.#sum(false, "acRanged"),
+      shieldMelee: this.#sum(true, "acMelee"),
+      shieldRanged: this.#sum(true, "acRanged"),
+      mod: this.#mod,
+    };
   }
 
-  /**
-   * A character's armor class without armor or a shield
-   *
-   * @returns {number} - The character's naked AC
-   */
-  get naked(): number {
-    return this.#isAscending ? this.base + this.#dexMod : this.base - this.#dexMod;
+  /** Every AC value, keyed by variant. */
+  get values(): Record<string, number> {
+    const components = this.components;
+    return Object.fromEntries(ARMOUR_CLASS_VARIANTS.map((v) => [v.key, v.formula(components)]));
   }
 
-  /**
-   * A character's shield bonus, if any
-   *
-   * @returns {number} - The shield bonus
-   */
-  get shield(): number {
-    return this.#getShieldBonus();
+  /** Every AC as label/value pairs, for the sheet and the attack dialog. */
+  get list(): { key: string; label: string; ranged: boolean; value: number }[] {
+    const components = this.components;
+    return ARMOUR_CLASS_VARIANTS.map(({ key, label, ranged, formula }) => ({
+      key,
+      label,
+      ranged,
+      value: formula(components),
+    }));
   }
 
-  /**
-   * The AC value from worn armor
-   *
-   * @todo After data migration, armor should be a bonus to naked AC.
-   * @returns {number | null} - The AC value from worn armor
-   */
-  get #armored(): number | null {
-    const armor = this.#armor.find(({ system: { type } }: Item) => type !== "shield")?.system[this.#acProp].value;
-    // Null if any falsy value but 0
-    if (!armor && armor !== 0) return null;
-
-    return this.#isAscending ? armor + this.#dexMod : armor - this.#dexMod;
-  }
-
-  /**
-   * A character's armor class
-   *
-   * @todo Data migration for armor with AC/AAC to act as a bonus, not an override
-   * @returns {number} - The creature's AC
-   */
+  /** The default AC, for anywhere that still wants a single number. */
   get value(): number {
-    const base = this.#armored === null ? this.naked : this.#armored;
-    return this.#isAscending ? base + this.shield + this.mod : base - this.shield - this.mod;
+    return this.values.melee;
   }
 
-  // @TODO This will need to be editable once we get to creatures
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  set value(_change: number) {} // eslint-disable-line class-methods-use-this
-
-  /**
-   * A character's miscellaneous armor class modifier
-   *
-   * @returns {number} - The creature's AC modifier
-   */
   get mod(): number {
     return this.#mod;
   }

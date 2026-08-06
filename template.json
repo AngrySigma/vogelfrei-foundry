@@ -20,6 +20,8 @@
           "value": 0,
           "max": 0
         },
+        "ws": 0,
+        "bs": 0,
         "ac": {
           "value": 0,
           "mod": 0
@@ -253,13 +255,9 @@
         "physical",
         "equippable"
       ],
-      "ac": {
-        "value": 9
-      },
-      "aac": {
-        "value": 10
-      },
-      "type": "light"
+      "type": "light",
+      "acMelee": 0,
+      "acRanged": 0
     },
     "spell": {
       "templates": [

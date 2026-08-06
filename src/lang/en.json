@@ -334,5 +334,17 @@
   "TYPES.Item.container": "Container",
   "TYPES.Item.item": "Item",
   "TYPES.Item.spell": "Spell",
-  "TYPES.Item.weapon": "Weapon"
+  "TYPES.Item.weapon": "Weapon",
+  "VF.ac.melee": "Melee",
+  "VF.ac.meleeMonster": "vs. Monster",
+  "VF.ac.ranged": "Ranged",
+  "VF.ac.surprised": "Surprised",
+  "VF.ac.noShield": "No Shield",
+  "VF.ac.mod": "AC Modifier",
+  "VF.WeaponSkill": "Weapon Skill",
+  "VF.WeaponSkillShort": "WS",
+  "VF.BallisticSkill": "Ballistic Skill",
+  "VF.BallisticSkillShort": "BS",
+  "VF.items.ArmorACMelee": "Melee AC Bonus",
+  "VF.items.ArmorACRanged": "Ranged AC Bonus"
 }

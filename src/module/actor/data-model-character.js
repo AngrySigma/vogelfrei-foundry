@@ -28,18 +28,13 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
 
     // @todo Once we create the new character sheet,
     //       we shouldn't need to list both AC schemes
+    // Vogelfrei is ascending-only, so there is one AC object holding several
+    // values rather than a descending/ascending pair.
     this.ac = new OseDataModelCharacterAC(
-      false,
       getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped),
       this.scores.agility.mod,
+      this.ws,
       this.ac.mod,
-    );
-
-    this.aac = new OseDataModelCharacterAC(
-      true,
-      getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped),
-      this.scores.agility.mod,
-      this.aac.mod,
     );
 
     this.spells = new OseDataModelCharacterSpells(this.spells, this.#spellList);
@@ -55,6 +50,8 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       details: new ObjectField(),
       ac: new ObjectField(),
       aac: new ObjectField(),
+      ws: new NumberField({ integer: true, initial: 0 }),
+      bs: new NumberField({ integer: true, initial: 0 }),
       encumbrance: CONFIG.OSE.encumbrance.defineSchema(),
       movement: new ObjectField(),
       config: new ObjectField(),

@@ -88,22 +88,13 @@
                 <div class="health-empty" style="height:{{counter false system.stamina.value system.stamina.max}}%"></div>
                 <div class="health-full" style="height:{{counter true system.stamina.value system.stamina.max}}%"></div>
             </div>
-            <div class="health armor-class">
-                {{#if @root.system.usesAscendingAC}}
-                <div class="health-value health-top" title="{{localize 'VF.ArmorClass'}}">{{system.aac.value}}</div>
-                <div class="health-value health-bottom" title="{{localize 'VF.ArmorClassNaked'}}">
-                    {{system.aac.naked}}</div>
-                {{#if system.aac.shield}}<div class="shield"
-                    title="{{localize 'VF.items.hasShield'}} ({{system.aac.shield}})"><i class="fas fa-shield-alt"></i>
-                </div>{{/if}}
-                {{else}}
-                <div class="health-value health-top" title="{{localize 'VF.ArmorClass'}}">{{system.ac.value}}</div>
-                <div class="health-value health-bottom" title="{{localize 'VF.ArmorClassNaked'}}">
-                    {{system.ac.naked}}</div>
-                {{#if system.ac.shield}}<div class="shield"
-                    title="{{localize 'VF.items.hasShield'}} ({{system.ac.shield}})"><i class="fas fa-shield-alt"></i>
-                </div>{{/if}}
-                {{/if}}
+            <div class="armour-classes">
+                {{#each system.ac.list}}
+                <div class="ac-entry">
+                    <span class="ac-label">{{localize this.label}}</span>
+                    <span class="ac-value">{{this.value}}</span>
+                </div>
+                {{/each}}
             </div>
         </div>
         <div class="flexrow resource-labels">
@@ -113,6 +104,24 @@
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{ localize 'VF.WeaponSkill' }}">
+                        <a>{{ localize "VF.WeaponSkillShort" }}</a>
+                    </h4>
+                    <div class="attribute-value">
+                        <input name="system.ws" type="text" value="{{system.ws}}" placeholder="0"
+                            data-dtype="Number" />
+                    </div>
+                </li>
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{ localize 'VF.BallisticSkill' }}">
+                        <a>{{ localize "VF.BallisticSkillShort" }}</a>
+                    </h4>
+                    <div class="attribute-value">
+                        <input name="system.bs" type="text" value="{{system.bs}}" placeholder="0"
+                            data-dtype="Number" />
+                    </div>
+                </li>
                 <li class="attribute hit-dice">
                     <h4 class="attribute-name box-title" title="{{ localize 'VF.HitDice' }}">
                         <a>{{ localize "VF.HitDiceShort" }}</a>
