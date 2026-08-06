@@ -37,13 +37,13 @@ const registerFVTTModuleAPIs = () => {
         {
           type: "item",
           name: "OSE.items.gp.long",
-          img: "systems/ose/assets/gold.png",
+          img: "systems/vogelfrei/assets/gold.png",
           abbreviation: "{#}GP",
           data: {
             item: {
               name: "Gold Coins",
               type: "item",
-              img: "systems/ose/assets/gold.png",
+              img: "systems/vogelfrei/assets/gold.png",
               system: {
                 quantity: { value: 1, max: null },
                 weight: 0.1,

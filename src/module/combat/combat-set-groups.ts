@@ -37,7 +37,7 @@ export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(A
 
   static PARTS = {
     main: {
-      template: "/systems/ose-dev/dist/templates/apps/combat-set-groups.hbs",
+      template: "/systems/vogelfrei/dist/templates/apps/combat-set-groups.hbs",
     },
   };
 

@@ -136,7 +136,7 @@ export async function rollTreasure(table, options = {}) {
 
   const chatData = {
     content: html,
-    // sound: "systems/ose/assets/coins.mp3"
+    // sound: "systems/vogelfrei/assets/coins.mp3"
   };
 
   const rollMode = getRollMode();
