@@ -13,8 +13,12 @@
       "url": "https://github.com/AngrySigma"
     }
   ],
-  "esmodules": ["dist/vogelfrei.js"],
-  "styles": ["dist/vogelfrei.css"],
+  "esmodules": [
+    "dist/vogelfrei.js"
+  ],
+  "styles": [
+    "dist/vogelfrei.css"
+  ],
   "packs": [],
   "languages": [
     {
@@ -27,13 +31,19 @@
     "distance": 5,
     "units": "ft"
   },
+  "primaryTokenAttribute": "wounds",
+  "secondaryTokenAttribute": "stamina",
   "url": "https://github.com/AngrySigma/vogelfrei-foundry",
   "manifest": "https://github.com/AngrySigma/vogelfrei-foundry/releases/latest/download/system.json",
   "download": "https://github.com/AngrySigma/vogelfrei-foundry/releases/download/0.1.0/system.zip",
   "bugs": "https://github.com/AngrySigma/vogelfrei-foundry/issues",
   "flags": {},
   "hotReload": {
-    "extensions": ["css"],
-    "paths": ["dist/"]
+    "extensions": [
+      "css"
+    ],
+    "paths": [
+      "dist/"
+    ]
   }
 }

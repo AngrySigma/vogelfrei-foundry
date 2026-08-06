@@ -1,6 +1,7 @@
 import skipRollDialogCheck from "../helpers-behaviour";
 import OseDice from "../helpers-dice";
 import OseItem from "../item/entity";
+import { applyDamageToPools } from "./damage";
 
 /**
  * Used in the rollAttack function to remove zeroes from rollParts arrays
@@ -179,8 +180,8 @@ export default class OseActor extends Actor {
   /* -------------------------------------------- */
 
   async rollHP(_options = {}) {
-    const { total } = await new Roll(this.system.hp.hd).roll({ async: true });
-    return this.update({ "system.hp": { max: total, value: total } });
+    const { total } = await new Roll(this.system.wounds.hd).roll({ async: true });
+    return this.update({ "system.wounds": { max: total, value: total } });
   }
 
   rollSave(save, options = {}) {
@@ -346,13 +347,13 @@ export default class OseActor extends Actor {
     const actorData = this.system;
 
     const label = game.i18n.localize("VF.roll.hd");
-    let rollParts = [actorData.hp.hd];
+    let rollParts = [actorData.wounds.hd];
 
     if (actorType === "character") {
       // A character always gains at least 1 hit point per Hit Die,
       // regardless of CON modifier.
       rollParts = [
-        `max(${actorData.hp.hd} + ${actorData.scores.toughness.mod * actorData.details.level}, ${actorData.hp.hd[0]})`,
+        `max(${actorData.wounds.hd} + ${actorData.scores.toughness.mod * actorData.details.level}, ${actorData.wounds.hd[0]})`,
       ];
     }
 
@@ -583,18 +584,35 @@ export default class OseActor extends Actor {
   }
 
   /**
-   * @param {number | string} amount
-   * @param {1 | -1} multiplier
-   * @returns
+   * Apply damage or healing to this actor's Wounds and Stamina.
+   *
+   * The arithmetic lives in {@link applyDamageToPools}, which is Foundry-free
+   * and unit tested; this method only reads the pools and writes back.
+   *
+   * @param {number | string} amount - Damage to deal. Healing uses multiplier -1.
+   * @param {1 | -1} multiplier - -1 heals. Healing restores Wounds only.
+   * @param {object} [options]
+   * @param {boolean} [options.critical] - A natural 20. Bypasses Stamina, or
+   *   doubles against a target that has none left.
+   * @returns {Promise<Actor>}
    */
-  async applyDamage(amount = 0, multiplier = 1) {
+  async applyDamage(amount = 0, multiplier = 1, { critical = false } = {}) {
     const damage = Math.floor(Number.parseInt(amount, 10) * multiplier);
 
-    const { value, max } = this.system.hp;
+    const { wounds, stamina } = applyDamageToPools(
+      {
+        wounds: this.system.wounds.value,
+        woundsMax: this.system.wounds.max,
+        stamina: this.system.stamina?.value ?? 0,
+        staminaMax: this.system.stamina?.max ?? 0,
+      },
+      damage,
+      { critical },
+    );
 
-    // Update the Actor
     return this.update({
-      "system.hp.value": Math.clamp(value - damage, 0, max),
+      "system.wounds.value": wounds,
+      "system.stamina.value": stamina,
     });
   }
 }

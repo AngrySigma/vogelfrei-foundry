@@ -109,6 +109,14 @@
       }
     }
     .health {
+      // Stamina reuses the Wounds heart sprites, recoloured, so the two pools
+      // read as the same kind of thing without needing a second asset.
+      &.stamina {
+        .health-empty,
+        .health-full {
+          filter: hue-rotate(150deg) saturate(0.8);
+        }
+      }
       &.armor-class {
         background: url("../assets/shield.png") no-repeat center;
         background-size: 70px;

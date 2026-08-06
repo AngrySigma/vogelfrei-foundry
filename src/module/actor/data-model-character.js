@@ -62,10 +62,14 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
         value: new NumberField({ integer: false, initial: 0 }),
         mod: new NumberField({ integer: false, initial: 0 }),
       }),
-      hp: new SchemaField({
+      wounds: new SchemaField({
         hd: new StringField(),
         value: new NumberField({ integer: true }),
         max: new NumberField({ integer: true }),
+      }),
+      stamina: new SchemaField({
+        value: new NumberField({ integer: true, initial: 0 }),
+        max: new NumberField({ integer: true, initial: 0 }),
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),

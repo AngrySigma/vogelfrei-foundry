@@ -225,7 +225,7 @@ export default class OseActorSheetMonster extends OseActorSheet {
       .click((ev) => ev.target.select())
       .change(this._updateAttackCounter.bind(this));
 
-    html.find(".hp-roll").click((ev) => {
+    html.find(".wounds-roll").click((ev) => {
       this.actor.rollHP({ event: ev });
     });
 

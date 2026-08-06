@@ -76,10 +76,18 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
         value: new NumberField({ integer: false, initial: 0 }),
         mod: new NumberField({ integer: false, initial: 0 }),
       }),
-      hp: new SchemaField({
+      wounds: new SchemaField({
         hd: new StringField(),
         value: new NumberField({ integer: true }),
         max: new NumberField({ integer: true }),
+      }),
+      // Monsters and unintelligent creatures have no Stamina. The pool exists
+      // so one damage pipeline serves both actor types; a max of 0 is what
+      // "has no Stamina" means, and it is also the condition under which a
+      // critical hit deals double damage instead of bypassing.
+      stamina: new SchemaField({
+        value: new NumberField({ integer: true, initial: 0 }),
+        max: new NumberField({ integer: true, initial: 0 }),
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),

@@ -42,6 +42,10 @@ import actorDataModelMonsterTests, {
   key as actorDataModelMonsterKey,
   options as actorDataModelMonsterOptions,
 } from "../module/actor/__tests__/data-model-monster.test";
+import actorDamageTests, {
+  key as actorDamageKey,
+  options as actorDamageOptions,
+} from "../module/actor/__tests__/damage.test";
 import actorEntityTests, {
   key as actorEntityKey,
   options as actorEntityOptions,
@@ -177,6 +181,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(actorDataModelMonsterKey, actorDataModelMonsterTests, actorDataModelMonsterOptions);
 
   quench.registerBatch(actorEntityKey, actorEntityTests, actorEntityOptions);
+  quench.registerBatch(actorDamageKey, actorDamageTests, actorDamageOptions);
 
   quench.registerBatch(actorSheetKey, actorSheetTests, actorSheetOptions);
   quench.registerBatch(actorSheetDragNDropKey, actorSheetDragNDropTests, actorSheetDragNDropOptions);

@@ -22,7 +22,10 @@ export class OSECombatant extends Combatant {
   get isDefeated() {
     if (this.defeated) return true;
 
-    return !this.defeated && this.actor?.system?.hp?.value === 0;
+    // Wounds are not floored at 0 -- a character driven below zero keeps the
+    // negative so the critical injury roll can use it -- so this has to be
+    // "at or below", not "equal to".
+    return !this.defeated && (this.actor?.system?.wounds?.value ?? 1) <= 0;
   }
 
   // ===========================================================================

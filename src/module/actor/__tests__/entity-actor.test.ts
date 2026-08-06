@@ -364,13 +364,13 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       hdSpread.forEach((hd) => {
         it(`${hd} hd with ${con} Con correctly rolls HP`, async () => {
           await actor?.update({
-            system: { hp: { hd: `1d${hd}` }, scores: { con: { value: con } } },
+            system: { wounds: { hd: `1d${hd}` }, scores: { con: { value: con } } },
           });
           await actor?.rollHP();
-          assert(actor?.system.hp.max - conBonusSpread[idx] >= 1);
-          assert(actor?.system.hp.value - conBonusSpread[idx] >= 1);
-          assert(actor?.system.hp.max - conBonusSpread[idx] >= hd);
-          assert(actor?.system.hp.value - conBonusSpread[idx] >= hd);
+          assert(actor?.system.wounds.max - conBonusSpread[idx] >= 1);
+          assert(actor?.system.wounds.value - conBonusSpread[idx] >= 1);
+          assert(actor?.system.wounds.max - conBonusSpread[idx] >= hd);
+          assert(actor?.system.wounds.value - conBonusSpread[idx] >= hd);
         });
       });
     });
@@ -520,7 +520,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
           await actor?.update({
             system: {
               details: { level },
-              hp: { hd: `${level}d8` },
+              wounds: { hd: `${level}d8` },
               scores: { con: { value: con } },
             },
           });
@@ -530,7 +530,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
           expect(roll.terms[0].rolls.length).equal(2); // 1d8 + 0, 1
           expect(roll.terms[0].rolls[0].terms.length).equal(expectedTerms); // 1d8, +, 0
           expect(roll.terms[0].rolls[0].terms[0].expression).equal(
-            actor?.system.hp.hd, // 1d8
+            actor?.system.wounds.hd, // 1d8
           );
           expect(roll.terms[0].rolls[0].terms[1].operator).equal(modSign);
           expect(roll.terms[0].rolls[0].terms[2].expression).equal((modUnsigned * level).toString());
@@ -882,84 +882,86 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
   });
 
   describe("applyDamage(amount, multiplier)", () => {
-    it("doesn't remove hp if no variables are given", async () => {
+    it("doesn't remove Wounds if no variables are given", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 10, max: 10 } } });
-      expect(actor.system.hp.value).equal(10);
+      await actor.update({ system: { wounds: { value: 10, max: 10 } } });
+      expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage();
-      expect(actor.system.hp.value).equal(10);
+      expect(actor.system.wounds.value).equal(10);
       await actor.delete();
     });
 
     it("calculates the amount with amount", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 10, max: 10 } } });
-      expect(actor.system.hp.value).equal(10);
+      await actor.update({ system: { wounds: { value: 10, max: 10 } } });
+      expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(3);
-      expect(actor.system.hp.value).equal(7);
+      expect(actor.system.wounds.value).equal(7);
       await actor.delete();
     });
 
     it("calculates the amount with amount and multiplier", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 10, max: 10 } } });
-      expect(actor.system.hp.value).equal(10);
+      await actor.update({ system: { wounds: { value: 10, max: 10 } } });
+      expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(3, 2);
-      expect(actor.system.hp.value).equal(4);
+      expect(actor.system.wounds.value).equal(4);
       await actor.delete();
     });
 
     it("calculates the amount with amount and negative multiplier", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 1, max: 10 } } });
-      expect(actor.system.hp.value).equal(1);
+      await actor.update({ system: { wounds: { value: 1, max: 10 } } });
+      expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(3, -2);
-      expect(actor.system.hp.value).equal(7);
+      expect(actor.system.wounds.value).equal(7);
       await actor.delete();
     });
 
     it("calculates the amount with negative amount", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 1, max: 10 } } });
-      expect(actor.system.hp.value).equal(1);
+      await actor.update({ system: { wounds: { value: 1, max: 10 } } });
+      expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(-3);
-      expect(actor.system.hp.value).equal(4);
+      expect(actor.system.wounds.value).equal(4);
       await actor.delete();
     });
 
-    it("doesn't reduce lower than 0 hp with only amount", async () => {
+    it("drives Wounds below zero with only amount", async () => {
+      // Vogelfrei deliberately does not floor Wounds at 0: the critical injury
+      // roll is 1d4 + the number of Wounds below zero.
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 10, max: 10 } } });
-      expect(actor.system.hp.value).equal(10);
+      await actor.update({ system: { wounds: { value: 10, max: 10 } } });
+      expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(20);
-      expect(actor.system.hp.value).equal(0);
+      expect(actor.system.wounds.value).equal(-10);
       await actor.delete();
     });
 
-    it("doesn't reduce lower than 0 hp with amount and multiplier", async () => {
+    it("drives Wounds below zero with amount and multiplier", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 10, max: 10 } } });
-      expect(actor.system.hp.value).equal(10);
+      await actor.update({ system: { wounds: { value: 10, max: 10 } } });
+      expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(4, 3);
-      expect(actor.system.hp.value).equal(0);
+      expect(actor.system.wounds.value).equal(-2);
       await actor.delete();
     });
 
-    it("doesn't increase higher than max hp with only amount", async () => {
+    it("doesn't heal above maximum Wounds with only amount", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 1, max: 10 } } });
-      expect(actor.system.hp.value).equal(1);
+      await actor.update({ system: { wounds: { value: 1, max: 10 } } });
+      expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(-20);
-      expect(actor.system.hp.value).equal(10);
+      expect(actor.system.wounds.value).equal(10);
       await actor.delete();
     });
 
-    it("doesn't increase higher than max hp with amount and multiplier", async () => {
+    it("doesn't heal above maximum Wounds with amount and multiplier", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { hp: { value: 1, max: 10 } } });
-      expect(actor.system.hp.value).equal(1);
+      await actor.update({ system: { wounds: { value: 1, max: 10 } } });
+      expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(4, -3);
-      expect(actor.system.hp.value).equal(10);
+      expect(actor.system.wounds.value).equal(10);
       await actor.delete();
     });
   });

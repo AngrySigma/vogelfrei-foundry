@@ -105,7 +105,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
     });
 
     const recursiveFields = [
-      { field: "hp", subFields: ["hd", "value", "max"] },
+      { field: "wounds", subFields: ["hd", "value", "max"] },
       { field: "retainer", subFields: ["enabled", "loyalty", "wage"] },
     ];
     recursiveFields.forEach(({ field, subFields }) => {

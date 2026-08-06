@@ -73,12 +73,20 @@
     <div class="resources">
         <div class="flexrow">
             <div class="health">
-                <input class="health-value health-top" name="system.hp.value" type="text" value="{{system.hp.value}}"
+                <input class="health-value health-top" name="system.wounds.value" type="text" value="{{system.wounds.value}}"
                     data-dtype="Number" placeholder="0" title="{{localize 'VF.Health'}}" />
-                <input class="health-value health-bottom" name="system.hp.max" type="text" value="{{system.hp.max}}"
+                <input class="health-value health-bottom" name="system.wounds.max" type="text" value="{{system.wounds.max}}"
                     data-dtype="Number" placeholder="0" title="{{localize 'VF.HealthMax'}}" />
-                <div class="health-empty" style="height:{{counter false system.hp.value system.hp.max}}%"></div>
-                <div class="health-full" style="height:{{counter true system.hp.value system.hp.max}}%"></div>
+                <div class="health-empty" style="height:{{counter false system.wounds.value system.wounds.max}}%"></div>
+                <div class="health-full" style="height:{{counter true system.wounds.value system.wounds.max}}%"></div>
+            </div>
+            <div class="health stamina">
+                <input class="health-value health-top" name="system.stamina.value" type="text" value="{{system.stamina.value}}"
+                    data-dtype="Number" placeholder="0" title="{{localize 'VF.Stamina'}}" />
+                <input class="health-value health-bottom" name="system.stamina.max" type="text" value="{{system.stamina.max}}"
+                    data-dtype="Number" placeholder="0" title="{{localize 'VF.StaminaMax'}}" />
+                <div class="health-empty" style="height:{{counter false system.stamina.value system.stamina.max}}%"></div>
+                <div class="health-full" style="height:{{counter true system.stamina.value system.stamina.max}}%"></div>
             </div>
             <div class="health armor-class">
                 {{#if @root.system.usesAscendingAC}}
@@ -105,7 +113,7 @@
                         <a>{{ localize "VF.HitDiceShort" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.hp.hd" type="text" value="{{system.hp.hd}}" placeholder=""
+                        <input name="system.wounds.hd" type="text" value="{{system.wounds.hd}}" placeholder=""
                             data-dtype="String" />
                     </div>
                 </li>
