@@ -1,0 +1,237 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "Godforsaken84",
+      "name": "Godforsaken84",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100036544?v=4",
+      "profile": "https://github.com/Godforsaken84",
+      "contributions": [
+        "design"
+      ]
+    },
+    {
+      "login": "freohr",
+      "name": "Stephen FAURE",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3462951?v=4",
+      "profile": "https://github.com/freohr",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "engleback",
+      "name": "Ian Engleback",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35422051?v=4",
+      "profile": "https://github.com/engleback",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "RabidOwlbear",
+      "name": "Grim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71675732?v=4",
+      "profile": "https://github.com/RabidOwlbear",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "WallaceMcGregor",
+      "name": "WallaceMcGregor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17795541?v=4",
+      "profile": "https://github.com/WallaceMcGregor",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "IGALEGOI",
+      "name": "IGALEGOI",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97805442?v=4",
+      "profile": "https://github.com/IGALEGOI",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "sanviler",
+      "name": "Lorenzo Castelletta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96877404?v=4",
+      "profile": "https://github.com/sanviler",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "herrsquash",
+      "name": "herrsquash",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97633309?v=4",
+      "profile": "https://github.com/HerrSquash",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "igorteuri",
+      "name": "Igor Teuri",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64547748?v=4",
+      "profile": "http://linktr.ee/teuri",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "hogwrassler",
+      "name": "hogwrassler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/110945935?v=4",
+      "profile": "https://github.com/hogwrassler",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "wyrmisis",
+      "name": "Tim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1731267?v=4",
+      "profile": "http://timsnyder.codes",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "maschill92",
+      "name": "Michael Schilling",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4692066?v=4",
+      "profile": "https://github.com/maschill92",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Haxxer",
+      "name": "Adam Oresten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12858387?v=4",
+      "profile": "http://adamoresten.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bakbakbakbakbak",
+      "name": "bakbakbakbakbak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105067023?v=4",
+      "profile": "https://github.com/bakbakbakbakbak",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "adn770",
+      "name": "Josep Torra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/113786?v=4",
+      "profile": "https://github.com/adn770",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "amir-arad",
+      "name": "Amir Arad",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6019373?v=4",
+      "profile": "https://github.com/amir-arad",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "justinthejaguar",
+      "name": "justinthejaguar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38022481?v=4",
+      "profile": "https://github.com/justinthejaguar",
+      "contributions": [
+        "question"
+      ]
+    },
+    {
+      "login": "carl-ellis",
+      "name": "Carl Ellis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/288811?v=4",
+      "profile": "http://www.carlellis.co.uk",
+      "contributions": [
+        "review"
+      ]
+    },
+    {
+      "login": "Stew-rt",
+      "name": "Stewart Webb",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40280034?v=4",
+      "profile": "https://github.com/Stew-rt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Ronner231",
+      "name": "Ronner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/136009984?v=4",
+      "profile": "https://github.com/Ronner231",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "ZzNoah",
+      "name": "ZzNoah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34055623?v=4",
+      "profile": "https://github.com/ZzNoah",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "Henrik-Bonsmann",
+      "name": "Henrik Bonsmann",
+      "avatar_url": "https://avatars.githubusercontent.com/u/112704394?v=4",
+      "profile": "https://github.com/Henrik-Bonsmann",
+      "contributions": [
+        "review",
+        "code"
+      ]
+    },
+    {
+      "login": "apewall",
+      "name": "Apewall",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1915182?v=4",
+      "profile": "https://github.com/apewall",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arcos",
+      "name": "Andrea Costantini",
+      "avatar_url": "https://avatars.githubusercontent.com/u/143747?v=4",
+      "profile": "https://github.com/arcos",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "ose",
+  "projectOwner": "vttred",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true,
+  "commitConvention": "angular",
+  "commitType": "docs"
+}

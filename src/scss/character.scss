@@ -1,0 +1,245 @@
+@import "./variables.scss";
+
+/* ----------------------------------------- */
+/*  Basic Structure                          */
+/* ----------------------------------------- */
+.ose.sheet.actor.character {
+  min-width: 450px;
+  min-height: 550px;
+
+  /* ----------------------------------------- */
+  /*  Sheet Header                             */
+  /* ----------------------------------------- */
+
+  .sheet-header {
+    position: relative;
+    .xp-bonus {
+      top: -15px;
+      right: 3px;
+      color: $colorTan;
+      font-size: 10px;
+      position: absolute;
+    }
+    .profile {
+      .modifiers-btn {
+        opacity: 0;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 20px;
+        width: 140px;
+        padding: 2px 5px;
+        color: whitesmoke;
+        background: $colorDark;
+      }
+      &:hover .modifiers-btn {
+        opacity: 1;
+      }
+      &:hover .profile-img {
+        box-shadow: 0 0 2px $colorDark;
+      }
+    }
+  }
+
+  /* ----------------------------------------- */
+  /*  Sheet Body                               */
+  /* ----------------------------------------- */
+  .sheet-body {
+    .tab {
+      height: 100%;
+    }
+    .attributes-tab {
+      justify-content: space-between;
+      height: 100%;
+    }
+    .resources {
+      display: flex;
+      justify-content: space-evenly;
+      flex-direction: column;
+      .attribute {
+        flex: 0 0 55px;
+        &.attribute-secondaries {
+          flex: 0 0 40px;
+          margin-bottom: 5px;
+        }
+      }
+    }
+    .notes-tab {
+      .inventory {
+        .languages {
+          margin: 2px;
+          flex: 0 0 130px;
+          .item-category-title {
+            .item-controls {
+              flex: 0 0 20px;
+            }
+          }
+          ol {
+            height: 100px;
+            overflow: auto;
+            list-style: none;
+            padding: 5px;
+            li {
+              margin: 0;
+              &:hover .item-controls {
+                display: flex;
+              }
+              .item-controls {
+                flex: 0 0 20px;
+                display: none;
+              }
+            }
+          }
+        }
+        .description {
+          margin: 2px;
+          .editor {
+            height: 130px;
+            min-height: 130px;
+          }
+        }
+        &.notes {
+          margin: 2px;
+          .editor {
+            flex: 1 0 0;
+            min-height: 500px;
+            overflow-y: visible;
+          }
+        }
+      }
+    }
+    .health {
+      &.armor-class {
+        background: url("../assets/shield.png") no-repeat center;
+        background-size: 70px;
+        .shield {
+          text-align: right;
+          padding: 0 14px;
+          font-size: var(--font-size-18);
+        }
+      }
+      height: 70px;
+      position: relative;
+      .health-value {
+        font-size: var(--font-size-16);
+        text-align: center;
+        font-weight: bolder;
+        text-shadow: 0 0 2px white, 0 1px 2px white, 1px 0 2px white,
+          1px 1px 2px white;
+      }
+      .health-top {
+        border-bottom: none;
+        position: absolute;
+        font-size: 24px;
+        top: 10px;
+        width: 70px;
+        left: calc(50% - 35px);
+      }
+      .health-bottom {
+        border-bottom: none;
+        position: absolute;
+        bottom: 8px;
+        width: 40px;
+        right: calc(50% + -20px);
+      }
+      .health-empty {
+        background: url("../assets/heart_empty.png") no-repeat center;
+        background-size: 70px;
+        background-position: top;
+      }
+      .health-full {
+        background: url("../assets/heart_full.png") no-repeat center;
+        background-size: 70px;
+        background-position: bottom;
+      }
+    }
+    .saving-throw {
+      .attribute-value.flat {
+        line-height: 30px;
+      }
+    }
+    .exploration {
+      flex-wrap: wrap;
+      .attribute {
+        margin: 4px;
+        flex: 1 0 calc(33.333% - 8px);
+        .attribute-name {
+          text-align: left;
+          flex: 1 0 60px;
+          line-height: 25px;
+          font-size: var(--font-size-12);
+        }
+      }
+    }
+  }
+
+  /* Encumbrance Bar */
+  .encumbrance-wrapper {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 5px 0;
+    margin-top: 5px;
+
+    .encumbrance-label {
+      height: 10px;
+      padding: 0 5px;
+      font-size: var(--font-size-13);
+      line-height: 12px;
+    }
+  }
+  .encumbrance {
+    height: 12px;
+    background: $darkBackground;
+    border: 1px solid $colorDark;
+    border-radius: 3px;
+    position: relative;
+
+    .encumbrance-bar {
+      position: absolute;
+      background: rgba(255, 0, 0, 0.6);
+      height: 10px;
+      border: 1px solid #777;
+      border-radius: 2px;
+    }
+
+    .encumbrance-breakpoint {
+      display: block;
+      position: absolute;
+    }
+
+    .arrow-up {
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 4px solid $colorFaint;
+    }
+
+    .arrow-down {
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid $colorFaint;
+    }
+
+    &.encumbered {
+      .arrow-up {
+        border-bottom: 4px solid $colorDark;
+      }
+      .arrow-down {
+        border-top: 4px solid $colorDark;
+      }
+    }
+  }
+  /* tag overflow */
+  .tag-row {
+    display: flex;
+    overflow: hidden;
+  }
+  /* ----------------------------------------- */
+  /*  Item Controls                            */
+  /* ----------------------------------------- */
+}

@@ -1,0 +1,72 @@
+/**
+ * @file A class representing the "Complete" encumbrance scheme from Old School Essentials: Classic Fantasy
+ */
+import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+
+// import { OSE } from '../../config';
+
+/**
+ * @todo Add template path for encumbrance bar
+ * @todo Add template path for inventory item row
+ */
+export default class OseDataModelCharacterEncumbranceComplete
+  extends OseDataModelCharacterEncumbrance
+  implements CharacterEncumbrance
+{
+  static templateEncumbranceBar = "";
+
+  static templateInventoryRow = "";
+
+  /**
+   * The machine-readable label for this encumbrance scheme
+   */
+  static type = "complete";
+
+  /**
+   * The human-readable label for this encumbrance scheme
+   */
+  static localizedLabel = "OSE.Setting.EncumbranceComplete";
+
+  #weight;
+
+  constructor(max = OseDataModelCharacterEncumbrance.baseEncumbranceCap, items: Item[] = []) {
+    super(OseDataModelCharacterEncumbranceComplete.type, max);
+    this.#weight = items.reduce((acc, { type, system: { quantity, weight } }: Item) => {
+      if (type === "item") return acc + quantity.value * weight;
+      if (["weapon", "armor", "container"].includes(type)) return acc + weight;
+      return acc;
+    }, 0);
+  }
+
+  static defineSchema() {
+    // @ts-expect-error League v13 client/data/fields shadows common (only declares ShaderField)
+    const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
+
+    return new SchemaField({
+      variant: new StringField({
+        initial: OseDataModelCharacterEncumbranceComplete.type,
+      }),
+      enabled: new BooleanField({ initial: true }),
+      encumbered: new BooleanField({ initial: false }),
+      pct: new NumberField({ integer: false, initial: 0, min: 0, max: 100 }),
+      steps: new ArrayField(new NumberField()),
+      value: new NumberField({ integer: false }),
+      max: new NumberField({
+        integer: false,
+        initial: OseDataModelCharacterEncumbrance.baseEncumbranceCap,
+      }),
+      atFirstBreakpoint: new BooleanField({ initial: false }),
+      atSecondBreakpoint: new BooleanField({ initial: false }),
+      atThirdBreakpoint: new BooleanField({ initial: false }),
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get steps() {
+    return Object.values(OseDataModelCharacterEncumbrance.encumbranceSteps);
+  }
+
+  get value(): number {
+    return this.#weight;
+  }
+}

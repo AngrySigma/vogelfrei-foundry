@@ -1,0 +1,784 @@
+/**
+ * @file Quench unit tests for the Character data model class.
+ */
+// eslint-disable-next-line import/no-cycle
+import type { QuenchMethods } from "../../../e2e";
+import { cleanUpActorsByKey, createMockActorKey, getMockActorKey } from "../../../e2e/testUtils";
+import OseDataModelCharacter from "../data-model-character";
+import OseDataModelCharacterScores from "../data-model-classes/data-model-character-scores";
+
+export const key = "ose.actor.datamodel.character";
+export const options = { displayName: "OSE: Actor: Data Model: Character" };
+
+const createMockActor = () => createMockActorKey("character", {}, key);
+
+export default ({ describe, it, expect, after, before }: QuenchMethods) => {
+  const dataModel = new OseDataModelCharacter();
+  const ascendingACSetting = game.settings.get(game.system.id, "ascendingAC");
+  const initiativeSetting = game.settings.get(game.system.id, "initiative");
+  const encumbranceSetting = game.settings.get(game.system.id, "encumbranceOption");
+
+  after(async () => {
+    game.settings.set(game.system.id, "ascendingAC", ascendingACSetting);
+    game.settings.set(game.system.id, "initiative", initiativeSetting);
+    game.settings.set(game.system.id, "encumbranceOption", encumbranceSetting);
+    await cleanUpActorsByKey(key);
+  });
+
+  // @todo: Can this be tested without creating an actor?
+  describe("prepareDerivedData()", () => {
+    before(async () => {
+      await game.settings.set(game.system.id, "encumbranceOption", "detailed");
+      await createMockActor();
+    });
+
+    it("has scores", async () => {
+      const actor = await getMockActorKey(key);
+      expect(actor?.system.scores).not.undefined;
+      expect(actor?.system.scores.str).not.undefined;
+      expect(actor?.system.scores.str.od).not.undefined;
+      expect(actor?.system.scores.int).not.undefined;
+      expect(actor?.system.scores.int.literacy).not.undefined;
+      expect(actor?.system.scores.int.spoken).not.undefined;
+      expect(actor?.system.scores.wis).not.undefined;
+      expect(actor?.system.scores.dex).not.undefined;
+      expect(actor?.system.scores.dex.init).not.undefined;
+      expect(actor?.system.scores.con).not.undefined;
+      expect(actor?.system.scores.cha).not.undefined;
+      expect(actor?.system.scores.cha.loyalty).not.undefined;
+      expect(actor?.system.scores.cha.retain).not.undefined;
+      expect(actor?.system.scores.cha.npc).not.undefined;
+    });
+
+    it("has encumbrance", async () => {
+      const actor = await getMockActorKey(key);
+      expect(actor?.system.encumbrance).not.undefined;
+      expect(actor?.system.encumbrance.variant).not.undefined;
+      expect(actor?.system.encumbrance.enabled).not.undefined;
+      expect(actor?.system.encumbrance.pct).not.undefined;
+      expect(actor?.system.encumbrance.encumbered).not.undefined;
+      expect(actor?.system.encumbrance.steps).not.undefined;
+      expect(actor?.system.encumbrance.value).not.undefined;
+      expect(actor?.system.encumbrance.max).not.undefined;
+      expect(actor?.system.encumbrance.steps).not.undefined;
+      //expect(actor?.system.encumbrance.atQuarterEncumbered).not.undefined;
+      //expect(actor?.system.encumbrance.atEighthEncumbered).not.undefined;
+    });
+
+    it("has movement", async () => {
+      const actor = await getMockActorKey(key);
+      expect(actor?.system.movement).not.undefined;
+      expect(actor?.system.movement.base).not.undefined;
+      expect(actor?.system.movement.encounter).not.undefined;
+      expect(actor?.system.movement.overland).not.undefined;
+    });
+
+    it("has ac", async () => {
+      const actor = await getMockActorKey(key);
+      expect(actor?.system.ac).not.undefined;
+      expect(actor?.system.ac.base).not.undefined;
+      expect(actor?.system.ac.naked).not.undefined;
+      expect(actor?.system.ac.shield).not.undefined;
+      expect(actor?.system.ac.value).not.undefined;
+      expect(actor?.system.ac.mod).not.undefined;
+    });
+
+    it("has aac", async () => {
+      const actor = await getMockActorKey(key);
+      expect(actor?.system.aac).not.undefined;
+      expect(actor?.system.aac.base).not.undefined;
+      expect(actor?.system.aac.naked).not.undefined;
+      expect(actor?.system.aac.shield).not.undefined;
+      expect(actor?.system.aac.value).not.undefined;
+      expect(actor?.system.aac.mod).not.undefined;
+    });
+
+    describe("has spells", () => {
+      const spellLevels = new Set(["1", "2", "3", "4", "5", "6"]);
+
+      it("has spells", async () => {
+        const actor = await getMockActorKey(key);
+        expect(actor?.system.spells).not.undefined;
+        expect(actor?.system.spells.enabled).not.undefined;
+        expect(actor?.system.spells.spellList).not.undefined;
+        expect(actor?.system.spells.slots).not.undefined;
+      });
+
+      spellLevels.forEach((lvl) => {
+        it(`has spell level ${lvl}`, async () => {
+          const actor = await getMockActorKey(key);
+          expect(actor?.system.spells.slots[lvl]).not.undefined;
+          expect(Object.keys(actor?.system.spells.slots[lvl])).contain("used");
+          expect(Object.keys(actor?.system.spells.slots[lvl])).contain("max");
+        });
+      });
+    });
+
+    after(async () => {
+      await cleanUpActorsByKey(key);
+    });
+  });
+
+  describe("defineSchema()", () => {
+    before(async () => {
+      await createMockActor();
+    });
+
+    const flatFields = ["config", "initiative", "thac0", "languages"];
+    flatFields.forEach((field) => {
+      it(`has ${field}`, async () => {
+        const actor = await getMockActorKey(key);
+        expect(actor?.system[field]).not.undefined;
+      });
+    });
+
+    const recursiveFields = [
+      { field: "hp", subFields: ["hd", "value", "max"] },
+      { field: "exploration", subFields: ["ft", "ld", "od", "sd", "fg", "hn"] },
+      { field: "retainer", subFields: ["enabled", "loyalty", "wage"] },
+    ];
+    recursiveFields.forEach(({ field, subFields }) => {
+      subFields.forEach((subField) => {
+        it(`${field} field has ${subField} subfield`, async () => {
+          const actor = await getMockActorKey(key);
+          expect(actor?.system[field]).not.undefined;
+          expect(actor?.system[field][subField]).not.undefined;
+        });
+      });
+    });
+
+    const doubleRecursiveFields = [
+      {
+        field: "saves",
+        subFields: [
+          { subField: "breath", subSubField: ["value"] },
+          { subField: "death", subSubField: ["value"] },
+          { subField: "paralysis", subSubField: ["value"] },
+          { subField: "spell", subSubField: ["value"] },
+          { subField: "wand", subSubField: ["value"] },
+        ],
+      },
+    ];
+    doubleRecursiveFields.forEach(({ field, subFields }) => {
+      subFields.forEach(({ subField, subSubField }) => {
+        it(`${field} field has ${subField} subfield, which has ${subSubField} field`, async () => {
+          const actor = await getMockActorKey(key);
+          expect(actor?.system[field]).not.undefined;
+          expect(actor?.system[field][subField]).not.undefined;
+          expect(actor?.system[field][subField][subSubField]).not.undefined;
+        });
+      });
+    });
+
+    after(async () => {
+      await cleanUpActorsByKey(key);
+    });
+  });
+
+  describe("usesAscendingAC()", () => {
+    it("successfully reads from settings", () => {
+      expect(dataModel.usesAscendingAC).equal(game.settings.get(game.system.id, "ascendingAC"));
+    });
+  });
+
+  describe("meleeMod()", () => {
+    describe("ascendingAC on", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "ascendingAC", true);
+      });
+
+      it("without scores, return 0 if bba undefined", () => {
+        expect(dataModel.meleeMod).equal(0);
+      });
+
+      it("without scores, return thac0.bba when bba defined", () => {
+        dataModel.thac0.bba = 12;
+        expect(dataModel.meleeMod).equal(12);
+        dataModel.thac0.bba = 0;
+        expect(dataModel.thac0.bba).equal(0);
+      });
+    });
+
+    describe("ascendingAC off", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "ascendingAC", false);
+      });
+
+      it("without scores, return 0", async () => {
+        expect(dataModel.meleeMod).equal(0);
+      });
+    });
+
+    it("adds str modifier", () => {
+      dataModel.scores.str = { mod: 10 };
+      expect(dataModel.meleeMod).equal(10);
+      dataModel.scores.str.mod = 0;
+      expect(dataModel.scores.str.mod).equal(0);
+    });
+
+    it("adds thac0 melee modifier", () => {
+      dataModel.thac0.mod = { melee: 5 };
+      expect(dataModel.meleeMod).equal(5);
+      dataModel.thac0.mod.melee = 0;
+      expect(dataModel.thac0.mod.melee).equal(0);
+    });
+  });
+
+  describe("rangedMod()", () => {
+    describe("ascendingAC on", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "ascendingAC", true);
+      });
+
+      it("without scores, return 0 if bba undefined", () => {
+        expect(dataModel.rangedMod).equal(0);
+      });
+
+      it("without scores, return thac0.bba when bba defined", () => {
+        dataModel.thac0.bba = 12;
+        expect(dataModel.rangedMod).equal(12);
+        dataModel.thac0.bba = 0;
+        expect(dataModel.thac0.bba).equal(0);
+      });
+    });
+
+    describe("ascendingAC off", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "ascendingAC", false);
+      });
+
+      it("without scores, return 0", async () => {
+        expect(dataModel.rangedMod).equal(0);
+      });
+    });
+
+    it("adds dex modifier", () => {
+      dataModel.scores.dex = { mod: 10 };
+      expect(dataModel.rangedMod).equal(10);
+      dataModel.scores.dex.mod = 0;
+      expect(dataModel.scores.dex.mod).equal(0);
+    });
+
+    it("adds thac0 missile modifier", () => {
+      dataModel.thac0.mod = { missile: 5 };
+      expect(dataModel.rangedMod).equal(5);
+      dataModel.thac0.mod.missile = 0;
+      expect(dataModel.thac0.mod.missile).equal(0);
+    });
+  });
+
+  describe("isNew()", () => {
+    it("New when all ability scores are at 0", async () => {
+      const testActor = await createMockActorKey(
+        "character",
+        {
+          system: {
+            scores: {
+              str: { value: 0 },
+              int: { value: 0 },
+              wis: { value: 0 },
+              dex: { value: 0 },
+              con: { value: 0 },
+              cha: { value: 0 },
+            },
+          },
+        },
+        key,
+      );
+      expect(testActor?.system.isNew).to.be.true;
+    });
+
+    it("Not new when any ability score is above 0", async () => {
+      const testActor = await createMockActorKey(
+        "character",
+        {
+          system: {
+            scores: {
+              str: { value: 10 },
+              int: { value: 0 },
+              wis: { value: 0 },
+              dex: { value: 0 },
+              con: { value: 0 },
+              cha: { value: 0 },
+            },
+          },
+        },
+        key,
+      );
+      expect(testActor?.system.isNew).to.be.false;
+    });
+
+    it("New when all saves are at 0", async () => {
+      const testActor = await createMockActorKey(
+        "monster",
+        {
+          system: {
+            saves: {
+              breath: { value: 0 },
+              death: { value: 0 },
+              paralysis: { value: 0 },
+              spell: { value: 0 },
+              wand: { value: 0 },
+            },
+          },
+        },
+        key,
+      );
+      expect(testActor?.system.isNew).to.be.true;
+    });
+
+    it("Not new when any save is above 0", async () => {
+      const testActor = await createMockActorKey(
+        "monster",
+        {
+          system: {
+            saves: {
+              breath: { value: 10 },
+              death: { value: 0 },
+              paralysis: { value: 0 },
+              spell: { value: 0 },
+              wand: { value: 0 },
+            },
+          },
+        },
+        key,
+      );
+      expect(testActor?.system.isNew).to.be.false;
+    });
+
+    after(async () => {
+      await cleanUpActorsByKey(key);
+    });
+  });
+
+  describe("containers()", () => {
+    it("returns all containers", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.containers.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [{ type: "container", name: "test container" }]);
+      expect(actor?.items.contents.length).equal(1);
+      const itemContainer = actor?.items.getName("test container");
+      expect(itemContainer).to.not.be.undefined;
+      expect(itemContainer?.name).equal("test container");
+      expect(actor?.system.containers.length).equal(1);
+      // eslint-disable-next-line no-underscore-dangle
+      expect(actor?.system.containers[0]._id).equal(itemContainer?.id);
+      await actor?.delete();
+    });
+  });
+
+  describe("treasures()", () => {
+    it("returns treasures on actor", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.treasures.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        { type: "item", name: "test treasure", system: { treasure: true } },
+      ]);
+      expect(actor?.items.contents.length).equal(1);
+      const itemTreasure = actor?.items.getName("test treasure");
+      expect(itemTreasure).to.not.be.undefined;
+      expect(itemTreasure?.name).equal("test treasure");
+      expect(itemTreasure?.system.treasure).is.true;
+      expect(actor?.system.treasures.length).equal(1);
+      // eslint-disable-next-line no-underscore-dangle
+      expect(actor?.system.treasures[0]._id).equal(itemTreasure?.id);
+      await actor?.delete();
+    });
+
+    it("doesn't returns treasures on actor if in container", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.treasures.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [{ type: "container", name: "test container" }]);
+      const container = actor?.items.getName("test container");
+      expect(container).to.not.be.undefined;
+      expect(container?.name).equal("test container");
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test treasure",
+          system: { treasure: true, containerId: container?.id },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(2);
+      const itemTreasure = actor?.items.getName("test treasure");
+      expect(itemTreasure).to.not.be.undefined;
+      expect(itemTreasure?.name).equal("test treasure");
+      expect(itemTreasure?.system.treasure).is.true;
+      expect(itemTreasure?.system.containerId).equal(container?.id);
+      expect(actor?.system.treasures.length).equal(0);
+      await actor?.delete();
+    });
+  });
+
+  describe("carriedTreasure()", () => {
+    it("return treasure value on actor", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.carriedTreasure).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test treasure",
+          system: { treasure: true, quantity: { value: 1 }, cost: 10 },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(1);
+      const itemTreasure = actor?.items.getName("test treasure");
+      expect(itemTreasure).to.not.be.undefined;
+      expect(itemTreasure?.name).equal("test treasure");
+      expect(itemTreasure?.system.treasure).is.true;
+      expect(actor?.system.carriedTreasure).equal(10);
+      await actor?.delete();
+    });
+
+    it("return multiple treasure value on actor", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.carriedTreasure).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test treasure",
+          system: { treasure: true, quantity: { value: 1 }, cost: 10 },
+        },
+        {
+          type: "item",
+          name: "test treasure 2",
+          system: { treasure: true, quantity: { value: 3 }, cost: 4 },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(2);
+      const itemTreasure = actor?.items.getName("test treasure");
+      expect(itemTreasure).to.not.be.undefined;
+      expect(itemTreasure?.name).equal("test treasure");
+      expect(itemTreasure?.system.treasure).is.true;
+      const itemTreasure2 = actor?.items.getName("test treasure 2");
+      expect(itemTreasure2).to.not.be.undefined;
+      expect(itemTreasure2?.name).equal("test treasure 2");
+      expect(itemTreasure2?.system.treasure).is.true;
+      expect(actor?.system.carriedTreasure).equal(10 + 3 * 4);
+      await actor?.delete();
+    });
+
+    it("doesn't returns treasure value on actor if in container", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.carriedTreasure).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [{ type: "container", name: "test container" }]);
+      const container = actor?.items.getName("test container");
+      expect(container).to.not.be.undefined;
+      expect(container?.name).equal("test container");
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test treasure",
+          system: {
+            treasure: true,
+            containerId: container?.id,
+            quantity: { value: 1 },
+            cost: 10,
+          },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(2);
+      const itemTreasure = actor?.items.getName("test treasure");
+      expect(itemTreasure).to.not.be.undefined;
+      expect(itemTreasure?.name).equal("test treasure");
+      expect(itemTreasure?.system.treasure).is.true;
+      expect(itemTreasure?.system.containerId).equal(container?.id);
+      expect(actor?.system.carriedTreasure).equal(0);
+      await actor?.delete();
+    });
+  });
+
+  describe("items()", () => {
+    it("only returns other items than treasure", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.items.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test item",
+        },
+        {
+          type: "item",
+          name: "test treasure",
+          system: { treasure: true, quantity: { value: 3 }, cost: 4 },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(2);
+      const testItem = actor?.items.getName("test item");
+      expect(testItem).to.not.be.undefined;
+      expect(testItem?.name).equal("test item");
+      const testTreasure = actor?.items.getName("test treasure");
+      expect(testTreasure).to.not.be.undefined;
+      expect(testTreasure?.name).equal("test treasure");
+      expect(testTreasure?.system.treasure).is.true;
+      expect(actor?.system.items.length).equal(1);
+      expect(actor?.system.items[0].name).equal("test item");
+      await actor?.delete();
+    });
+
+    it("only returns other items than stored in containers", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      expect(actor?.system.items.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "container",
+          name: "test container",
+        },
+      ]);
+      const container = actor?.items.getName("test container");
+      expect(container).to.not.be.undefined;
+      expect(container?.name).equal("test container");
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "item",
+          name: "test item in container",
+          system: { containerId: container?.id },
+        },
+        {
+          type: "item",
+          name: "test item",
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(3);
+      const itemInContainer = actor?.items.getName("test item in container");
+      expect(itemInContainer).to.not.be.undefined;
+      expect(itemInContainer?.name).equal("test item in container");
+      const testItem = actor?.items.getName("test item");
+      expect(testItem).to.not.be.undefined;
+      expect(testItem?.name).equal("test item");
+      expect(actor?.system.items.length).equal(1);
+      expect(actor?.system.items[0].name).equal("test item");
+      await actor?.delete();
+    });
+  });
+
+  const testTypes = [
+    { type: "weapon", getter: "weapons" },
+    { type: "ability", getter: "abilities" },
+    { type: "armor", getter: "armor" },
+    { type: "spell", getter: "spellList" },
+  ];
+  testTypes.forEach(({ type, getter }) => {
+    describe(`${getter}()`, () => {
+      it(`returns all ${getter}`, async () => {
+        const actor = await createMockActor();
+        expect(actor?.items.contents.length).equal(0);
+        expect(actor?.system[getter].length).equal(0);
+        await actor?.createEmbeddedDocuments("Item", [{ type, name: `test ${type}` }]);
+        expect(actor?.items.contents.length).equal(1);
+        const testItem = actor?.items.getName(`test ${type}`);
+        expect(testItem).to.not.be.undefined;
+        expect(testItem?.name).equal(`test ${type}`);
+        expect(actor?.system[getter].length).equal(1);
+        // eslint-disable-next-line no-underscore-dangle
+        expect(actor?.system[getter][0]._id).equal(testItem?.id);
+        await actor?.delete();
+      });
+
+      it(`returns all ${getter} except ones in container`, async () => {
+        switch (getter) {
+          case "abilities":
+            // Abilities are not stored in containers
+            return;
+
+          case "spellList":
+            // Spells are not stored in containers
+            return;
+
+          default:
+            break;
+        }
+
+        const actor = await createMockActor();
+        expect(actor?.items.contents.length).equal(0);
+        expect(actor?.system[getter].length).equal(0);
+        await actor?.createEmbeddedDocuments("Item", [
+          {
+            type: "container",
+            name: "test container",
+          },
+        ]);
+        const container = actor?.items.getName("test container");
+        expect(container).to.not.be.undefined;
+        expect(container?.name).equal("test container");
+        await actor?.createEmbeddedDocuments("Item", [
+          {
+            type,
+            name: `test ${type} in container`,
+            system: { containerId: container?.id },
+          },
+          {
+            type,
+            name: `test ${type}`,
+          },
+        ]);
+        expect(actor?.items.contents.length).equal(3);
+        const itemInContainer = actor?.items.getName(`test ${type} in container`);
+        expect(itemInContainer).to.not.be.undefined;
+        expect(itemInContainer?.name).equal(`test ${type} in container`);
+        const testItem = actor?.items.getName(`test ${type}`);
+        expect(testItem).to.not.be.undefined;
+        expect(testItem?.name).equal(`test ${type}`);
+        expect(actor?.system[getter].length).equal(1);
+        // eslint-disable-next-line no-underscore-dangle
+        expect(actor?.system[getter][0]._id).equal(testItem?.id);
+        await actor?.delete();
+      });
+    });
+  });
+
+  describe("isSlow()", () => {
+    it("returns false if no weapons", async () => {
+      const actor = await createMockActor();
+      expect(actor?.system.isSlow).is.false;
+      await actor?.delete();
+    });
+
+    it("returns false if weapon that has slow tag and not equipped", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "weapon",
+          name: "test weapon",
+          system: { slow: true, equipped: false },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(1);
+      const testItem = actor?.items.getName("test weapon");
+      expect(testItem).to.not.be.undefined;
+      expect(testItem?.name).equal("test weapon");
+      expect(actor?.system.isSlow).is.false;
+      await actor?.delete();
+    });
+
+    it("returns false if weapon that doesn't have slow tag and is equipped", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "weapon",
+          name: "test weapon",
+          system: { slow: false, equipped: true },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(1);
+      const testItem = actor?.items.getName("test weapon");
+      expect(testItem).to.not.be.undefined;
+      expect(testItem?.name).equal("test weapon");
+      expect(actor?.system.isSlow).is.false;
+      await actor?.delete();
+    });
+
+    it("returns true if weapon that has slow tag and is equipped", async () => {
+      const actor = await createMockActor();
+      expect(actor?.items.contents.length).equal(0);
+      await actor?.createEmbeddedDocuments("Item", [
+        {
+          type: "weapon",
+          name: "test weapon",
+          system: { slow: true, equipped: true },
+        },
+      ]);
+      expect(actor?.items.contents.length).equal(1);
+      const testItem = actor?.items.getName("test weapon");
+      expect(testItem).to.not.be.undefined;
+      expect(testItem?.name).equal("test weapon");
+      expect(actor?.system.isSlow).is.true;
+      await actor?.delete();
+    });
+  });
+
+  describe("init()", () => {
+    describe("group inititative", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "initiative", "group");
+      });
+
+      it("returns 0", () => {
+        expect(dataModel.init).equal(0);
+      });
+
+      it("returns 0 with initiative value set", async () => {
+        dataModel.initiative.value = 12;
+        expect(dataModel.init).equal(0);
+        dataModel.initiative.value = 0;
+        expect(dataModel.initiative.value).equal(0);
+      });
+
+      it("returns 0 with initiative mod set", async () => {
+        dataModel.initiative.mod = 10;
+        expect(dataModel.init).equal(0);
+        dataModel.initiative.mod = 0;
+        expect(dataModel.initiative.mod).equal(0);
+      });
+
+      it("returns 0 with dex mod init set", async () => {
+        dataModel.dex = { mod: { init: 5 } };
+        expect(dataModel.init).equal(0);
+        dataModel.dex.mod.init = 0;
+        expect(dataModel.dex.mod.init).equal(0);
+      });
+    });
+
+    describe("individual inititative", () => {
+      before(async () => {
+        await game.settings.set(game.system.id, "initiative", "individual");
+        // Initialise the scores with a "standard" dexterity score
+        dataModel.scores = new OseDataModelCharacterScores({
+          dex: { value: 9, bonus: 0, mod: 0 },
+        });
+      });
+
+      it("returns 0 by default", () => {
+        expect(dataModel.initiative.value).equal(0);
+        expect(dataModel.initiative.mod).equal(0);
+        expect(dataModel.scores.dex.init).equal(0);
+        expect(dataModel.init).equal(0);
+      });
+
+      it("returns correctly with initiative value set", async () => {
+        dataModel.initiative.value = 12;
+        expect(dataModel.init).equal(12);
+        dataModel.initiative.value = 0;
+        expect(dataModel.initiative.value).equal(0);
+      });
+
+      it("returns correctly with initiative mod set", async () => {
+        dataModel.initiative.mod = 10;
+        expect(dataModel.init).equal(10);
+        dataModel.initiative.mod = 0;
+        expect(dataModel.initiative.mod).equal(0);
+      });
+
+      it("returns correctly with dex mod init set", async () => {
+        // See the Ability Scores section in the OSE SRD for how dexterity affects initiative
+        dataModel.scores.dex = { value: 18 };
+        expect(dataModel.init).equal(2);
+        dataModel.scores.dex = { value: 9 };
+        expect(dataModel.scores.dex.init).equal(0);
+      });
+
+      it("returns correctly with initiative value, mod, and dex mod init set", async () => {
+        dataModel.initiative.value = 12;
+        dataModel.initiative.mod = 10;
+        dataModel.scores.dex = { value: 18 };
+        expect(dataModel.init).equal(24);
+        dataModel.initiative.value = 0;
+        expect(dataModel.initiative.value).equal(0);
+        dataModel.initiative.mod = 0;
+        expect(dataModel.initiative.mod).equal(0);
+        dataModel.scores.dex = { value: 9 };
+        expect(dataModel.scores.dex.init).equal(0);
+      });
+    });
+  });
+};

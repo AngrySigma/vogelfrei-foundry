@@ -1,0 +1,236 @@
+/**
+ * @file The sheet class for Actors of type Monster
+ */
+import OSE from "../config";
+import OseActorSheet from "./actor-sheet";
+
+/**
+ * Extend the basic ActorSheet with some very simple modifications
+ */
+export default class OseActorSheetMonster extends OseActorSheet {
+  /**
+   * Extend and override the default options used by the Actor Sheet
+   *
+   * @returns {object} - The sheet's default options
+   */
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(OseActorSheet.defaultOptions, {
+      classes: ["ose", "sheet", "monster", "actor"],
+      template: `${OSE.systemPath()}/templates/actors/monster-sheet.html`,
+      width: 450,
+      height: 560,
+      resizable: true,
+      tabs: [
+        {
+          navSelector: ".tabs",
+          contentSelector: ".sheet-body",
+          initial: "attributes",
+        },
+      ],
+    });
+  }
+
+  /**
+   * Organize and classify Owned Items for Character sheets
+   *
+   * @param data
+   * @private
+   */
+  _prepareItems(data) {
+    // Assign and return
+    data.owned = {
+      weapons: this.actor.system.weapons,
+      items: this.actor.system.items,
+      containers: this.actor.system.containers,
+      armors: this.actor.system.armor,
+      treasures: this.actor.system.treasures,
+    };
+
+    data.attackPatterns = this.actor.system.attackPatterns;
+    data.spells = this.actor.system.spells.spellList;
+  }
+
+  /**
+   * Prepare data for rendering the Actor sheet
+   * The prepared data object contains both the actor data as well as additional sheet options
+   */
+  async getData() {
+    const data = await super.getData();
+    // Prepare owned items
+    this._prepareItems(data);
+
+    const monsterData = data?.system;
+
+    // Settings
+    data.config.morale = game.settings.get(game.system.id, "morale");
+    monsterData.details.treasure.link = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+      monsterData.details.treasure.table,
+      { async: true },
+    );
+    data.isNew = this.actor.isNew();
+
+    data.enrichedBiography = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+      this.object.system.details.biography,
+      { async: true },
+    );
+
+    // Monsters don't show an encumbrance bar
+    data.encumbranceTemplate = "";
+
+    return data;
+  }
+
+  /**
+   * Monster creation helpers
+   */
+  async generateSave() {
+    const choices = CONFIG.OSE.monster_saves;
+
+    const templateData = { choices };
+    const dlg = await foundry.applications.handlebars.renderTemplate(
+      `${OSE.systemPath()}/templates/actors/dialogs/monster-saves.html`,
+      templateData,
+    );
+    // Create Dialog window
+    return new foundry.applications.api.DialogV2({
+      window: { title: game.i18n.localize("OSE.dialog.generateSaves") },
+      position: {
+        width: 250,
+      },
+      content: dlg,
+      buttons: [
+        {
+          action: "ok",
+          label: game.i18n.localize("OSE.Ok"),
+          icon: "fas fa-check",
+          default: true,
+          callback: (_event, button) => {
+            const { hd } = new foundry.applications.ux.FormDataExtended(button.form).object;
+            this.actor.generateSave(hd.replace(/[^\d+.-]/g, ""));
+          },
+        },
+        {
+          action: "cancel",
+          icon: "fas fa-times",
+          label: game.i18n.localize("OSE.Cancel"),
+          callback: () => {},
+        },
+      ],
+    }).render(true);
+  }
+
+  async _onDrop(event) {
+    super._onDrop(event);
+    let data;
+    try {
+      data = JSON.parse(event.dataTransfer.getData("text/plain"));
+      if (data.type !== "RollTable") return;
+    } catch (_error) {
+      return false;
+    }
+
+    let link = "";
+    if (data.pack) {
+      const tableDatum = game.packs.get(data.pack).index.find((el) => el._id === data.id);
+      link = `@UUID[${data.uuid}]{${tableDatum.name}}`;
+    } else {
+      link = `@UUID[${data.uuid}]`;
+    }
+    this.actor.update({ "system.details.treasure.table": link });
+  }
+
+  /* -------------------------------------------- */
+  async _resetAttacks(_event) {
+    return Promise.all(
+      this.actor.items
+        .filter((i) => i.type === "weapon")
+        .map((weapon) =>
+          weapon.update({
+            "system.counter.value": Number.parseInt(weapon.system.counter.max, 10),
+          }),
+        ),
+    );
+  }
+
+  async _updateAttackCounter(event) {
+    event.preventDefault();
+    const item = this._getItemFromActor(event);
+
+    if (event.target.dataset.field === "value") {
+      return item.update({
+        "system.counter.value": Number.parseInt(event.target.value, 10),
+      });
+    }
+    if (event.target.dataset.field === "max") {
+      return item.update({
+        "system.counter.max": Number.parseInt(event.target.value, 10),
+      });
+    }
+  }
+
+  _cycleAttackPatterns(event) {
+    const item = super._getItemFromActor(event);
+    const currentColor = item.system.pattern;
+    // Attack patterns include all OSE colors and transparent
+    const colors = Object.keys(CONFIG.OSE.colors);
+    colors.push("transparent");
+    let index = colors.indexOf(currentColor);
+    if (index + 1 === colors.length) {
+      index = 0;
+    } else {
+      index++;
+    }
+    item.update({
+      "system.pattern": colors[index],
+    });
+  }
+
+  /**
+   * Activate event listeners using the prepared sheet HTML
+   *
+   * @param html - {HTML}   The prepared HTML object ready to be rendered into the DOM
+   */
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    html.find(".morale-check a").click((ev) => {
+      const actorObject = this.actor;
+      actorObject.rollMorale({ event: ev });
+    });
+
+    html.find(".reaction-check a").click((ev) => {
+      const actorObject = this.actor;
+      actorObject.rollReaction({ event: ev });
+    });
+
+    html.find(".appearing-check a").click((ev) => {
+      const actorObject = this.actor;
+      const check = $(ev.currentTarget).closest(".check-field").data("check");
+      actorObject.rollAppearing({ event: ev, check });
+    });
+
+    html.find(".treasure-table a").contextmenu((_ev) => {
+      this.actor.update({ "system.details.treasure.table": null });
+    });
+
+    // Everything below here is only needed if the sheet is editable
+    if (!this.options.editable) return;
+
+    html.find(".item-reset[data-action='reset-attacks']").click((ev) => {
+      this._resetAttacks(ev);
+    });
+
+    html
+      .find(".counter input")
+      .click((ev) => ev.target.select())
+      .change(this._updateAttackCounter.bind(this));
+
+    html.find(".hp-roll").click((ev) => {
+      this.actor.rollHP({ event: ev });
+    });
+
+    html.find(".item-pattern").click((ev) => this._cycleAttackPatterns(ev));
+
+    html.find('button[data-action="generate-saves"]').click(() => this.generateSave());
+  }
+}

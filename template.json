@@ -1,0 +1,245 @@
+{
+  "Actor": {
+    "types": ["character", "monster"],
+    "templates": {
+      "common": {
+        "retainer": {
+          "enabled": false,
+          "loyalty": 0,
+          "wage": ""
+        },
+        "hp": {
+          "hd": "1d8",
+          "value": 20,
+          "max": 20
+        },
+        "ac": {
+          "value": 0,
+          "mod": 0
+        },
+        "aac": {
+          "value": 0,
+          "mod": 0
+        },
+        "thac0": {
+          "value": 19,
+          "bba": 0,
+          "mod": {
+            "missile": 0,
+            "melee": 0
+          }
+        },
+        "saves": {
+          "death": {
+            "value": 0
+          },
+          "wand": {
+            "value": 0
+          },
+          "paralysis": {
+            "value": 0
+          },
+          "breath": {
+            "value": 0
+          },
+          "spell": {
+            "value": 0
+          }
+        },
+        "movement": {
+          "base": 120
+        },
+        "initiative": {
+          "value": 0,
+          "mod": 0
+        },
+        "languages": {
+          "value": []
+        }
+      },
+      "spellcaster": {
+        "spells": {
+          "enabled": false,
+          "0": {
+            "max": 0
+          },
+          "1": {
+            "max": 0
+          },
+          "2": {
+            "max": 0
+          },
+          "3": {
+            "max": 0
+          },
+          "4": {
+            "max": 0
+          },
+          "5": {
+            "max": 0
+          },
+          "6": {
+            "max": 0
+          }
+        }
+      }
+    },
+    "character": {
+      "templates": ["common", "spellcaster"],
+      "config": {
+        "movementAuto": true
+      },
+      "details": {
+        "biography": "",
+        "notes": "",
+        "class": "",
+        "title": "",
+        "alignment": "",
+        "level": 1,
+        "xp": {
+          "share": 100,
+          "next": 2000,
+          "value": 0,
+          "bonus": 0
+        },
+        "magic": {
+          "bonus": 0
+        }
+      },
+      "exploration": {
+        "ld": 1,
+        "od": 2,
+        "sd": 1,
+        "ft": 1,
+        "fg": 2,
+        "hn": 1
+      },
+      "scores": {
+        "str": {
+          "value": 0,
+          "bonus": 0
+        },
+        "int": {
+          "value": 0,
+          "bonus": 0
+        },
+        "wis": {
+          "value": 0,
+          "bonus": 0
+        },
+        "dex": {
+          "value": 0,
+          "bonus": 0
+        },
+        "con": {
+          "value": 0,
+          "bonus": 0
+        },
+        "cha": {
+          "value": 0,
+          "bonus": 0
+        }
+      },
+      "encumbrance": {
+        "max": 1600
+      }
+    },
+    "monster": {
+      "templates": ["common", "spellcaster"],
+      "details": {
+        "biography": "",
+        "alignment": "",
+        "xp": 0,
+        "specialAbilities": 0,
+        "treasure": {
+          "table": "",
+          "type": ""
+        },
+        "appearing": {
+          "d": 0,
+          "w": 0
+        },
+        "morale": 0
+      },
+      "attacks": ""
+    }
+  },
+  "Item": {
+    "types": ["item", "weapon", "armor", "spell", "ability", "container"],
+    "templates": {
+      "common": {
+        "description": "",
+        "autoTags": [],
+        "manualTags": []
+      },
+      "physical": {
+        "quantity": {
+          "value": 1,
+          "max": 0
+        },
+        "weight": 0,
+        "cost": 0,
+        "containerId": ""
+      },
+      "rollable": {
+        "save": ""
+      },
+      "equippable": {
+        "equipped": false
+      }
+    },
+    "item": {
+      "templates": ["common", "physical"],
+      "treasure": false,
+      "isContainer": false
+    },
+    "container": {
+      "templates": ["common", "physical"],
+      "itemIds": []
+    },
+    "weapon": {
+      "templates": ["common", "physical", "rollable", "equippable"],
+      "range": {
+        "short": 0,
+        "medium": 0,
+        "long": 0
+      },
+      "pattern": "transparent",
+      "damage": "1d6",
+      "bonus": 0,
+      "tags": [],
+      "slow": false,
+      "missile": false,
+      "melee": true,
+      "counter": {
+        "value": 0,
+        "max": 0
+      }
+    },
+    "armor": {
+      "templates": ["common", "physical", "equippable"],
+      "ac": { "value": 9},
+      "aac": { "value": 10 },
+      "type": "light"
+    },
+    "spell": {
+      "templates": ["common", "rollable"],
+      "lvl": 1,
+      "class": "Magic-User",
+      "duration": "",
+      "range": "",
+      "roll": "",
+      "memorized": 0,
+      "cast": 0
+    },
+    "ability": {
+      "templates": ["common", "rollable"],
+      "pattern": "transparent",
+      "requirements": "",
+      "roll": "",
+      "rollType": "result",
+      "rollTarget": 0,
+      "blindroll": false
+    }
+  }
+}

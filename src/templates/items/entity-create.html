@@ -1,0 +1,16 @@
+<form class="ose dialog">
+    <div class="form-group">
+        <label>{{localize 'OSE.dialog.itemName'}}</label>
+        <div class="form-fields">
+            <input name="name" type="text" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>{{localize 'OSE.dialog.itemType'}}</label>
+        <div class="form-fields">
+            <select name="type">
+                {{selectOptions types selected=type}}
+            </select>
+        </div>
+    </div>
+    </div>
