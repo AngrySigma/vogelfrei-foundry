@@ -146,9 +146,14 @@
         text-shadow: 0 0 2px white, 0 1px 2px white, 1px 0 2px white,
           1px 1px 2px white;
       }
+      // The gauge fills below use mask, which forms a stacking context. A
+      // non-positioned element that forms one paints alongside positioned
+      // siblings in tree order, so the fills -- which come later in the DOM --
+      // would cover these inputs and swallow their clicks. Lift them out.
       .health-top {
         border-bottom: none;
         position: absolute;
+        z-index: 1;
         font-size: 24px;
         top: 10px;
         width: 70px;
@@ -157,6 +162,7 @@
       .health-bottom {
         border-bottom: none;
         position: absolute;
+        z-index: 1;
         bottom: 8px;
         width: 40px;
         right: calc(50% + -20px);
