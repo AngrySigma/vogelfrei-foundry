@@ -1,142 +1,39 @@
 {
-  "id": "ose-dev",
-  "title": "Old-School Essentials Development Build",
-  "description": "Simple, robust rules compatible with decades of Basic/Expert material",
-  "version": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
+  "id": "vogelfrei",
+  "title": "Vogelfrei",
+  "description": "An OSR system of Wounds and Stamina, Weapon Skill and ascending Armour Class. Derived from the Old-School Essentials system for Foundry VTT by Necrotic Gnome and contributors.",
+  "version": "0.1.0",
   "compatibility": {
-    "minimum": "13",
-    "verified": "13"
+    "minimum": "14",
+    "verified": "14"
   },
   "authors": [
     {
-      "name": "Necrotic Gnome",
-      "url": "https://necroticgnome.com/"
-    },
-    {
-      "name": "VTT RED",
-      "email": "ose-system@vtt.red",
-      "url": "https://vtt.red"
-    },
-    {
-      "name": "Blair McMillan",
-      "discord": "blair#9056"
-    },
-    {
-      "name": "and many other contributors",
-      "url": "https://github.com/NecroticGnome/ose-foundry-core#contributors-"
+      "name": "Illarion Iov",
+      "url": "https://github.com/AngrySigma"
     }
   ],
-  "esmodules": ["dist/ose.js"],
-  "styles": ["dist/ose.css"],
+  "esmodules": ["dist/vogelfrei.js"],
+  "styles": ["dist/vogelfrei.css"],
   "packs": [],
   "languages": [
     {
       "lang": "en",
-      "name": "English (UK)",
+      "name": "English",
       "path": "dist/lang/en.json"
-    },
-    {
-      "lang": "it",
-      "name": "Italiano (Italia)",
-      "path": "dist/lang/it.json"
-    },
-    {
-      "lang": "fr",
-      "name": "Français (France)",
-      "path": "dist/lang/fr.json"
-    },
-    {
-      "lang": "pt-BR",
-      "name": "Português (Brasil)",
-      "path": "dist/lang/pt-BR.json"
-    },
-    {
-      "lang": "es",
-      "name": "Español (España)",
-      "path": "dist/lang/es.json"
-    },
-    {
-      "lang": "de",
-      "name": "Deutsch (Deutschland)",
-      "path": "dist/lang/de.json"
-    },
-    {
-      "lang": "ca",
-      "name": "Català (Andorra)",
-      "path": "dist/lang/ca.json"
-    },
-    {
-      "lang": "cn",
-      "name": "简体中文 (中国)",
-      "path": "dist/lang/zh-CN.json"
-    },
-    {
-      "lang": "sv",
-      "name": "Svenska (Sverige)",
-      "path": "dist/lang/sv.json"
-    },
-    {
-      "lang": "pl",
-      "name": "Polski (Polska)",
-      "path": "dist/lang/pl.json"
-    },
-    {
-      "lang": "ko",
-      "name": "한국어 (한국)",
-      "path": "dist/lang/ko.json"
-    },
-    {
-      "lang": "ru",
-      "name": "Русский (Россия)",
-      "path": "dist/lang/ru.json"
     }
   ],
   "grid": {
     "distance": 5,
     "units": "ft"
   },
-  "url": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
-  "manifest": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
-  "download": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
-  "bugs": "https://github.com/NecroticGnome/ose-foundry-core/issues",
-  "media": [
-    {
-      "type": "cover",
-      "loop": false,
-      "flags": {}
-    },
-    {
-      "type": "setup",
-      "url": "systems/ose/assets/ose-system.webp",
-      "thumbnail": "systems/ose/assets/ose-system-thumbnail.webp"
-    }
-  ],
-  "background": "systems/ose/assets/ose-system.webp",
-  "flags": {
-    "allowBugReporter": true
-  },
+  "url": "https://github.com/AngrySigma/vogelfrei-foundry",
+  "manifest": "https://github.com/AngrySigma/vogelfrei-foundry/releases/latest/download/system.json",
+  "download": "https://github.com/AngrySigma/vogelfrei-foundry/releases/download/0.1.0/system.zip",
+  "bugs": "https://github.com/AngrySigma/vogelfrei-foundry/issues",
+  "flags": {},
   "hotReload": {
     "extensions": ["css"],
     "paths": ["dist/"]
-  },
-  "relationships": {
-    "recommends": [
-      {
-        "id": "ose-advancedfantasytome",
-        "type": "module",
-        "compatibility": {
-          "minimum": "25.07.01",
-          "verified": "25.07.03"
-        }
-      },
-      {
-        "id": "classicfantasycompendium",
-        "type": "module",
-        "compatibility": {
-          "minimum": "1.0.0",
-          "verified": "1.0.99"
-        }
-      }
-    ]
   }
 }

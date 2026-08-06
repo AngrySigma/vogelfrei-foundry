@@ -1,7 +1,7 @@
 node_modules
 foundryconfig.json
 foundryconfig_*.json
-ose-dev.lock
+vogelfrei-dev.lock
 dist
 .types-build
 packages/types/index.d.ts

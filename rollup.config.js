@@ -4,9 +4,9 @@ import copy from "rollup-plugin-copy";
 const staticFileFolders = ["lang", "packs", "templates"];
 
 export default {
-  input: "src/ose.js",
+  input: "src/vogelfrei.js",
   output: {
-    file: "dist/ose.js",
+    file: "dist/vogelfrei.js",
     format: "es",
     sourcemap: true,
   },
