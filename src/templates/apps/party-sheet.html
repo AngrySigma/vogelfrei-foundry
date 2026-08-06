@@ -6,16 +6,16 @@
       id="deal-xp"
       class="item-control"
       type="button"
-      title="{{localize 'OSE.dialog.xp.deal'}}"
+      title="{{localize 'VF.dialog.xp.deal'}}"
     >
-      {{localize 'OSE.dialog.xp.label'}}
+      {{localize 'VF.dialog.xp.label'}}
     </button>
     {{/if}}
   </div>
   <div class="body party-members">
     {{#if (and user.isGM (eq partyActors.length 0))}}
     <div class="drag-drop-placeholder">
-      <p>{{localize 'OSE.dialog.partysheetplaceholder'}}</p>
+      <p>{{localize 'VF.dialog.partysheetplaceholder'}}</p>
     </div>
     {{/if}}
     <ol class="actor-list">
@@ -35,11 +35,11 @@
         <div class="fields">
           <div class="flexrow field-row">
             <div title="{{e.name}}" class="field-name flex2">{{e.name}}</div>
-            <div class="field-long" title="{{localize 'OSE.Health'}}">
+            <div class="field-long" title="{{localize 'VF.Health'}}">
               <i class="fas fa-heart"></i>
               {{e.system.hp.value}}/{{e.system.hp.max}}
             </div>
-            <div class="field-short" title="{{localize 'OSE.ArmorClass'}}">
+            <div class="field-short" title="{{localize 'VF.ArmorClass'}}">
               <i class="fas fa-shield-alt"></i>
               {{#if @root.settings.ascending}}<strong
                 >{{e.system.aac.value}}</strong
@@ -52,21 +52,21 @@
           </div>
           <div class="flexrow field-row">
             {{#unless @root.settings.ascending}}
-            <div class="field-short" title="{{localize 'OSE.Thac0'}}">
+            <div class="field-short" title="{{localize 'VF.Thac0'}}">
               <i class="fas fa-crosshairs"></i>
               {{e.system.thac0.value}}
             </div>
             {{else}}
-            <div class="field-short" title="{{localize 'OSE.AB'}}">
+            <div class="field-short" title="{{localize 'VF.AB'}}">
               <i class="fas fa-crosshairs"></i>
               {{e.system.thac0.bba}}
             </div>
             {{/unless}} {{#if (eq e.type 'character')}}
-            <div class="field-short" title="{{localize 'OSE.Melee'}}">
+            <div class="field-short" title="{{localize 'VF.Melee'}}">
               <i class="fas fa-fist-raised"></i>
               {{add e.system.scores.str.mod e.system.thac0.mod.melee}}
             </div>
-            <div class="field-short" title="{{localize 'OSE.Missile'}}">
+            <div class="field-short" title="{{localize 'VF.Missile'}}">
               <i class="fas fa-bullseye"></i>
               {{add e.system.scores.dex.mod e.system.thac0.mod.missile}}
             </div>
@@ -74,12 +74,12 @@
             <div class="field-short flex2">
               <i
                 class="fas fa-shoe-prints"
-                title="{{localize 'OSE.movement.base'}}"
+                title="{{localize 'VF.movement.base'}}"
               ></i>
-              <span title="{{localize 'OSE.movement.encounter.long'}}"
+              <span title="{{localize 'VF.movement.encounter.long'}}"
                 >{{e.system.movement.encounter}}</span
               >
-              <sub title="{{localize 'OSE.movement.exploration.long'}}"
+              <sub title="{{localize 'VF.movement.exploration.long'}}"
                 >{{e.system.movement.base}}</sub
               >
             </div>
@@ -87,7 +87,7 @@
             <div class="field-short flex2">
               <i
                 class="fas fa-weight-hanging"
-                title="{{localize 'OSE.Encumbrance'}}"
+                title="{{localize 'VF.Encumbrance'}}"
               ></i>
               {{roundWeight e.system.encumbrance.value}}k
             </div>
@@ -102,7 +102,7 @@
               {{/each}} {{#if (eq e.type 'character')}}<span
                 ><i
                   class="fas fa-magic"
-                  title="{{localize 'OSE.saves.magic.long'}}"
+                  title="{{localize 'VF.saves.magic.long'}}"
                 ></i
                 >{{mod e.system.scores.wis.mod}}</span
               >{{/if}}

@@ -14,15 +14,15 @@
         </div>
         <div class="blindable" data-blind="{{data.roll.blindroll}}">
             {{#if result.details}}<div class="chat-details">{{{result.details}}}</div>{{/if}}
-            {{#if result.isFailure}}<div class='roll-result roll-fail'><b>{{localize 'OSE.Failure'}}</b> ({{result.target}})
+            {{#if result.isFailure}}<div class='roll-result roll-fail'><b>{{localize 'VF.Failure'}}</b> ({{result.target}})
             </div>{{/if}}
-            {{#if result.isSuccess}}<div class='roll-result roll-success'><b>{{localize 'OSE.Success'}}</b>
+            {{#if result.isSuccess}}<div class='roll-result roll-success'><b>{{localize 'VF.Success'}}</b>
                 ({{result.target}})</div>{{/if}}
             {{#if rollOSE}}<div>{{{rollOSE}}}</div>{{/if}}
             {{#if data.save}}
             <div class="card-buttons">
                 <button data-action="save" data-save="{{data.save}}">
-                    {{lookup config.saves_long data.save}} - {{localize "OSE.spells.Save"}}
+                    {{lookup config.saves_long data.save}} - {{localize "VF.spells.Save"}}
                 </button>
             </div>
             {{/if}}

@@ -6,8 +6,8 @@ import { getRollMode } from "../helpers-message-mode";
 import OSECombatGroupSelector from "./combat-set-groups";
 
 export const actionGroups = {
-  slow: "OSE.items.Slow",
-  cast: "OSE.spells.Cast",
+  slow: "VF.items.Slow",
+  cast: "VF.spells.Cast",
 };
 
 /**
@@ -102,9 +102,9 @@ export class OSECombat extends foundry.documents.Combat {
       // Construct chat message data
       const messageData = {
         speaker: {
-          alias: game.i18n.localize("OSE.Initiative"),
+          alias: game.i18n.localize("VF.Initiative"),
         },
-        flavor: game.i18n.format("OSE.roll.initiative", {
+        flavor: game.i18n.format("VF.roll.initiative", {
           group: foundry.utils.escapeHTML(group.name),
         }),
         flags: { "core.initiativeRoll": true },

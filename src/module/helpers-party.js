@@ -18,7 +18,7 @@ export const addControl = (object) => {
   const control = document.createElement("button");
   control.className = "ose-party-sheet";
   control.type = "button";
-  control.title = game.i18n.localize("OSE.dialog.partysheet");
+  control.title = game.i18n.localize("VF.dialog.partysheet");
   const icon = document.createElement("i");
   icon.className = "fas fa-users";
   control.append(icon);
@@ -27,7 +27,7 @@ export const addControl = (object) => {
   if (searchToggle) {
     control.addEventListener("click", (ev) => {
       ev.preventDefault();
-      Hooks.call("OSE.Party.showSheet");
+      Hooks.call("VF.Party.showSheet");
     });
 
     searchToggle.parentNode.insertBefore(control, searchToggle);

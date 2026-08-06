@@ -26,7 +26,7 @@ export default class OseDataModelCharacterEncumbranceDisabled
   /**
    * The human-readable label for this encumbrance scheme
    */
-  static localizedLabel = "OSE.Setting.EncumbranceDisabled";
+  static localizedLabel = "VF.Setting.EncumbranceDisabled";
 
   constructor() {
     super(OseDataModelCharacterEncumbranceDisabled.type);

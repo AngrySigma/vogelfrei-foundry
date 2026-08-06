@@ -566,7 +566,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
         await actor.rollAppearing({ check: "wilderness" });
         await waitUntil(() => game.messages?.size === 1);
         expect(game.messages?.size).equal(1);
-        expect(game.messages?.contents[0].content).contain(game.i18n.format("OSE.roll.appearing", { type: "2" }));
+        expect(game.messages?.contents[0].content).contain(game.i18n.format("VF.roll.appearing", { type: "2" }));
         await actor.delete();
       });
 
@@ -576,7 +576,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
         await actor.rollAppearing({ check: "other" });
         await waitUntil(() => game.messages?.size === 1);
         expect(game.messages?.size).equal(1);
-        expect(game.messages?.contents[0].content).contain(game.i18n.format("OSE.roll.appearing", { type: "1" }));
+        expect(game.messages?.contents[0].content).contain(game.i18n.format("VF.roll.appearing", { type: "1" }));
         await actor.delete();
       });
     });
@@ -595,8 +595,8 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
         await actor.rollExploration(expl, { fastForward: true });
         await waitUntil(() => (game.messages?.size ?? 0) >= 1);
         expect(game.messages?.contents[0].content).contain(
-          game.i18n.format("OSE.roll.exploration", {
-            exploration: game.i18n.localize(`OSE.exploration.${expl}.long`),
+          game.i18n.format("VF.roll.exploration", {
+            exploration: game.i18n.localize(`VF.exploration.${expl}.long`),
           }),
         );
         await actor.delete();
@@ -624,7 +624,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.rollDamage({ label: "test" });
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("OSE.Damage")}`);
+      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("VF.Damage")}`);
       await actor.delete();
     });
 
@@ -634,7 +634,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.rollDamage({ label: "test" });
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("OSE.Damage")}`);
+      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("VF.Damage")}`);
       await actor.delete();
     });
 
@@ -647,7 +647,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       });
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("OSE.Damage")}`);
+      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("VF.Damage")}`);
       expect(game.messages?.contents[0].content).contain("15");
       await actor.delete();
     });
@@ -663,7 +663,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       });
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("OSE.Damage")}`);
+      expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("VF.Damage")}`);
       expect(game.messages?.contents[0].content).contain("15 - 3");
       await actor.delete();
     });
@@ -819,7 +819,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(
-        game.i18n.format("OSE.roll.attacksWith", { name: item?.name }),
+        game.i18n.format("VF.roll.attacksWith", { name: item?.name }),
       );
       expect(game.messages?.contents[0].content).contain("1d20");
       actor?.delete();
@@ -860,7 +860,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       expect(rolldata.formula).equal("1d20 + 3");
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(game.i18n.localize("OSE.messages.InflictsDamage"));
+      expect(game.messages?.contents[0].content).contain(game.i18n.localize("VF.messages.InflictsDamage"));
       expect(game.messages?.contents[0].content).contain("1d6 + 3");
       await actor.delete();
 

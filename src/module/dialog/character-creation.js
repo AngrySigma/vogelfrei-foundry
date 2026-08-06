@@ -22,7 +22,7 @@ export default class OseCharacterCreator extends FormApplication {
    * @type {string}
    */
   get title() {
-    return `${this.object.name}: ${game.i18n.localize("OSE.dialog.generator")}`;
+    return `${this.object.name}: ${game.i18n.localize("VF.dialog.generator")}`;
   }
 
   /* -------------------------------------------- */
@@ -85,7 +85,7 @@ export default class OseCharacterCreator extends FormApplication {
     // Increase counter
     this.counters[score] += 1;
 
-    const label = score === "gold" ? "Gold" : game.i18n.localize(`OSE.scores.${score}.long`);
+    const label = score === "gold" ? "Gold" : game.i18n.localize(`VF.scores.${score}.long`);
     const rollParts = ["3d6"];
     const data = {
       roll: {},
@@ -101,11 +101,11 @@ export default class OseCharacterCreator extends FormApplication {
       data,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.dialog.generateScore", {
+      flavor: game.i18n.format("VF.dialog.generateScore", {
         score: label,
         count: this.counters[score],
       }),
-      title: game.i18n.format("OSE.dialog.generateScore", {
+      title: game.i18n.format("VF.dialog.generateScore", {
         score: label,
         count: this.counters[score],
       }),
@@ -164,7 +164,7 @@ export default class OseCharacterCreator extends FormApplication {
     const templateData = {
       config: CONFIG.OSE,
       scores: this.scores,
-      title: game.i18n.localize("OSE.dialog.generator"),
+      title: game.i18n.localize("VF.dialog.generator"),
       stats: this.object.stats,
       gold: this.gold,
     };
@@ -180,7 +180,7 @@ export default class OseCharacterCreator extends FormApplication {
 
     // Generate gold
     const itemData = {
-      name: game.i18n.localize("OSE.items.gp.short"),
+      name: game.i18n.localize("VF.items.gp.short"),
       type: "item",
       img: `${OSE.assetsPath}/gold.png`,
       system: {

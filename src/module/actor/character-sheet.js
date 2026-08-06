@@ -114,7 +114,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
         buttons: [
           {
             action: "ok",
-            label: game.i18n.localize("OSE.Ok"),
+            label: game.i18n.localize("VF.Ok"),
             icon: "fas fa-check",
             default: true,
             callback: (_event, button, _html) => {
@@ -124,7 +124,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
           {
             action: "cancel",
             icon: "fas fa-times",
-            label: game.i18n.localize("OSE.Cancel"),
+            label: game.i18n.localize("VF.Cancel"),
             callback: () => {},
           },
         ],

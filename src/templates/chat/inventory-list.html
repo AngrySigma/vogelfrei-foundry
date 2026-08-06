@@ -2,12 +2,12 @@
   <div class="ose chat-block">
     <div class="flexrow chat-header">
       <div class="chat-title">
-        <h2>{{name}} {{localize "OSE.category.inventory"}}</h2>
+        <h2>{{name}} {{localize "VF.category.inventory"}}</h2>
       </div>
     </div>
     <div class="inventory-list">
       <div id="weapons" class="item-category-title">
-        <div class="category-name">{{localize "OSE.items.Weapons"}}</div>
+        <div class="category-name">{{localize "VF.items.Weapons"}}</div>
       </div>
       <ol class="item-list">
         {{#each owned.weapons as |item|}}
@@ -19,7 +19,7 @@
             ></div>
             <div class="item-name" title="{{item.name}}">{{item.name~}}</div>
             <div class="field-short">
-              {{localize "OSE.items.Quantity"}} {{item.system.quantity.value}}
+              {{localize "VF.items.Quantity"}} {{item.system.quantity.value}}
             </div>
           </div>
           <div class="item-summary">
@@ -30,7 +30,7 @@
         {{/each}}
       </ol>
       <div id="armors" class="item-category-title">
-        <div class="category-name">{{localize "OSE.items.Armors"}}</div>
+        <div class="category-name">{{localize "VF.items.Armors"}}</div>
       </div>
       <ol class="item-list">
         {{#each owned.armors as |item|}}
@@ -42,7 +42,7 @@
             ></div>
             <div class="item-name" title="{{item.name}}">{{item.name~}}</div>
             <div class="field-short">
-              {{localize "OSE.items.Quantity"}} {{item.system.quantity.value}}
+              {{localize "VF.items.Quantity"}} {{item.system.quantity.value}}
             </div>
           </div>
           <div class="item-summary">
@@ -54,7 +54,7 @@
       </ol>
       {{!-- Containers items --}}
       <div id="container" class="item-category-title">
-        <div class="category-name">{{localize "OSE.items.Containers"}}</div>
+        <div class="category-name">{{localize "VF.items.Containers"}}</div>
       </div>
       <ol class="item-list">
         {{#each owned.containers as |bag|}}
@@ -66,7 +66,7 @@
             ></div>
             <div class="item-name" title="{{bag.name}}">{{bag.name~}}</div>
             <div class="field-short">
-              {{localize "OSE.items.Quantity"}} {{bag.system.quantity.value}}
+              {{localize "VF.items.Quantity"}} {{bag.system.quantity.value}}
             </div>
           </div>
           <div class="item-summary">
@@ -83,7 +83,7 @@
                 ></div>
                 <div class="item-name" title="{{item.name}}">{{item.name~}}</div>
                 <div class="field-short">
-                  {{localize "OSE.items.Quantity"}}
+                  {{localize "VF.items.Quantity"}}
                   {{item.system.quantity.value}}
                 </div>
               </div>
@@ -99,7 +99,7 @@
       </ol>
       {{!-- Misc items --}}
       <div id="gear" class="item-category-title">
-        <div class="category-name">{{localize "OSE.items.Misc"}}</div>
+        <div class="category-name">{{localize "VF.items.Misc"}}</div>
       </div>
       <ol class="item-list">
         {{#each owned.items as |item|}}
@@ -111,7 +111,7 @@
             ></div>
             <div class="item-name" title="{{item.name}}">{{item.name~}}</div>
             <div class="field-short">
-              {{localize "OSE.items.Quantity"}} {{item.system.quantity.value}}
+              {{localize "VF.items.Quantity"}} {{item.system.quantity.value}}
             </div>
           </div>
           <div class="item-summary">
@@ -123,7 +123,7 @@
       </ol>
       {{!-- Treasure items --}}
       <div id="treasure" class="item-category-title">
-        <div class="category-name">{{localize "OSE.items.Treasure"}}</div>
+        <div class="category-name">{{localize "VF.items.Treasure"}}</div>
       </div>
       <ol class="item-list">
         {{#each owned.treasures as |item|}}
@@ -135,7 +135,7 @@
             ></div>
             <div class="item-name" title="{{item.name}}">{{item.name~}}</div>
             <div class="field-short">
-              {{localize "OSE.items.Quantity"}} {{item.system.quantity.value}}
+              {{localize "VF.items.Quantity"}} {{item.system.quantity.value}}
             </div>
           </div>
           <div class="item-summary">

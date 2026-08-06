@@ -25,7 +25,7 @@ export default class OseDataModelCharacterEncumbranceDetailed
   /**
    * The human-readable label for this encumbrance scheme
    */
-  static localizedLabel = "OSE.Setting.EncumbranceDetailed";
+  static localizedLabel = "VF.Setting.EncumbranceDetailed";
 
   /**
    * The weight (in coins) to add to the total weight value if the character has adventuring gear

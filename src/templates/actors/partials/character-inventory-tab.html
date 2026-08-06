@@ -1,15 +1,15 @@
 <section class="inventory resizable" data-base-size="{{#if (eq @root.config.encumbrance "itembased")}}300{{else}}320{{/if}}">
   <div id="weapons" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
-    <div class="category-name">{{localize "OSE.items.Weapons"}}</div>
-    <div class="icon-row">{{localize "OSE.items.Qualities"}}</div>
+    <div class="category-name">{{localize "VF.items.Weapons"}}</div>
+    <div class="icon-row">{{localize "VF.items.Qualities"}}</div>
     <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
         class="item-control item-create"
         data-type="weapon"
-        title="{{localize 'OSE.Add'}}"
+        title="{{localize 'VF.Add'}}"
         ><i class="fa fa-plus"></i
       ></a>
     </div>
@@ -47,21 +47,21 @@
         </div>
         {{#if @root.owner }}
         <div class="item-controls">
-          <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+          <a class="item-control item-show" title='{{localize "VF.Show"}}'
           ><i class="fas fa-eye"></i
           ></a>
           {{#if (eq @root.type "character")}}
             <a
               class="item-control item-toggle {{#unless item.system.equipped}}item-unequipped{{/unless}}"
-              title='{{localize "OSE.items.Equip"}}'
+              title='{{localize "VF.items.Equip"}}'
             >
               <i class="fas fa-hand"></i>
             </a>
           {{/if}}
-          <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+          <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
             ><i class="fas fa-edit"></i
           ></a>
-          <a class="item-control item-delete" title='{{localize "OSE.Delete"}}'
+          <a class="item-control item-delete" title='{{localize "VF.Delete"}}'
             ><i class="fas fa-trash"></i
           ></a>
         </div>
@@ -76,11 +76,11 @@
   </ol>
   <div id="armors" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
-    <div class="category-name">{{localize "OSE.items.Armors"}}</div>
+    <div class="category-name">{{localize "VF.items.Armors"}}</div>
     {{#if @root.config.ascendingAC}}
-    <div class="field-short">{{localize "OSE.items.ArmorAAC"}}</div>
+    <div class="field-short">{{localize "VF.items.ArmorAAC"}}</div>
     {{else}}
-    <div class="field-short">{{localize "OSE.items.ArmorAC"}}</div>
+    <div class="field-short">{{localize "VF.items.ArmorAC"}}</div>
     {{/if}}
     <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
     {{#if @root.owner}}
@@ -88,7 +88,7 @@
       <a
         class="item-control item-create"
         data-type="armor"
-        title="{{localize 'OSE.Add'}}"
+        title="{{localize 'VF.Add'}}"
         ><i class="fa fa-plus"></i
       ></a>
     </div>
@@ -114,21 +114,21 @@
         </div>
         {{#if @root.owner }}
         <div class="item-controls">
-          <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+          <a class="item-control item-show" title='{{localize "VF.Show"}}'
           ><i class="fas fa-eye"></i
           ></a>
           {{#if (eq @root.type "character")}}
             <a
               class="item-control item-toggle {{#unless item.system.equipped}}item-unequipped{{/unless}}"
-              title='{{localize "OSE.items.Equip"}}'
+              title='{{localize "VF.items.Equip"}}'
             >
               <i class="fas fa-tshirt"></i>
             </a>
           {{/if}}
-          <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+          <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
             ><i class="fas fa-edit"></i
           ></a>
-          <a class="item-control item-delete" title='{{localize "OSE.Delete"}}'
+          <a class="item-control item-delete" title='{{localize "VF.Delete"}}'
             ><i class="fas fa-trash"></i
           ></a>
         </div>
@@ -144,7 +144,7 @@
   {{!-- Containers items --}}
   <div id="container" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
-    <div class="category-name">{{localize "OSE.items.Containers"}}</div>
+    <div class="category-name">{{localize "VF.items.Containers"}}</div>
     <div class="field-short"><i class="fas fa-suitcase"></i></div>
     <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
     {{#if @root.owner}}
@@ -152,7 +152,7 @@
       <a
         class="item-control item-create"
         data-type="container"
-        title="{{localize 'OSE.Add'}}"
+        title="{{localize 'VF.Add'}}"
         ><i class="fa fa-plus"></i
       ></a>
     </div>
@@ -184,7 +184,7 @@
         </div>
         {{#if @root.owner}}
         <div class="item-controls">
-          <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+          <a class="item-control item-show" title='{{localize "VF.Show"}}'
           ><i class="fas fa-eye"></i
           ></a>
           {{#if (eq @root.type "character") }} {{#unless
@@ -192,15 +192,15 @@
             <a
               class="item-control item-toggle {{#unless
                bag.system.equipped}}item-unequipped{{/unless}}"
-              title='{{localize "OSE.items.Equip"}}'
+              title='{{localize "VF.items.Equip"}}'
             >
               <i class="fas fa-hand"></i>
             </a>
           {{/unless }} {{/if }}
-          <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+          <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
             ><i class="fas fa-edit"></i
           ></a>
-          <a class="item-control item-delete" title='{{localize "OSE.Delete"}}'
+          <a class="item-control item-delete" title='{{localize "VF.Delete"}}'
             ><i class="fas fa-trash"></i
           ></a>
         </div>
@@ -238,15 +238,15 @@
             </div>
             {{#if @root.owner}}
             <div class="item-controls">
-              <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+              <a class="item-control item-show" title='{{localize "VF.Show"}}'
               ><i class="fas fa-eye"></i
               ></a>
-              <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+              <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
                 ><i class="fas fa-edit"></i
               ></a>
               <a
                 class="item-control item-delete"
-                title='{{localize "OSE.Delete"}}'
+                title='{{localize "VF.Delete"}}'
                 ><i class="fas fa-trash"></i
               ></a>
             </div>
@@ -255,7 +255,7 @@
           {{#if item.system.quantity.max }} {{#if (lte item.system.quantity.max
           38)}}
           <div class="consumable-counter">
-            <label>{{localize "OSE.items.uses"}}</label>
+            <label>{{localize "VF.items.uses"}}</label>
             {{#times item.system.quantity.value}}
             <div class="full-mark"></div>
             {{/times}} {{#times (subtract item.system.quantity.max
@@ -277,7 +277,7 @@
   {{!-- Misc items --}}
   <div id="gear" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
-    <div class="category-name">{{localize "OSE.items.Misc"}}</div>
+    <div class="category-name">{{localize "VF.items.Misc"}}</div>
     <div class="field-short"><i class="fas fa-hashtag"></i></div>
     <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
     {{#if @root.owner}}
@@ -285,7 +285,7 @@
       <a
         class="item-control item-create"
         data-type="item"
-        title="{{localize 'OSE.Add'}}"
+        title="{{localize 'VF.Add'}}"
         ><i class="fa fa-plus"></i
       ></a>
     </div>
@@ -317,22 +317,22 @@
         </div>
         {{#if @root.owner}}
         <div class="item-controls">
-            <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+            <a class="item-control item-show" title='{{localize "VF.Show"}}'
             ><i class="fas fa-eye"></i
             ></a>
             {{#if (eq @root.type "character") }}
               <a
                 class="item-control item-toggle {{#unless
                 item.system.equipped}}item-unequipped{{/unless}}"
-                title='{{localize "OSE.items.Equip"}}'
+                title='{{localize "VF.items.Equip"}}'
               >
                 <i class="fas fa-hand"></i>
               </a>
             {{/if }}
-          <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+          <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
             ><i class="fas fa-edit"></i
           ></a>
-          <a class="item-control item-delete" title='{{localize "OSE.Delete"}}'
+          <a class="item-control item-delete" title='{{localize "VF.Delete"}}'
             ><i class="fas fa-trash"></i
           ></a>
         </div>
@@ -341,7 +341,7 @@
       {{#if item.system.quantity.max }} {{#if (lte item.system.quantity.max
       38)}}
       <div class="consumable-counter">
-        <label>{{localize "OSE.items.uses"}}</label>
+        <label>{{localize "VF.items.uses"}}</label>
         {{#times item.system.quantity.value}}
         <div class="full-mark"></div>
         {{/times}} {{#times (subtract item.system.quantity.max
@@ -360,7 +360,7 @@
   {{!-- Treasure items --}}
   <div id="treasure" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
-    <div class="category-name">{{localize "OSE.items.Treasure"}}</div>
+    <div class="category-name">{{localize "VF.items.Treasure"}}</div>
     <div class="field-long">
       {{treasure}} <i class="fas fa-circle"></i>
     </div>
@@ -372,7 +372,7 @@
         class="item-control item-create"
         data-type="item"
         data-treasure="true"
-        title="{{localize 'OSE.Add'}}"
+        title="{{localize 'VF.Add'}}"
         ><i class="fa fa-plus"></i
       ></a>
     </div>
@@ -407,22 +407,22 @@
         </div>
         {{#if @root.owner}}
         <div class="item-controls">
-            <a class="item-control item-show" title='{{localize "OSE.Show"}}'
+            <a class="item-control item-show" title='{{localize "VF.Show"}}'
             ><i class="fas fa-eye"></i
             ></a>
             {{#if (eq @root.type "character") }}
               <a
                 class="item-control item-toggle {{#unless
                 item.system.equipped}}item-unequipped{{/unless}}"
-                title='{{localize "OSE.items.Equip"}}'
+                title='{{localize "VF.items.Equip"}}'
               >
                 <i class="fas fa-hand"></i>
               </a>
             {{/if }}
-          <a class="item-control item-edit" title='{{localize "OSE.Edit"}}'
+          <a class="item-control item-edit" title='{{localize "VF.Edit"}}'
             ><i class="fas fa-edit"></i
           ></a>
-          <a class="item-control item-delete" title='{{localize "OSE.Delete"}}'
+          <a class="item-control item-delete" title='{{localize "VF.Delete"}}'
             ><i class="fas fa-trash"></i
           ></a>
         </div>

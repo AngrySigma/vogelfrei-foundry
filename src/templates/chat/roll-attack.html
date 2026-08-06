@@ -23,13 +23,13 @@
             {{#if rollOSE}}<div>{{{rollOSE}}}</div>{{/if}}
             {{#if result.isSuccess}}
             <div class="chat-details">
-                <div class="roll-result"><b>{{localize 'OSE.messages.InflictsDamage'}}</b></div>
+                <div class="roll-result"><b>{{localize 'VF.messages.InflictsDamage'}}</b></div>
             </div>
             <div class="damage-roll">{{{rollDamage}}}</div>
             {{#if data.roll.save}}
             <div class="card-buttons">
                 <button data-action="save" data-save="{{data.roll.save}}">
-                    {{lookup config.saves_long data.roll.save}} - {{localize "OSE.spells.Save"}}
+                    {{lookup config.saves_long data.roll.save}} - {{localize "VF.spells.Save"}}
                 </button>
             </div>
             {{/if}}

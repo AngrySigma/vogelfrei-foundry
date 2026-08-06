@@ -42,7 +42,7 @@ export default class OsePartySheet extends FormApplication {
    * @type {string}
    */
   get title() {
-    return game.i18n.localize("OSE.dialog.partysheet");
+    return game.i18n.localize("VF.dialog.partysheet");
   }
 
   /* -------------------------------------------- */

@@ -16,7 +16,7 @@ export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(A
     window: {
       frame: true,
       positioned: true,
-      title: "OSE.combat.SetCombatantGroups",
+      title: "VF.combat.SetCombatantGroups",
       icon: "fa-solid fa-flag",
       controls: [],
       minimizable: false,

@@ -324,15 +324,15 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
 
     it("GROUPS should combine OSE colors with action groups", () => {
       expect(OSECombat.GROUPS).to.eql({
-        green: game.i18n.localize("OSE.colors.green"),
-        red: game.i18n.localize("OSE.colors.red"),
-        yellow: game.i18n.localize("OSE.colors.yellow"),
-        purple: game.i18n.localize("OSE.colors.purple"),
-        blue: game.i18n.localize("OSE.colors.blue"),
-        orange: game.i18n.localize("OSE.colors.orange"),
-        white: game.i18n.localize("OSE.colors.white"),
-        slow: game.i18n.localize("OSE.items.Slow"),
-        cast: game.i18n.localize("OSE.spells.Cast"),
+        green: game.i18n.localize("VF.colors.green"),
+        red: game.i18n.localize("VF.colors.red"),
+        yellow: game.i18n.localize("VF.colors.yellow"),
+        purple: game.i18n.localize("VF.colors.purple"),
+        blue: game.i18n.localize("VF.colors.blue"),
+        orange: game.i18n.localize("VF.colors.orange"),
+        white: game.i18n.localize("VF.colors.white"),
+        slow: game.i18n.localize("VF.items.Slow"),
+        cast: game.i18n.localize("VF.spells.Cast"),
       });
     });
   });
@@ -574,7 +574,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       expect(game.messages.size).to.equal(3);
       for (const group of game.combat.groups.contents.map((g) => g.name)) {
         expect(
-          game.messages.contents.some((cm) => cm.flavor.includes(game.i18n.format("OSE.roll.initiative", { group }))),
+          game.messages.contents.some((cm) => cm.flavor.includes(game.i18n.format("VF.roll.initiative", { group }))),
         ).to.be.true;
       }
       expect(game.combat?.groups?.some((g) => g.initiative === null)).to.be.false;
@@ -637,7 +637,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       expect(game.messages.size).to.equal(3);
       for (const group of game.combat.groups.contents.map((g) => g.name)) {
         expect(
-          game.messages.contents.some((cm) => cm.flavor.includes(game.i18n.format("OSE.roll.initiative", { group }))),
+          game.messages.contents.some((cm) => cm.flavor.includes(game.i18n.format("VF.roll.initiative", { group }))),
         ).to.be.true;
       }
       expect(game.combat?.groups?.some((g) => g.initiative === null)).to.be.false;
@@ -936,7 +936,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
         expect(
           game.messages.contents.some((cm) =>
             cm.flavor.includes(
-              game.i18n.format("OSE.roll.individualInit", {
+              game.i18n.format("VF.roll.individualInit", {
                 name: combatant,
               }),
             ),

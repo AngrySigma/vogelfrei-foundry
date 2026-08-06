@@ -30,7 +30,7 @@ export default class OseCharacterGpCost extends FormApplication {
    * @returns {string} - A localized window title
    */
   get title() {
-    return `${this.object.name}: ${game.i18n.localize("OSE.dialog.shoppingCart")}`;
+    return `${this.object.name}: ${game.i18n.localize("VF.dialog.shoppingCart")}`;
   }
 
   /* -------------------------------------------- */
@@ -78,12 +78,12 @@ export default class OseCharacterGpCost extends FormApplication {
     const gp = await this.object.items.find((item) => {
       const itemData = item.system;
       return (
-        (item.name === game.i18n.localize("OSE.items.gp.short") || item.name === "GP") && // legacy behavior used GP, even for other languages
+        (item.name === game.i18n.localize("VF.items.gp.short") || item.name === "GP") && // legacy behavior used GP, even for other languages
         itemData.treasure
       );
     });
     if (!gp) {
-      ui.notifications.error(game.i18n.localize("OSE.error.noGP"));
+      ui.notifications.error(game.i18n.localize("VF.error.noGP"));
       return;
     }
     const newGP = gp.system.quantity.value - totalCost;
@@ -96,7 +96,7 @@ export default class OseCharacterGpCost extends FormApplication {
       // Close the dialog after successful transaction
       await this.close();
     } else {
-      ui.notifications.error(game.i18n.localize("OSE.error.notEnoughGP"));
+      ui.notifications.error(game.i18n.localize("VF.error.notEnoughGP"));
     }
   }
 

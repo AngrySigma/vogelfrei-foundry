@@ -33,7 +33,7 @@ export default class OseDataModelCharacterEncumbranceBasic
   /**
    * The human-readable label for this encumbrance scheme
    */
-  static localizedLabel = "OSE.Setting.EncumbranceBasic";
+  static localizedLabel = "VF.Setting.EncumbranceBasic";
 
   /**
    * The base value for the amount of treasure that slows a character down

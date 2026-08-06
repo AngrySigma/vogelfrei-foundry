@@ -709,7 +709,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
       // Verification
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(
-        `<h2>${game.i18n.format("OSE.roll.attacksWith", {
+        `<h2>${game.i18n.format("VF.roll.attacksWith", {
           name: "New Actor Test Weapon",
         })}</h2>`,
       );
@@ -732,7 +732,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
       // Verification
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(
-        `<h2>${game.i18n.format("OSE.roll.attacksWith", {
+        `<h2>${game.i18n.format("VF.roll.attacksWith", {
           name: "New Actor Test Weapon",
         })}</h2>`,
       );
@@ -777,7 +777,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
       // Verification
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(
-        `<h2>${game.i18n.format("OSE.roll.formula", {
+        `<h2>${game.i18n.format("VF.roll.formula", {
           label: "New Actor Test Ability",
         })}</h2>`,
       );
@@ -834,8 +834,8 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           await clickSave(save);
           expect(game.messages?.size).equal(1);
           expect(game.messages?.contents[0].content).contain(
-            game.i18n.format("OSE.roll.save", {
-              save: game.i18n.localize(`OSE.saves.${save}.long`),
+            game.i18n.format("VF.roll.save", {
+              save: game.i18n.localize(`VF.saves.${save}.long`),
             }),
           );
         });
@@ -862,8 +862,8 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           await clickSave(save);
           expect(game.messages?.size).equal(1);
           expect(game.messages?.contents[0].content).contain(
-            game.i18n.format("OSE.roll.save", {
-              save: game.i18n.localize(`OSE.saves.${save}.long`),
+            game.i18n.format("VF.roll.save", {
+              save: game.i18n.localize(`VF.saves.${save}.long`),
             }),
           );
         });
@@ -901,7 +901,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         expect(game.messages?.size).equal(0);
         await clickAttack(attackClass);
         expect(game.messages?.size).equal(1);
-        expect(game.messages?.contents[0].content).contain(game.i18n.format("OSE.roll.attacks", { name: actor?.name }));
+        expect(game.messages?.contents[0].content).contain(game.i18n.format("VF.roll.attacks", { name: actor?.name }));
         await trashChat();
       });
     });

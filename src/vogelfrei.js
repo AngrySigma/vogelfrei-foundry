@@ -103,18 +103,18 @@ Hooks.once("init", async () => {
   foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetCharacter, {
     types: ["character"],
     makeDefault: true,
-    label: "OSE.SheetClassCharacter",
+    label: "VF.SheetClassCharacter",
   });
   foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetMonster, {
     types: ["monster"],
     makeDefault: true,
-    label: "OSE.SheetClassMonster",
+    label: "VF.SheetClassMonster",
   });
 
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
   foundry.documents.collections.Items.registerSheet(game.system.id, OseItemSheet, {
     makeDefault: true,
-    label: "OSE.SheetClassItem",
+    label: "VF.SheetClassItem",
   });
 
   await templates();
@@ -209,7 +209,7 @@ Hooks.on("renderActorSheet", (app, html) => {
     ".item",
     [
       {
-        name: "OSE.Show",
+        name: "VF.Show",
         icon: "<i class='fas fa-eye'></i>",
         callback: (el) => {
           const id = el.dataset?.itemId;
@@ -220,7 +220,7 @@ Hooks.on("renderActorSheet", (app, html) => {
         },
       },
       {
-        name: "OSE.items.Equip",
+        name: "VF.items.Equip",
         icon: "<i class='fas fa-hand'></i>",
         condition: (el) => {
           if (app.actor?.type !== "character" || !app.object?.sheet?.isEditable) {
@@ -244,7 +244,7 @@ Hooks.on("renderActorSheet", (app, html) => {
         },
       },
       {
-        name: "OSE.Edit",
+        name: "VF.Edit",
         icon: "<i class='fas fa-edit'></i>",
         condition: () => !!app.object?.sheet?.isEditable,
         callback: (el) => {
@@ -256,7 +256,7 @@ Hooks.on("renderActorSheet", (app, html) => {
         },
       },
       {
-        name: "OSE.Delete",
+        name: "VF.Delete",
         icon: "<i class='fas fa-trash'></i>",
         condition: () => !!app.object?.sheet?.isEditable,
         callback: (el) => {
@@ -277,5 +277,5 @@ Hooks.on("renderActorSheet", (app, html) => {
 Hooks.on("renderCompendium", renderList.RenderCompendium);
 Hooks.on("activateItemDirectory", renderList.RenderItemDirectory);
 
-Hooks.on("OSE.Party.showSheet", OsePartySheet.showPartySheet);
+Hooks.on("VF.Party.showSheet", OsePartySheet.showPartySheet);
 Hooks.once("initializeDynamicTokenRingConfig", initializeTokenRing);

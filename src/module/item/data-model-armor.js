@@ -3,10 +3,10 @@
  */
 export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
-    unarmored: "OSE.armor.unarmored",
-    light: "OSE.armor.light",
-    heavy: "OSE.armor.heavy",
-    shield: "OSE.armor.shield",
+    unarmored: "VF.armor.unarmored",
+    light: "VF.armor.light",
+    heavy: "VF.armor.heavy",
+    shield: "VF.armor.shield",
   };
 
   static defineSchema() {

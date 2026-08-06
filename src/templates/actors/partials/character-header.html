@@ -3,17 +3,17 @@
   {{#if isOwnerOrObserver}}
     <div class="modifiers-btn">
       {{#unless isNew}}
-      <a data-action="modifiers" title="{{localize 'OSE.Modifiers'}}"
+      <a data-action="modifiers" title="{{localize 'VF.Modifiers'}}"
         ><i class="fas fa-book"></i
       ></a>
-      <a data-action="gp-cost" title="{{localize 'OSE.dialog.shoppingCart'}}"
+      <a data-action="gp-cost" title="{{localize 'VF.dialog.shoppingCart'}}"
         ><i class="fas fa-coins"></i
       ></a>
       {{else}}
       <a
         class="blinking"
         data-action="generate-scores"
-        title="{{localize 'OSE.dialog.generateScores'}}"
+        title="{{localize 'VF.dialog.generateScores'}}"
         ><i class="fa fa-dice"></i
       ></a>
       {{/unless}}
@@ -26,7 +26,7 @@
       name="name"
       type="text"
       value="{{name}}"
-      placeholder="{{localize 'OSE.details.name'}}"
+      placeholder="{{localize 'VF.details.name'}}"
       data-dtype="String"
     />
   </h1>
@@ -39,7 +39,7 @@
         value="{{system.retainer.wage}}"
         data-dtype="String"
       />
-      <label>{{localize 'OSE.RetainerWage'}}</label>
+      <label>{{localize 'VF.RetainerWage'}}</label>
     </li>
     {{else}}
     <li>
@@ -49,7 +49,7 @@
         value="{{system.details.title}}"
         data-dtype="String"
       />
-      <label>{{localize 'OSE.details.title'}}</label>
+      <label>{{localize 'VF.details.title'}}</label>
     </li>
     {{/if}}
     {{#if isOwnerOrObserver}}
@@ -60,7 +60,7 @@
           value="{{system.details.alignment}}"
           data-dtype="String"
         />
-        <label>{{localize 'OSE.details.alignment'}}</label>
+        <label>{{localize 'VF.details.alignment'}}</label>
       </li>
     {{/if}}
   </ul>
@@ -73,7 +73,7 @@
           value="{{system.details.class}}"
           data-dtype="String"
         />
-        <label>{{localize 'OSE.details.class'}}</label>
+        <label>{{localize 'VF.details.class'}}</label>
       </li>
       <li
         class="{{#if (gte system.details.xp.value system.details.xp.next)}}notify{{/if}}"
@@ -84,7 +84,7 @@
           value="{{system.details.level}}"
           data-dtype="Number"
         />
-        <label>{{localize 'OSE.details.level'}}</label>
+        <label>{{localize 'VF.details.level'}}</label>
       </li>
       <li class="flex2">
         <input
@@ -93,7 +93,7 @@
           value="{{system.details.xp.value}}"
           data-dtype="Number"
         />
-        <label>{{localize 'OSE.details.experience.base'}}</label>
+        <label>{{localize 'VF.details.experience.base'}}</label>
         {{#if system.details.xp.bonus}}
         <span class="xp-bonus">+{{system.details.xp.bonus}}%</span>
         {{/if}}

@@ -82,7 +82,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       const macroSlot = 9;
       const notification = await createOseMacro(data, macroSlot);
       expect(objectIsNotification(notification)).equal(true);
-      expect(notification.message).equal(game.i18n.localize("OSE.warn.macrosNotAnItem"));
+      expect(notification.message).equal(game.i18n.localize("VF.warn.macrosNotAnItem"));
       await actor?.delete();
     });
 
@@ -93,7 +93,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       const macroSlot = 9;
       const notification = await createOseMacro(data, macroSlot);
       expect(objectIsNotification(notification)).equal(true);
-      expect(notification.message).equal(game.i18n.localize("OSE.warn.macrosOnlyForOwnedItems"));
+      expect(notification.message).equal(game.i18n.localize("VF.warn.macrosOnlyForOwnedItems"));
       await actor?.delete();
       await worldItem?.delete();
     });
@@ -137,7 +137,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       expect(ChatMessage.getSpeaker().actor).is.not.null;
       const notification = await rollItemMacro(`New Actor Test ${type.capitalize()}`);
       expect(objectIsNotification(notification)).equal(true);
-      expect(notification.message).equal(game.i18n.localize("OSE.warn.macrosNoTokenOwnedInScene"));
+      expect(notification.message).equal(game.i18n.localize("VF.warn.macrosNoTokenOwnedInScene"));
       await actor?.delete();
     });
 
@@ -152,7 +152,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       expect(ChatMessage.getSpeaker().actor).is.null;
       const notification = await rollItemMacro(`New Actor Test ${type.capitalize()}`);
       expect(objectIsNotification(notification)).equal(true);
-      expect(notification.message).equal(game.i18n.localize("OSE.warn.macrosNoTokenOwnedInScene"));
+      expect(notification.message).equal(game.i18n.localize("VF.warn.macrosNoTokenOwnedInScene"));
       await actor?.delete();
       await scene?.delete();
     });
@@ -186,7 +186,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       await rollItemMacro(`New Actor Test ${type.capitalize()}`);
       // Both the warning notification and the roll dialog appear
       // asynchronously; poll for them instead of using fixed delays.
-      const expectedWarning = game.i18n.format("OSE.warn.moreThanOneItemWithName", {
+      const expectedWarning = game.i18n.format("VF.warn.moreThanOneItemWithName", {
         actorName: actor?.name,
         itemName: `New Actor Test ${type.capitalize()}`,
       });
@@ -216,7 +216,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       expect(objectIsNotification(notification)).equal(true);
       expect(notification.type).equal("error");
       expect(notification.message).equal(
-        game.i18n.format("OSE.error.noItemWithName", {
+        game.i18n.format("VF.error.noItemWithName", {
           actorName: actor?.name,
           itemName: `New Actor Test ${type.capitalize()}`,
         }),

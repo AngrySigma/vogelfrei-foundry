@@ -57,7 +57,7 @@ export const augmentTable = (table, html) => {
   const rollButton = document.createElement("button");
   rollButton.className = "roll-treasure";
   rollButton.type = "button";
-  rollButton.innerHTML = `<i class="fas fa-gem"></i> ${game.i18n.localize("OSE.table.treasure.roll")}`;
+  rollButton.innerHTML = `<i class="fas fa-gem"></i> ${game.i18n.localize("VF.table.treasure.roll")}`;
 
   const footerRoll = html.querySelector(".form-footer [data-action='drawResult']");
   footerRoll.replaceWith(rollButton);

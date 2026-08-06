@@ -25,7 +25,7 @@ export default class OsePartyXP extends FormApplication {
    */
   // eslint-disable-next-line class-methods-use-this
   get title() {
-    return game.i18n.localize("OSE.dialog.xp.deal");
+    return game.i18n.localize("VF.dialog.xp.deal");
   }
 
   /* -------------------------------------------- */

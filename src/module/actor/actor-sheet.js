@@ -121,9 +121,9 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
   async _promptRemoveItemFromActor(item) {
     return foundry.applications.api.DialogV2.confirm({
       window: {
-        title: game.i18n.localize("OSE.dialog.deleteItem"),
+        title: game.i18n.localize("VF.dialog.deleteItem"),
       },
-      content: game.i18n.format("OSE.dialog.confirmDeleteItem", {
+      content: game.i18n.format("VF.dialog.confirmDeleteItem", {
         name: item.name,
       }),
       yes: {
@@ -434,12 +434,12 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
     // Create Dialog window
     return new Promise((resolve) => {
       new foundry.applications.api.DialogV2({
-        window: { title: game.i18n.localize("OSE.dialog.createItem") },
+        window: { title: game.i18n.localize("VF.dialog.createItem") },
         content: dlg,
         buttons: [
           {
             action: "ok",
-            label: game.i18n.localize("OSE.Ok"),
+            label: game.i18n.localize("VF.Ok"),
             icon: "fas fa-check",
             default: true,
             callback: (_event, button, _html) => {
@@ -449,7 +449,7 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             action: "cancel",
             icon: "fas fa-times",
-            label: game.i18n.localize("OSE.Cancel"),
+            label: game.i18n.localize("VF.Cancel"),
             callback: () => {},
           },
         ],
@@ -565,7 +565,7 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
     if (this.options.editable && canConfigure) {
       buttons = [
         {
-          label: game.i18n.localize("OSE.dialog.tweaks"),
+          label: game.i18n.localize("VF.dialog.tweaks"),
           class: "configure-actor",
           icon: "fas fa-code",
           onclick: (event) => this._onConfigureActor(event),

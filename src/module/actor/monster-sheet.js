@@ -93,7 +93,7 @@ export default class OseActorSheetMonster extends OseActorSheet {
     );
     // Create Dialog window
     return new foundry.applications.api.DialogV2({
-      window: { title: game.i18n.localize("OSE.dialog.generateSaves") },
+      window: { title: game.i18n.localize("VF.dialog.generateSaves") },
       position: {
         width: 250,
       },
@@ -101,7 +101,7 @@ export default class OseActorSheetMonster extends OseActorSheet {
       buttons: [
         {
           action: "ok",
-          label: game.i18n.localize("OSE.Ok"),
+          label: game.i18n.localize("VF.Ok"),
           icon: "fas fa-check",
           default: true,
           callback: (_event, button) => {
@@ -112,7 +112,7 @@ export default class OseActorSheetMonster extends OseActorSheet {
         {
           action: "cancel",
           icon: "fas fa-times",
-          label: game.i18n.localize("OSE.Cancel"),
+          label: game.i18n.localize("VF.Cancel"),
           callback: () => {},
         },
       ],

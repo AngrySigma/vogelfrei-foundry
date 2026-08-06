@@ -15,7 +15,7 @@ import OseActor from "./actor/entity";
  */
 async function applyDamageToTarget(actor: Actor | null, amount: string, multiplier: 1 | -1, nameOrId: string) {
   if (!game.user?.isGM || !(actor instanceof OseActor)) {
-    ui.notifications?.error(game.i18n.format("OSE.error.cantDealDamageTo", { nameOrId }));
+    ui.notifications?.error(game.i18n.format("VF.error.cantDealDamageTo", { nameOrId }));
     return;
   }
   await actor.applyDamage(amount, multiplier);
@@ -75,7 +75,7 @@ function canApplyDamage(html: HTMLElement) {
 
     default:
       ui.notifications?.error(
-        game.i18n.format("OSE.error.unexpectedSettings", {
+        game.i18n.format("VF.error.unexpectedSettings", {
           configName: "applyDamageOption",
           configValue: applyDamageOption,
         }),
@@ -97,13 +97,13 @@ const canApply: OseContextMenuEntry["condition"] = (li) => canApplyDamage(li);
 export const addChatMessageContextOptions = (_: HTMLElement, options: OseContextMenuEntry[]) => {
   options.push(
     {
-      name: game.i18n.localize("OSE.messages.applyDamage"),
+      name: game.i18n.localize("VF.messages.applyDamage"),
       icon: '<i class="fas fa-user-minus"></i>',
       condition: canApply,
       callback: (li) => applyChatCardDamage(li, 1),
     },
     {
-      name: game.i18n.localize("OSE.messages.applyHealing"),
+      name: game.i18n.localize("VF.messages.applyHealing"),
       icon: '<i class="fas fa-user-plus"></i>',
       condition: canApply,
       callback: (li) => applyChatCardDamage(li, -1),

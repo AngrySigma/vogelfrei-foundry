@@ -117,7 +117,7 @@ export default class OseItem extends Item {
           {
             action: "melee",
             icon: "fas fa-fist-raised",
-            label: game.i18n.localize("OSE.Melee"),
+            label: game.i18n.localize("VF.Melee"),
             default: true,
             callback: () => {
               this.actor.targetAttack(rollData, "melee", options);
@@ -126,7 +126,7 @@ export default class OseItem extends Item {
           {
             action: "missile",
             icon: "fas fa-bullseye",
-            label: game.i18n.localize("OSE.Missile"),
+            label: game.i18n.localize("VF.Missile"),
             callback: () => {
               this.actor.targetAttack(rollData, "missile", options);
             },
@@ -178,8 +178,8 @@ export default class OseItem extends Item {
       data: rollData,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.roll.formula", { label }),
-      title: game.i18n.format("OSE.roll.formula", { label }),
+      flavor: game.i18n.format("VF.roll.formula", { label }),
+      title: game.i18n.format("VF.roll.formula", { label }),
     });
   }
 
@@ -206,7 +206,7 @@ export default class OseItem extends Item {
         data.rollTarget ? CONFIG.OSE.roll_type[data.rollType] : ""
       }${data.rollTarget ? data.rollTarget : ""}`;
       return {
-        label: `${game.i18n.localize("OSE.items.Roll")} ${roll}`,
+        label: `${game.i18n.localize("VF.items.Roll")} ${roll}`,
       };
     }
   }
@@ -483,7 +483,7 @@ export default class OseItem extends Item {
     const item = actor.items.get(card.dataset.itemId);
     if (!item) {
       return ui.notifications.error(
-        game.i18n.format("OSE.error.itemNoLongerExistsOnActor", {
+        game.i18n.format("VF.error.itemNoLongerExistsOnActor", {
           actorName: actor.name,
           itemId: card.dataset.itemId,
         }),
@@ -510,7 +510,7 @@ export default class OseItem extends Item {
 
       case "save": {
         if (targets.length === 0) {
-          ui.notifications.error(game.i18n.localize("OSE.error.noTokenControlled"));
+          ui.notifications.error(game.i18n.localize("VF.error.noTokenControlled"));
           button.disabled = false;
           return button.disabled;
         }

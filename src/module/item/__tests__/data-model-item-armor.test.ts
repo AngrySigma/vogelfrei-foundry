@@ -16,16 +16,16 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(Object.keys(dataTypes).length).equal(4);
     });
     it("Has unarmored", () => {
-      expect(dataTypes.unarmored).equal("OSE.armor.unarmored");
+      expect(dataTypes.unarmored).equal("VF.armor.unarmored");
     });
     it("Has light", () => {
-      expect(dataTypes.light).equal("OSE.armor.light");
+      expect(dataTypes.light).equal("VF.armor.light");
     });
     it("Has heavy", () => {
-      expect(dataTypes.heavy).equal("OSE.armor.heavy");
+      expect(dataTypes.heavy).equal("VF.armor.heavy");
     });
     it("Has shield", () => {
-      expect(dataTypes.shield).equal("OSE.armor.shield");
+      expect(dataTypes.shield).equal("VF.armor.shield");
     });
   });
 
@@ -62,7 +62,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(Object.keys(item.autoTags[0]).length).equal(2);
     });
     it("By default return light armor", () => {
-      expect(item.autoTags[0].label).equal("OSE.armor.light");
+      expect(item.autoTags[0].label).equal("VF.armor.light");
     });
     it("By default return tshirt icon", () => {
       expect(item.autoTags[0].icon).equal("fa-tshirt");

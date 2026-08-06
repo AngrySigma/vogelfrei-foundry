@@ -25,7 +25,7 @@ export default class OseDataModelCharacterEncumbranceComplete
   /**
    * The human-readable label for this encumbrance scheme
    */
-  static localizedLabel = "OSE.Setting.EncumbranceComplete";
+  static localizedLabel = "VF.Setting.EncumbranceComplete";
 
   #weight;
 

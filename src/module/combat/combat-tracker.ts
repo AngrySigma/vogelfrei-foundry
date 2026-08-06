@@ -90,7 +90,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
     const options = super._getEntryContextOptions();
     return [
       {
-        name: game.i18n.localize("OSE.combat.SetCombatantAsActive"),
+        name: game.i18n.localize("VF.combat.SetCombatantAsActive"),
         icon: '<i class="fas fa-star-of-life"></i>',
         callback: (li: HTMLElement) => {
           const { combatantId } = li.dataset;
@@ -119,8 +119,8 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
       reRollButton.type = "button";
       reRollButton.classList.add("inline-control", "combat-control", "combat-button", "icon", "fa-solid", "fa-dice");
       reRollButton.dataset.action = "smartRerollInitiative";
-      reRollButton.dataset.tooltip = game.i18n.localize("OSE.Reroll");
-      reRollButton.ariaLabel = game.i18n.localize("OSE.Reroll");
+      reRollButton.dataset.tooltip = game.i18n.localize("VF.Reroll");
+      reRollButton.ariaLabel = game.i18n.localize("VF.Reroll");
 
       const setCombatantGroupsButton = document.createElement("button");
       setCombatantGroupsButton.type = "button";
@@ -133,8 +133,8 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
         "fa-flag",
       );
       setCombatantGroupsButton.dataset.action = "setCombatantGroups";
-      setCombatantGroupsButton.dataset.tooltip = game.i18n.localize("OSE.combat.SetCombatantGroups");
-      setCombatantGroupsButton.ariaLabel = game.i18n.localize("OSE.combat.SetCombatantGroups");
+      setCombatantGroupsButton.dataset.tooltip = game.i18n.localize("VF.combat.SetCombatantGroups");
+      setCombatantGroupsButton.ariaLabel = game.i18n.localize("VF.combat.SetCombatantGroups");
 
       headerButtonContainer.replaceChildren(reRollButton, setCombatantGroupsButton);
     }
@@ -183,7 +183,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
       diceIcon.className = "fas fa-dice-d6";
       nameStrong.append(diceIcon);
 
-      nameStrong.append(" ", game.i18n.localize(label === "slow" ? "OSE.items.Slow" : `OSE.colors.${label}`));
+      nameStrong.append(" ", game.i18n.localize(label === "slow" ? "VF.items.Slow" : `VF.colors.${label}`));
 
       tokenName.append(nameStrong);
       groupHeader.append(tokenName);

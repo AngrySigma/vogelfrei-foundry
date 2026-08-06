@@ -89,7 +89,7 @@ export default class OseActor extends Actor {
     }).then(() => {
       const speaker = ChatMessage.getSpeaker({ actor: this });
       ChatMessage.create({
-        content: game.i18n.format("OSE.messages.GetExperience", {
+        content: game.i18n.format("VF.messages.GetExperience", {
           name: this.name,
           value: modified,
         }),
@@ -184,7 +184,7 @@ export default class OseActor extends Actor {
   }
 
   rollSave(save, options = {}) {
-    const label = game.i18n.localize(`OSE.saves.${save}.long`);
+    const label = game.i18n.localize(`VF.saves.${save}.long`);
     const rollParts = ["1d20"];
     const actorData = this.system;
     const actorType = this.type;
@@ -197,7 +197,7 @@ export default class OseActor extends Actor {
         magic: actorType === "character" ? actorData.scores.wis.mod + actorData.details.magic.bonus : 0,
         poison: actorType === "character" ? actorData.details.magic.bonus : 0,
       },
-      details: game.i18n.format("OSE.roll.details.save", { save: label }),
+      details: game.i18n.format("VF.roll.details.save", { save: label }),
     };
 
     const rollMethod = actorType === "character" ? OseDice.RollSave : OseDice.Roll;
@@ -209,8 +209,8 @@ export default class OseActor extends Actor {
       data,
       skipDialog: options.fastForward || skipRollDialogCheck(options.event),
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.roll.save", { save: label }),
-      title: game.i18n.format("OSE.roll.save", { save: label }),
+      flavor: game.i18n.format("VF.roll.save", { save: label }),
+      title: game.i18n.format("VF.roll.save", { save: label }),
       chatMessage: options.chatMessage,
     });
   }
@@ -235,13 +235,13 @@ export default class OseActor extends Actor {
       data,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.localize("OSE.roll.morale"),
-      title: game.i18n.localize("OSE.roll.morale"),
+      flavor: game.i18n.localize("VF.roll.morale"),
+      title: game.i18n.localize("VF.roll.morale"),
     });
   }
 
   rollLoyalty(options = {}) {
-    const label = game.i18n.localize("OSE.roll.loyalty");
+    const label = game.i18n.localize("VF.roll.loyalty");
     const rollParts = ["2d6"];
 
     const actorData = this.system;
@@ -274,19 +274,19 @@ export default class OseActor extends Actor {
       roll: {
         type: "table",
         table: {
-          2: game.i18n.format("OSE.reaction.Hostile", {
+          2: game.i18n.format("VF.reaction.Hostile", {
             name: this.name,
           }),
-          3: game.i18n.format("OSE.reaction.Unfriendly", {
+          3: game.i18n.format("VF.reaction.Unfriendly", {
             name: this.name,
           }),
-          6: game.i18n.format("OSE.reaction.Neutral", {
+          6: game.i18n.format("VF.reaction.Neutral", {
             name: this.name,
           }),
-          9: game.i18n.format("OSE.reaction.Indifferent", {
+          9: game.i18n.format("VF.reaction.Indifferent", {
             name: this.name,
           }),
-          12: game.i18n.format("OSE.reaction.Friendly", {
+          12: game.i18n.format("VF.reaction.Friendly", {
             name: this.name,
           }),
         },
@@ -300,8 +300,8 @@ export default class OseActor extends Actor {
       data,
       skipDialog: options.fastForward || skipRollDialogCheck(options.event),
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.localize("OSE.reaction.check"),
-      title: game.i18n.localize("OSE.reaction.check"),
+      flavor: game.i18n.localize("VF.reaction.check"),
+      title: game.i18n.localize("VF.reaction.check"),
     });
   }
 
@@ -312,7 +312,7 @@ export default class OseActor extends Actor {
 
     const actorData = this.system;
 
-    const label = game.i18n.localize(`OSE.scores.${score}.long`);
+    const label = game.i18n.localize(`VF.scores.${score}.long`);
     const rollParts = ["1d20"];
 
     const data = {
@@ -322,7 +322,7 @@ export default class OseActor extends Actor {
         target: actorData.scores[score].value,
       },
 
-      details: game.i18n.format("OSE.roll.details.attribute", {
+      details: game.i18n.format("VF.roll.details.attribute", {
         score: label,
       }),
     };
@@ -334,8 +334,8 @@ export default class OseActor extends Actor {
       data,
       skipDialog: options.fastForward || skipRollDialogCheck(options.event),
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.roll.attribute", { attribute: label }),
-      title: game.i18n.format("OSE.roll.attribute", { attribute: label }),
+      flavor: game.i18n.format("VF.roll.attribute", { attribute: label }),
+      title: game.i18n.format("VF.roll.attribute", { attribute: label }),
       chatMessage: options.chatMessage,
     });
   }
@@ -345,7 +345,7 @@ export default class OseActor extends Actor {
 
     const actorData = this.system;
 
-    const label = game.i18n.localize("OSE.roll.hd");
+    const label = game.i18n.localize("VF.roll.hd");
     let rollParts = [actorData.hp.hd];
 
     if (actorType === "character") {
@@ -406,8 +406,8 @@ export default class OseActor extends Actor {
       data,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.roll.appearing", { type: label }),
-      title: game.i18n.format("OSE.roll.appearing", { type: label }),
+      flavor: game.i18n.format("VF.roll.appearing", { type: label }),
+      title: game.i18n.format("VF.roll.appearing", { type: label }),
     });
   }
 
@@ -423,7 +423,7 @@ export default class OseActor extends Actor {
     if (actorType !== "character") return;
     const actorData = this.system;
 
-    const label = game.i18n.localize(`OSE.exploration.${expl}.long`);
+    const label = game.i18n.localize(`VF.exploration.${expl}.long`);
     const rollParts = ["1d6"];
 
     const data = {
@@ -433,7 +433,7 @@ export default class OseActor extends Actor {
         target: actorData.exploration[expl],
         blindroll: true,
       },
-      details: game.i18n.format("OSE.roll.details.exploration", {
+      details: game.i18n.format("VF.roll.details.exploration", {
         expl: label,
       }),
     };
@@ -445,8 +445,8 @@ export default class OseActor extends Actor {
       data,
       skipDialog: options.fastForward || skipRollDialogCheck(options.event),
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("OSE.roll.exploration", { exploration: label }),
-      title: game.i18n.format("OSE.roll.exploration", { exploration: label }),
+      flavor: game.i18n.format("VF.roll.exploration", { exploration: label }),
+      title: game.i18n.format("VF.roll.exploration", { exploration: label }),
     });
   }
 
@@ -480,8 +480,8 @@ export default class OseActor extends Actor {
       data: rollData,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${attData.label} - ${game.i18n.localize("OSE.Damage")}`,
-      title: `${attData.label} - ${game.i18n.localize("OSE.Damage")}`,
+      flavor: `${attData.label} - ${game.i18n.localize("VF.Damage")}`,
+      title: `${attData.label} - ${game.i18n.localize("VF.Damage")}`,
     });
   }
 
@@ -517,10 +517,10 @@ export default class OseActor extends Actor {
     const data = this.system;
 
     const label = attData.item
-      ? game.i18n.format("OSE.roll.attacksWith", {
+      ? game.i18n.format("VF.roll.attacksWith", {
           name: attData.item.name,
         })
-      : game.i18n.format("OSE.roll.attacks", {
+      : game.i18n.format("VF.roll.attacks", {
           name: this.name,
         });
 

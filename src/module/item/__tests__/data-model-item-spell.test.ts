@@ -46,7 +46,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       spell.save = "death";
       expect(spell.autoTags.length).equal(4);
       expect(Object.keys(spell.autoTags[3]).length).equal(2);
-      expect(spell.autoTags[3].label).equal(game.i18n.localize("OSE.saves.death.long"));
+      expect(spell.autoTags[3].label).equal(game.i18n.localize("VF.saves.death.long"));
       expect(spell.autoTags[3].icon).equal("fa-skull");
     });
 
@@ -54,7 +54,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       spell.updateSource({ roll: "1d20+1" });
       expect(spell.autoTags.length).equal(4);
       expect(Object.keys(spell.autoTags[3]).length).equal(1);
-      expect(spell.autoTags[3].label).equal(`${game.i18n.localize("OSE.items.Roll")} 1d20 + 1`);
+      expect(spell.autoTags[3].label).equal(`${game.i18n.localize("VF.items.Roll")} 1d20 + 1`);
     });
   });
 };

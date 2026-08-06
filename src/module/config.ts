@@ -79,39 +79,39 @@ export const OSE = {
   },
   /** Full ability-score names, as localization keys, keyed by ability. */
   scores: {
-    str: "OSE.scores.str.long",
-    int: "OSE.scores.int.long",
-    dex: "OSE.scores.dex.long",
-    wis: "OSE.scores.wis.long",
-    con: "OSE.scores.con.long",
-    cha: "OSE.scores.cha.long",
+    str: "VF.scores.str.long",
+    int: "VF.scores.int.long",
+    dex: "VF.scores.dex.long",
+    wis: "VF.scores.wis.long",
+    con: "VF.scores.con.long",
+    cha: "VF.scores.cha.long",
   },
   /** Abbreviated ability-score names, as localization keys, keyed by ability. */
   scores_short: {
-    str: "OSE.scores.str.short",
-    int: "OSE.scores.int.short",
-    dex: "OSE.scores.dex.short",
-    wis: "OSE.scores.wis.short",
-    con: "OSE.scores.con.short",
-    cha: "OSE.scores.cha.short",
+    str: "VF.scores.str.short",
+    int: "VF.scores.int.short",
+    dex: "VF.scores.dex.short",
+    wis: "VF.scores.wis.short",
+    con: "VF.scores.con.short",
+    cha: "VF.scores.cha.short",
   },
   /** Full exploration skill names, as localization keys, keyed by skill. */
   exploration_skills: {
-    ld: "OSE.exploration.ld.long",
-    od: "OSE.exploration.od.long",
-    sd: "OSE.exploration.sd.long",
-    ft: "OSE.exploration.ft.long",
-    fg: "OSE.exploration.fg.long",
-    hn: "OSE.exploration.hn.long",
+    ld: "VF.exploration.ld.long",
+    od: "VF.exploration.od.long",
+    sd: "VF.exploration.sd.long",
+    ft: "VF.exploration.ft.long",
+    fg: "VF.exploration.fg.long",
+    hn: "VF.exploration.hn.long",
   },
   /** Abbreviated exploration skill names, as localization keys, keyed by skill. */
   exploration_skills_short: {
-    ld: "OSE.exploration.ld.abrev",
-    od: "OSE.exploration.od.abrev",
-    sd: "OSE.exploration.sd.abrev",
-    ft: "OSE.exploration.ft.abrev",
-    fg: "OSE.exploration.fg.abrev",
-    hn: "OSE.exploration.hn.abrev",
+    ld: "VF.exploration.ld.abrev",
+    od: "VF.exploration.od.abrev",
+    sd: "VF.exploration.sd.abrev",
+    ft: "VF.exploration.ft.abrev",
+    fg: "VF.exploration.fg.abrev",
+    hn: "VF.exploration.hn.abrev",
   },
   /** Comparison operators shown for a roll's target: equal, at-or-above, at-or-below. */
   roll_type: {
@@ -121,26 +121,26 @@ export const OSE = {
   },
   /** Abbreviated saving-throw names, as localization keys, keyed by save category. */
   saves_short: {
-    death: "OSE.saves.death.short",
-    wand: "OSE.saves.wand.short",
-    paralysis: "OSE.saves.paralysis.short",
-    breath: "OSE.saves.breath.short",
-    spell: "OSE.saves.spell.short",
+    death: "VF.saves.death.short",
+    wand: "VF.saves.wand.short",
+    paralysis: "VF.saves.paralysis.short",
+    breath: "VF.saves.breath.short",
+    spell: "VF.saves.spell.short",
   },
   /** Full saving-throw names, as localization keys, keyed by save category. */
   saves_long: {
-    death: "OSE.saves.death.long",
-    wand: "OSE.saves.wand.long",
-    paralysis: "OSE.saves.paralysis.long",
-    breath: "OSE.saves.breath.long",
-    spell: "OSE.saves.spell.long",
+    death: "VF.saves.death.long",
+    wand: "VF.saves.wand.long",
+    paralysis: "VF.saves.paralysis.long",
+    breath: "VF.saves.breath.long",
+    spell: "VF.saves.spell.long",
   },
   /** Armour category names, as localization keys, keyed by category. */
   armor: {
-    unarmored: "OSE.armor.unarmored",
-    light: "OSE.armor.light",
-    heavy: "OSE.armor.heavy",
-    shield: "OSE.armor.shield",
+    unarmored: "VF.armor.unarmored",
+    light: "VF.armor.light",
+    heavy: "VF.armor.heavy",
+    shield: "VF.armor.shield",
   },
   /** Targeting modes for applying damage, keyed by mode. */
   apply_damage_options: {
@@ -150,13 +150,13 @@ export const OSE = {
   },
   /** Named UI colours, as localization keys, keyed by colour. */
   colors: {
-    green: "OSE.colors.green",
-    red: "OSE.colors.red",
-    yellow: "OSE.colors.yellow",
-    purple: "OSE.colors.purple",
-    blue: "OSE.colors.blue",
-    orange: "OSE.colors.orange",
-    white: "OSE.colors.white",
+    green: "VF.colors.green",
+    red: "VF.colors.red",
+    yellow: "VF.colors.yellow",
+    purple: "VF.colors.purple",
+    blue: "VF.colors.blue",
+    orange: "VF.colors.orange",
+    white: "VF.colors.white",
   },
   /** The languages a character may know, as display names. */
   languages: [
@@ -186,15 +186,15 @@ export const OSE = {
   ],
   /** Weapon/item quality tag labels, as localization keys, keyed by tag. */
   tags: {
-    melee: "OSE.items.Melee",
-    missile: "OSE.items.Missile",
-    slow: "OSE.items.Slow",
-    twohanded: "OSE.items.TwoHanded",
-    blunt: "OSE.items.Blunt",
-    brace: "OSE.items.Brace",
-    splash: "OSE.items.Splash",
-    reload: "OSE.items.Reload",
-    charge: "OSE.items.Charge",
+    melee: "VF.items.Melee",
+    missile: "VF.items.Missile",
+    slow: "VF.items.Slow",
+    twohanded: "VF.items.TwoHanded",
+    blunt: "VF.items.Blunt",
+    brace: "VF.items.Brace",
+    splash: "VF.items.Splash",
+    reload: "VF.items.Reload",
+    charge: "VF.items.Charge",
   },
   /** Display metadata (label, image, icon) for each item tag, derived on access. */
   auto_tags: {

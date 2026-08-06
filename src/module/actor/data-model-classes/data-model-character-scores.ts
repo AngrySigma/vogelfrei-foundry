@@ -140,9 +140,9 @@ export default class OseDataModelCharacterScores implements CharacterScores {
    */
   static literacyMods = {
     0: "",
-    3: "OSE.Illiterate",
-    6: "OSE.LiteracyBasic",
-    9: "OSE.Literate",
+    3: "VF.Illiterate",
+    6: "VF.LiteracyBasic",
+    9: "VF.Literate",
   };
 
   /**
@@ -151,11 +151,11 @@ export default class OseDataModelCharacterScores implements CharacterScores {
    * - `int.spoken`
    */
   static spokenMods = {
-    0: "OSE.NativeBroken",
-    3: "OSE.Native",
-    13: "OSE.NativePlus1",
-    16: "OSE.NativePlus2",
-    18: "OSE.NativePlus3",
+    0: "VF.NativeBroken",
+    3: "VF.Native",
+    13: "VF.NativePlus1",
+    16: "VF.NativePlus2",
+    18: "VF.NativePlus3",
   };
 
   static valueFromTable<T>(table: Record<number, T> & { 0: T }, val: number): T {

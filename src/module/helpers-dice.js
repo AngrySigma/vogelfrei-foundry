@@ -208,12 +208,12 @@ const OseDice = {
     if (game.settings.get(game.system.id, "ascendingAC")) {
       const attackBonus = 0; // Attack bonus is already included in the roll
       if (this.attackIsSuccess(roll, targetAac, attackBonus) || result.victim == null) {
-        result.details = game.i18n.format("OSE.messages.AttackAscendingSuccess", {
+        result.details = game.i18n.format("VF.messages.AttackAscendingSuccess", {
           result: roll.total,
         });
         result.isSuccess = true;
       } else {
-        result.details = game.i18n.format("OSE.messages.AttackAscendingFailure", {
+        result.details = game.i18n.format("VF.messages.AttackAscendingFailure", {
           bonus: result.target,
         });
         result.isFailure = true;
@@ -221,13 +221,13 @@ const OseDice = {
     } else if (this.attackIsSuccess(roll, result.target, targetAc) || result.victim == null) {
       // Show result in chat card
       const value = result.target - roll.total;
-      result.details = game.i18n.format("OSE.messages.AttackSuccess", {
+      result.details = game.i18n.format("VF.messages.AttackSuccess", {
         result: value,
         bonus: result.target,
       });
       result.isSuccess = true;
     } else {
-      result.details = game.i18n.format("OSE.messages.AttackFailure", {
+      result.details = game.i18n.format("VF.messages.AttackFailure", {
         bonus: result.target,
       });
       result.isFailure = true;
@@ -376,7 +376,7 @@ const OseDice = {
     const buttons = [
       {
         action: "ok",
-        label: game.i18n.localize("OSE.Roll"),
+        label: game.i18n.localize("VF.Roll"),
         icon: "fas fa-dice-d20",
         callback: (_event, button) => {
           rolled = true;
@@ -386,32 +386,32 @@ const OseDice = {
       },
       {
         action: "magic",
-        label: game.i18n.localize("OSE.saves.magic.short"),
+        label: game.i18n.localize("VF.saves.magic.short"),
         icon: "fas fa-magic",
         callback: (_event, button) => {
           rolled = true;
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.magic}`);
-          rollData.title += ` ${game.i18n.localize("OSE.saves.magic.short")} (${rollData.data.roll.magic})`;
+          rollData.title += ` ${game.i18n.localize("VF.saves.magic.short")} (${rollData.data.roll.magic})`;
           roll = OseDice.sendRoll(rollData);
         },
       },
       {
         action: "Poison",
-        label: game.i18n.localize("OSE.saves.poison.short"),
+        label: game.i18n.localize("VF.saves.poison.short"),
         icon: "fas fa-skull",
         callback: (event, button) => {
           rolled = true;
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.poison}`);
-          rollData.title += ` ${game.i18n.localize("OSE.saves.poison.short")} (${rollData.data.roll.poison})`;
+          rollData.title += ` ${game.i18n.localize("VF.saves.poison.short")} (${rollData.data.roll.poison})`;
           roll = OseDice.sendRoll(rollData);
         },
       },
       {
         action: "cancel",
         icon: "fas fa-times",
-        label: game.i18n.localize("OSE.Cancel"),
+        label: game.i18n.localize("VF.Cancel"),
         callback: () => {},
       },
     ];
@@ -470,7 +470,7 @@ const OseDice = {
     const buttons = [
       {
         action: "ok",
-        label: game.i18n.localize("OSE.Roll"),
+        label: game.i18n.localize("VF.Roll"),
         icon: "fas fa-dice-d20",
         callback: (_event, button) => {
           rolled = true;
@@ -484,7 +484,7 @@ const OseDice = {
       {
         action: "cancel",
         icon: "fas fa-times",
-        label: game.i18n.localize("OSE.Cancel"),
+        label: game.i18n.localize("VF.Cancel"),
         callback: () => {},
       },
     ];

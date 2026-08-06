@@ -8,7 +8,7 @@
         </h1>
         <div class="details">
           <div class="form-group">
-            <label title="{{localize 'OSE.items.Cost'}}"
+            <label title="{{localize 'VF.items.Cost'}}"
               ><i class="fas fa-circle"></i
             ></label>
             <div class="form-fields">
@@ -22,7 +22,7 @@
           </div>
           {{#unless (eq @root.config.encumbrance 'itembased')}}
           <div class="form-group">
-            <label title="{{localize 'OSE.items.WeightLong'}}"
+            <label title="{{localize 'VF.items.WeightLong'}}"
               ><i class="fas fa-weight-hanging"></i
             ></label>
             <div class="form-fields">
@@ -36,7 +36,7 @@
           </div>
           {{else}}
           <div class="form-group">
-            <label data-tooltip aria-label="{{localize 'OSE.items.ItemBasedEncumbranceLong'}}">
+            <label data-tooltip aria-label="{{localize 'VF.items.ItemBasedEncumbranceLong'}}">
               <i class="fas fa-weight-hanging"></i>
             </label>
             <div class="form-fields">
@@ -69,13 +69,13 @@
             <input
               type="text"
               data-action="add-tag"
-              title="{{localize 'OSE.items.typeTag'}}"
-              placeholder="{{localize 'OSE.items.enterTag'}}"
+              title="{{localize 'VF.items.typeTag'}}"
+              placeholder="{{localize 'VF.items.enterTag'}}"
             />
           </div>
         </div>
         <div class="form-group block-input">
-          <label>{{localize 'OSE.items.Damage'}}</label>
+          <label>{{localize 'VF.items.Damage'}}</label>
           <div class="form-fields">
             <input
               type="text"
@@ -86,8 +86,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label title="{{localize 'OSE.items.AtkBonus'}}"
-            >{{localize 'OSE.items.Bonus'}}</label
+          <label title="{{localize 'VF.items.AtkBonus'}}"
+            >{{localize 'VF.items.Bonus'}}</label
           >
           <div class="form-fields">
             <input
@@ -100,13 +100,13 @@
         </div>
         <div class="form-group attack-type">
           <a
-            title="{{localize 'OSE.items.Melee'}}"
+            title="{{localize 'VF.items.Melee'}}"
             class="melee-toggle {{#if
             system.melee}}active{{/if}}"
             ><i class="fas fa-fist-raised"></i
           ></a>
           <a
-            title="{{localize 'OSE.items.Missile'}}"
+            title="{{localize 'VF.items.Missile'}}"
             class="missile-toggle
             {{#if system.missile}}active{{/if}}"
             ><i class="fas fa-bullseye"></i
@@ -114,7 +114,7 @@
         </div>
         {{#if system.missile}}
         <div class="form-group block-input">
-          <label>{{localize 'OSE.items.Range'}}</label>
+          <label>{{localize 'VF.items.Range'}}</label>
           <div class="form-fields range">
             <input
               type="text"
@@ -140,7 +140,7 @@
         </div>
         {{/if}}
         <div class="form-group">
-          <label>{{localize 'OSE.spells.Save'}}</label>
+          <label>{{localize 'VF.spells.Save'}}</label>
           <div class="form-fields">
             <select name="system.save">
               <option value=""></option>
@@ -149,7 +149,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label>{{localize 'OSE.items.Slow'}}</label>
+          <label>{{localize 'VF.items.Slow'}}</label>
           <div class="form-fields">
             <input
               type="checkbox"

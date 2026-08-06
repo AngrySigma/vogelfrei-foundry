@@ -8,7 +8,7 @@ export function initializeTokenRing(config: foundry.canvas.tokens.TokenRingConfi
   config.addConfig(
     "ose-default-black-white",
     new foundry.canvas.placeables.tokens.DynamicRingData({
-      label: "OSE.rings.BlackWhite",
+      label: "VF.rings.BlackWhite",
       spritesheet: `${OSE.assetsPath}/rings/black-white.json`,
     }),
   );
@@ -25,9 +25,9 @@ export async function promptTokenRingSelection() {
   if (
     await foundry.applications.api.DialogV2.confirm({
       window: {
-        title: game.i18n.localize("OSE.dialog.TokenRingPrompt.Title"),
+        title: game.i18n.localize("VF.dialog.TokenRingPrompt.Title"),
       },
-      content: game.i18n.localize("OSE.dialog.TokenRingPrompt.Content"),
+      content: game.i18n.localize("VF.dialog.TokenRingPrompt.Content"),
     })
   ) {
     await game.settings.set("core", "dynamicTokenRing", "ose-default-black-white");

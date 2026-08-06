@@ -36,7 +36,7 @@ const registerFVTTModuleAPIs = () => {
       CURRENCIES: [
         {
           type: "item",
-          name: "OSE.items.gp.long",
+          name: "VF.items.gp.long",
           img: "systems/vogelfrei/assets/gold.png",
           abbreviation: "{#}GP",
           data: {

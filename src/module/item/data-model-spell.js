@@ -23,7 +23,7 @@ export default class OseDataModelSpell extends foundry.abstract.TypeDataModel {
   get #rollTag() {
     if (!this.roll) return null;
 
-    const rollLabel = game.i18n.localize("OSE.items.Roll");
+    const rollLabel = game.i18n.localize("VF.items.Roll");
 
     const rollFormula = OseTags.rollTagFormula({
       actor: this.parent?.actor,

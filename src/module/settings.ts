@@ -8,36 +8,36 @@ import type { ApplyDamageOption, EncumbranceOption } from "./config";
  */
 const registerSettings = () => {
   game.settings.register(game.system.id, "initiative", {
-    name: game.i18n.localize("OSE.Setting.Initiative"),
-    hint: game.i18n.localize("OSE.Setting.InitiativeHint"),
+    name: game.i18n.localize("VF.Setting.Initiative"),
+    hint: game.i18n.localize("VF.Setting.InitiativeHint"),
     default: "group",
     scope: "world",
     type: String,
     requiresReload: true,
     config: true,
     choices: {
-      individual: "OSE.Setting.InitiativeIndividual",
-      group: "OSE.Setting.InitiativeGroup",
+      individual: "VF.Setting.InitiativeIndividual",
+      group: "VF.Setting.InitiativeGroup",
     },
   });
 
   game.settings.register(game.system.id, "rerollInitiative", {
-    name: game.i18n.localize("OSE.Setting.RerollInitiative"),
-    hint: game.i18n.localize("OSE.Setting.RerollInitiativeHint"),
+    name: game.i18n.localize("VF.Setting.RerollInitiative"),
+    hint: game.i18n.localize("VF.Setting.RerollInitiativeHint"),
     default: "reset",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      keep: "OSE.Setting.InitiativeKeep",
-      reset: "OSE.Setting.InitiativeReset",
-      reroll: "OSE.Setting.InitiativeReroll",
+      keep: "VF.Setting.InitiativeKeep",
+      reset: "VF.Setting.InitiativeReset",
+      reroll: "VF.Setting.InitiativeReroll",
     },
   });
 
   game.settings.register(game.system.id, "ascendingAC", {
-    name: game.i18n.localize("OSE.Setting.AscendingAC"),
-    hint: game.i18n.localize("OSE.Setting.AscendingACHint"),
+    name: game.i18n.localize("VF.Setting.AscendingAC"),
+    hint: game.i18n.localize("VF.Setting.AscendingACHint"),
     default: false,
     scope: "world",
     type: Boolean,
@@ -45,8 +45,8 @@ const registerSettings = () => {
   });
 
   game.settings.register(game.system.id, "morale", {
-    name: game.i18n.localize("OSE.Setting.Morale"),
-    hint: game.i18n.localize("OSE.Setting.MoraleHint"),
+    name: game.i18n.localize("VF.Setting.Morale"),
+    hint: game.i18n.localize("VF.Setting.MoraleHint"),
     default: false,
     scope: "world",
     type: Boolean,
@@ -54,8 +54,8 @@ const registerSettings = () => {
   });
 
   game.settings.register(game.system.id, "encumbranceOption", {
-    name: game.i18n.localize("OSE.Setting.Encumbrance"),
-    hint: game.i18n.localize("OSE.Setting.EncumbranceHint"),
+    name: game.i18n.localize("VF.Setting.Encumbrance"),
+    hint: game.i18n.localize("VF.Setting.EncumbranceHint"),
     default: "detailed",
     scope: "world",
     type: String,
@@ -68,8 +68,8 @@ const registerSettings = () => {
   });
 
   game.settings.register(game.system.id, "encumbranceItemStrengthMod", {
-    name: game.i18n.localize("OSE.Setting.EncumbranceItemStrengthMod"),
-    hint: game.i18n.localize("OSE.Setting.EncumbranceItemStrengthModHint"),
+    name: game.i18n.localize("VF.Setting.EncumbranceItemStrengthMod"),
+    hint: game.i18n.localize("VF.Setting.EncumbranceItemStrengthModHint"),
     default: false,
     scope: "world",
     type: Boolean,
@@ -77,8 +77,8 @@ const registerSettings = () => {
   });
 
   game.settings.register(game.system.id, "significantTreasure", {
-    name: game.i18n.localize("OSE.Setting.SignificantTreasure"),
-    hint: game.i18n.localize("OSE.Setting.SignificantTreasureHint"),
+    name: game.i18n.localize("VF.Setting.SignificantTreasure"),
+    hint: game.i18n.localize("VF.Setting.SignificantTreasureHint"),
     default: 800,
     scope: "world",
     type: Number,
@@ -86,37 +86,37 @@ const registerSettings = () => {
   });
 
   game.settings.register(game.system.id, "languages", {
-    name: game.i18n.localize("OSE.Setting.Languages"),
-    hint: game.i18n.localize("OSE.Setting.LanguagesHint"),
+    name: game.i18n.localize("VF.Setting.Languages"),
+    hint: game.i18n.localize("VF.Setting.LanguagesHint"),
     default: "",
     scope: "world",
     type: String,
     config: true,
   });
   game.settings.register(game.system.id, "applyDamageOption", {
-    name: game.i18n.localize("OSE.Setting.applyDamageOption"),
-    hint: game.i18n.localize("OSE.Setting.applyDamageOptionHint"),
+    name: game.i18n.localize("VF.Setting.applyDamageOption"),
+    hint: game.i18n.localize("VF.Setting.applyDamageOptionHint"),
     default: "selected",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      selected: game.i18n.localize("OSE.Setting.damageSelected"),
-      targeted: game.i18n.localize("OSE.Setting.damageTarget"),
-      originalTarget: game.i18n.localize("OSE.Setting.damageOriginalTarget"),
+      selected: game.i18n.localize("VF.Setting.damageSelected"),
+      targeted: game.i18n.localize("VF.Setting.damageTarget"),
+      originalTarget: game.i18n.localize("VF.Setting.damageOriginalTarget"),
     },
   });
   game.settings.register(game.system.id, "invertedCtrlBehavior", {
-    name: game.i18n.localize("OSE.Setting.InvertedCtrlBehavior"),
-    hint: game.i18n.localize("OSE.Setting.InvertedCtrlBehaviorHint"),
+    name: game.i18n.localize("VF.Setting.InvertedCtrlBehavior"),
+    hint: game.i18n.localize("VF.Setting.InvertedCtrlBehaviorHint"),
     default: false,
     scope: "world",
     type: Boolean,
     config: true,
   });
   game.settings.register(game.system.id, "ignoreAttackBonusOnDamageRoll", {
-    name: game.i18n.localize("OSE.Setting.ignoreAttackBonusOnDamageRoll"),
-    hint: game.i18n.localize("OSE.Setting.ignoreAttackBonusOnDamageRollHint"),
+    name: game.i18n.localize("VF.Setting.ignoreAttackBonusOnDamageRoll"),
+    hint: game.i18n.localize("VF.Setting.ignoreAttackBonusOnDamageRollHint"),
     default: false,
     scope: "world",
     type: Boolean,

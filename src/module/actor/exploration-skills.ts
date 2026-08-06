@@ -23,6 +23,6 @@ export const prepareExplorationSkills = (exploration: ExplorationSkills = {}): E
     key,
     value: exploration[key],
     long: game.i18n.localize(CONFIG.OSE.exploration_skills[key]),
-    short: game.i18n.localize(`OSE.exploration.${key}.short`),
+    short: game.i18n.localize(`VF.exploration.${key}.short`),
     abbreviation: game.i18n.localize(CONFIG.OSE.exploration_skills_short[key]),
   }));

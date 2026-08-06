@@ -16,7 +16,7 @@
                     class="inline-control combatant-control icon fas fa-walking move-combat{{#if
                       isRetreating}} active{{/if}}"
                     data-action="retreat"
-                    data-tooltip aria-label="{{localize 'OSE.CombatFlag.RetreatFromMeleeDeclared'}}"
+                    data-tooltip aria-label="{{localize 'VF.CombatFlag.RetreatFromMeleeDeclared'}}"
                     role="button"
                     data-control="retreat"
             ></button>
@@ -24,7 +24,7 @@
                     class="inline-control combatant-control icon fas fa-magic prepare-spell{{#if
                       this.isCasting}} active{{/if}}"
                     data-action="casting"
-                    data-tooltip aria-label="{{localize 'OSE.CombatFlag.SpellDeclared'}}"
+                    data-tooltip aria-label="{{localize 'VF.CombatFlag.SpellDeclared'}}"
                     role="button"
                     data-control="casting"
             ></button>
@@ -71,7 +71,7 @@
           <i class="fa fa-dizzy"></i>
         {{else if isOwner}}
           {{#if isSlowed}}
-            <i class="fa fa-weight-hanging" title="{{ localize "OSE.items.Slow" }}"></i>
+            <i class="fa fa-weight-hanging" title="{{ localize "VF.items.Slow" }}"></i>
           {{else}}
             {{#unless group}}
               {{#if initiative}}

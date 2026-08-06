@@ -22,7 +22,7 @@ export default class OseEntityTweaks extends FormApplication {
    * @returns {string} - The app title
    */
   get title() {
-    return `${this.object.name}: ${game.i18n.localize("OSE.dialog.tweaks")}`;
+    return `${this.object.name}: ${game.i18n.localize("VF.dialog.tweaks")}`;
   }
 
   /* -------------------------------------------- */

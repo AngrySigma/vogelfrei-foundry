@@ -7,7 +7,7 @@
       name="name"
       type="text"
       value="{{name}}"
-      placeholder="{{localize 'OSE.Name'}}"
+      placeholder="{{localize 'VF.Name'}}"
     />
   </h1>
   {{#if isOwnerOrObserver}}
@@ -19,11 +19,11 @@
             name="system.details.alignment"
             value="{{system.details.alignment}}"
           />
-          <label>{{localize 'OSE.details.alignment'}}</label>
+          <label>{{localize 'VF.details.alignment'}}</label>
         </div>
         <div
           class="check reaction-check"
-          title="{{localize 'OSE.roll.reaction'}}"
+          title="{{localize 'VF.roll.reaction'}}"
         >
           <a><i class="fas fa-dice"></i></a>
         </div>
@@ -35,11 +35,11 @@
             name="system.details.appearing.d"
             value="{{system.details.appearing.d}}"
           />
-          <label>{{localize 'OSE.details.appearing'}}</label>
+          <label>{{localize 'VF.details.appearing'}}</label>
         </div>
         <div
           class="check appearing-check"
-          title="{{localize 'OSE.roll.appearing'}}"
+          title="{{localize 'VF.roll.appearing'}}"
         >
           <a><i class="fas fa-dice"></i></a>
         </div>
@@ -56,7 +56,7 @@
         )
         <div
           class="check appearing-check"
-          title="{{localize 'OSE.roll.appearing'}}"
+          title="{{localize 'VF.roll.appearing'}}"
         >
           <a><i class="fas fa-dice"></i></a>
         </div>
@@ -69,9 +69,9 @@
             name="system.details.morale"
             value="{{system.details.morale}}"
           />
-          <label>{{localize 'OSE.details.morale'}}</label>
+          <label>{{localize 'VF.details.morale'}}</label>
         </div>
-        <div class="check morale-check" title="{{localize 'OSE.roll.morale'}}">
+        <div class="check morale-check" title="{{localize 'VF.roll.morale'}}">
            <a><i class="fas fa-dice"></i></a>
         </div>
       </li>
@@ -84,7 +84,7 @@
           name="system.details.xp"
           value="{{system.details.xp}}"
         />
-        <label>{{localize 'OSE.details.experience.award'}}</label>
+        <label>{{localize 'VF.details.experience.award'}}</label>
       </li>
       <li>
         <input
@@ -93,14 +93,14 @@
           value="{{system.details.specialAbilities}}"
         />
         <label title="Special Abilities"
-          >{{localize 'OSE.details.special.abilities'}}</label>
+          >{{localize 'VF.details.special.abilities'}}</label>
       </li>
       <li
         class="treasure-table"
-        title="{{localize 'OSE.details.treasureTableHint'}}"
+        title="{{localize 'VF.details.treasureTableHint'}}"
       >
         <div>{{{system.details.treasure.link}}}</div>
-        <label>{{localize 'OSE.details.treasure'}}</label>
+        <label>{{localize 'VF.details.treasure'}}</label>
       </li>
     </ul>
   {{/if}}

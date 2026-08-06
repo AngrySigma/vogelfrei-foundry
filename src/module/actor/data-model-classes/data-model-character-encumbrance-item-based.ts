@@ -69,7 +69,7 @@ export default class OseDataModelCharacterEncumbranceItemBased
   /**
    * The human-readable label for this encumbrance scheme
    */
-  static localizedLabel = "OSE.Setting.EncumbranceItemBased";
+  static localizedLabel = "VF.Setting.EncumbranceItemBased";
 
   #weight;
 

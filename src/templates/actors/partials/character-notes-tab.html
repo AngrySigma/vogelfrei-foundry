@@ -4,13 +4,13 @@
       {{#if isOwnerOrObserver}}
         <div class="languages">
           <div class="item-category-title flexrow">
-            <div class="item-name">{{localize "OSE.category.languages"}}</div>
+            <div class="item-name">{{localize "VF.category.languages"}}</div>
             {{#if @root.owner}}
             <div class="item-controls">
               <a
                 class="item-control item-push"
                 data-array="languages"
-                title="{{localize 'OSE.Add'}}"
+                title="{{localize 'VF.Add'}}"
                 ><i class="fa fa-plus"></i
               ></a>
             </div>
@@ -25,7 +25,7 @@
                 <a
                   class="item-control item-pop"
                   data-array="languages"
-                  title="{{localize 'OSE.Delete'}}"
+                  title="{{localize 'VF.Delete'}}"
                   ><i class="fa fa-trash"></i
                 ></a>
               </div>
@@ -46,7 +46,7 @@
   </div>
   {{#if isOwnerOrObserver}}
     <div class="inventory notes">
-      <div class="item-category-title">{{localize "OSE.category.notes"}}</div>
+      <div class="item-category-title">{{localize "VF.category.notes"}}</div>
       <div class="resizable-editor">
         {{editor enrichedNotes target="system.details.notes" button=true
         editable=editable async=true engine="prosemirror"}}
