@@ -150,20 +150,20 @@
                     <button data-action="generate-saves">{{localize "VF.dialog.generateSaves"}}</button>
                     {{/unless}}
                 </li>
-                <li class="attribute saving-throw" data-save="death">
+                <li class="attribute saving-throw" data-save="poison">
                     <h4 class="attribute-name box-title">
-                        <a>{{ localize "VF.saves.death.long" }}</a>
+                        <a>{{ localize "VF.saves.poison.long" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.saves.death.value" type="text" value="{{system.saves.death.value}}"
+                        <input name="system.saves.poison.value" type="text" value="{{system.saves.poison.value}}"
                             placeholder="0" data-dtype="Number" />
                 </li>
-                <li class="attribute saving-throw" data-save="wand">
+                <li class="attribute saving-throw" data-save="device">
                     <h4 class="attribute-name box-title">
-                        <a>{{ localize "VF.saves.wand.long" }}</a>
+                        <a>{{ localize "VF.saves.device.long" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.saves.wand.value" type="text" value="{{system.saves.wand.value}}"
+                        <input name="system.saves.device.value" type="text" value="{{system.saves.device.value}}"
                             placeholder="0" data-dtype="Number" />
                 </li>
                 <li class="attribute saving-throw" data-save="paralysis">
@@ -182,12 +182,12 @@
                         <input name="system.saves.breath.value" type="text" value="{{system.saves.breath.value}}"
                             placeholder="0" data-dtype="Number" />
                 </li>
-                <li class="attribute saving-throw" data-save="spell">
+                <li class="attribute saving-throw" data-save="magic">
                     <h4 class="attribute-name box-title">
-                        <a>{{ localize "VF.saves.spell.long" }}</a>
+                        <a>{{ localize "VF.saves.magic.long" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.saves.spell.value" type="text" value="{{system.saves.spell.value}}"
+                        <input name="system.saves.magic.value" type="text" value="{{system.saves.magic.value}}"
                             placeholder="0" />
                 </li>
             </ul>

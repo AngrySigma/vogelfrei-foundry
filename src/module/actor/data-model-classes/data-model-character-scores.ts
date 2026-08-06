@@ -11,12 +11,12 @@ type IncomingScore = {
 };
 
 type Scores = {
-  str: BaseScore;
-  int: BaseScore;
-  wis: BaseScore;
-  dex: BaseScore;
-  con: BaseScore;
-  cha: BaseScore;
+  strength: BaseScore;
+  intelligence: BaseScore;
+  willpower: BaseScore;
+  agility: BaseScore;
+  toughness: BaseScore;
+  leadership: BaseScore;
 };
 type OptionalScores = Partial<Scores>;
 
@@ -34,13 +34,13 @@ type BaseScore = IncomingScore & {
  */
 export interface CharacterScores {
   /** Strength, plus the character's open-doors chance. */
-  str: BaseScore & {
+  strength: BaseScore & {
     /** Chance (in 6) to force open a stuck door, derived from Strength. */
     od: number;
   };
 
   /** Intelligence, plus derived literacy and spoken-language information. */
-  int: BaseScore & {
+  intelligence: BaseScore & {
     /** Localization key describing the character's literacy level. */
     literacy: string;
 
@@ -49,19 +49,19 @@ export interface CharacterScores {
   };
 
   /** Wisdom. */
-  wis: BaseScore;
+  willpower: BaseScore;
 
   /** Dexterity, plus its contribution to initiative. */
-  dex: BaseScore & {
+  agility: BaseScore & {
     /** Initiative modifier derived from Dexterity. */
     init: number;
   };
 
   /** Constitution. */
-  con: BaseScore;
+  toughness: BaseScore;
 
   /** Charisma, plus its retainer-related values. */
-  cha: BaseScore & {
+  leadership: BaseScore & {
     /** Loyalty rating of the character's retainers, derived from Charisma. */
     loyalty: number;
 
@@ -81,14 +81,14 @@ export default class OseDataModelCharacterScores implements CharacterScores {
    * Standard modifiers, from -3 to 3.
    *
    * Applied to:
-   * - `str.mod`
-   * - `int.mod`
-   * - `wis.mod`
-   * - `dex.mod`
-   * - `con.mod`
-   * - `cha.mod`
-   * - `cha.retain` (with a +4 modifier)
-   * - `cha.loyalty` (with a +7 modifier)
+   * - `strength.mod`
+   * - `intelligence.mod`
+   * - `willpower.mod`
+   * - `agility.mod`
+   * - `toughness.mod`
+   * - `leadership.mod`
+   * - `leadership.retain` (with a +4 modifier)
+   * - `leadership.loyalty` (with a +7 modifier)
    */
   static standardAttributeMods = {
     0: -3,
@@ -105,8 +105,8 @@ export default class OseDataModelCharacterScores implements CharacterScores {
    * Capped modifiers, from -2 to 2.
    *
    * Applied to:
-   * - `dex.init`
-   * - `cha.npc`
+   * - `agility.init`
+   * - `leadership.npc`
    */
   static cappedAttributeMods = {
     0: -2,
@@ -122,7 +122,7 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   /**
    * Modifier tables for the Open Door exploration skill, from 0 to 5.
    * Applied to:
-   * - `str.od`
+   * - `strength.od`
    */
   static openDoorMods = {
     0: 0,
@@ -136,7 +136,7 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   /**
    * Mapping tables for character literacy.
    * Applied to:
-   * - `int.literacy`
+   * - `intelligence.literacy`
    */
   static literacyMods = {
     0: "",
@@ -148,7 +148,7 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   /**
    * Mapping tables for character's spoken languages.
    * Applied to:
-   * - `int.spoken`
+   * - `intelligence.spoken`
    */
   static spokenMods = {
     0: "VF.NativeBroken",
@@ -170,50 +170,50 @@ export default class OseDataModelCharacterScores implements CharacterScores {
     return table[0];
   }
 
-  #str: IncomingScore = { value: 0, bonus: 0 };
+  #strength: IncomingScore = { value: 0, bonus: 0 };
 
-  #int: IncomingScore = { value: 0, bonus: 0 };
+  #intelligence: IncomingScore = { value: 0, bonus: 0 };
 
-  #wis: IncomingScore = { value: 0, bonus: 0 };
+  #willpower: IncomingScore = { value: 0, bonus: 0 };
 
-  #dex: IncomingScore = { value: 0, bonus: 0 };
+  #agility: IncomingScore = { value: 0, bonus: 0 };
 
-  #con: IncomingScore = { value: 0, bonus: 0 };
+  #toughness: IncomingScore = { value: 0, bonus: 0 };
 
-  #cha: IncomingScore = { value: 0, bonus: 0 };
+  #leadership: IncomingScore = { value: 0, bonus: 0 };
 
   /**
    * The constructor
    *
    * @param {object} scores - An object containing the six primary ability scores.
-   * @param {string} scores.str - The character's strength
-   * @param {string} scores.int - The character's intelligence
-   * @param {string} scores.wis - The character's wisdom
-   * @param {string} scores.dex - The character's dexterity
-   * @param {string} scores.con - The character's constitution
-   * @param {string} scores.cha - The character's charisma
+   * @param {string} scores.strength - The character's strength
+   * @param {string} scores.intelligence - The character's intelligence
+   * @param {string} scores.willpower - The character's wisdom
+   * @param {string} scores.agility - The character's dexterity
+   * @param {string} scores.toughness - The character's constitution
+   * @param {string} scores.leadership - The character's charisma
    */
-  constructor({ str, int, wis, dex, con, cha }: OptionalScores = {}) {
-    this.#str = str ?? { value: 0, bonus: 0 };
-    this.#int = int ?? { value: 0, bonus: 0 };
-    this.#wis = wis ?? { value: 0, bonus: 0 };
-    this.#dex = dex ?? { value: 0, bonus: 0 };
-    this.#con = con ?? { value: 0, bonus: 0 };
-    this.#cha = cha ?? { value: 0, bonus: 0 };
+  constructor({ strength, intelligence, willpower, agility, toughness, leadership }: OptionalScores = {}) {
+    this.#strength = strength ?? { value: 0, bonus: 0 };
+    this.#intelligence = intelligence ?? { value: 0, bonus: 0 };
+    this.#willpower = willpower ?? { value: 0, bonus: 0 };
+    this.#agility = agility ?? { value: 0, bonus: 0 };
+    this.#toughness = toughness ?? { value: 0, bonus: 0 };
+    this.#leadership = leadership ?? { value: 0, bonus: 0 };
   }
 
-  get str() {
+  get strength() {
     return {
-      value: this.#str.value,
-      bonus: this.#str.bonus,
+      value: this.#strength.value,
+      bonus: this.#strength.bonus,
       mod: this.#strMod,
       od: this.#strOpenDoorsMod,
     };
   }
 
-  set str(change) {
-    this.#str = {
-      ...this.#str,
+  set strength(change) {
+    this.#strength = {
+      ...this.#strength,
       ...change,
     };
   }
@@ -221,30 +221,30 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #strMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#str.value,
+      this.#strength.value,
     ) as number;
   }
 
   get #strOpenDoorsMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.openDoorMods,
-      this.#str.value,
+      this.#strength.value,
     ) as number;
   }
 
-  get int() {
+  get intelligence() {
     return {
-      value: this.#int.value,
-      bonus: this.#int.bonus,
+      value: this.#intelligence.value,
+      bonus: this.#intelligence.bonus,
       mod: this.#intMod,
       literacy: this.#intLiteracyMod,
       spoken: this.#intSpokenLanguagesMod,
     };
   }
 
-  set int(change) {
-    this.#int = {
-      ...this.#int,
+  set intelligence(change) {
+    this.#intelligence = {
+      ...this.#intelligence,
       ...change,
     };
   }
@@ -252,35 +252,35 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #intMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#int.value,
+      this.#intelligence.value,
     ) as number;
   }
 
   get #intLiteracyMod(): string {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.literacyMods,
-      this.#int.value,
+      this.#intelligence.value,
     ) as string;
   }
 
   get #intSpokenLanguagesMod(): string {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.spokenMods,
-      this.#int.value,
+      this.#intelligence.value,
     ) as string;
   }
 
-  get wis() {
+  get willpower() {
     return {
-      value: this.#wis.value,
-      bonus: this.#wis.bonus,
+      value: this.#willpower.value,
+      bonus: this.#willpower.bonus,
       mod: this.#wisMod,
     };
   }
 
-  set wis(change) {
-    this.#wis = {
-      ...this.#wis,
+  set willpower(change) {
+    this.#willpower = {
+      ...this.#willpower,
       ...change,
     };
   }
@@ -288,22 +288,22 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #wisMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#wis.value,
+      this.#willpower.value,
     ) as number;
   }
 
-  get dex() {
+  get agility() {
     return {
-      value: this.#dex.value,
-      bonus: this.#dex.bonus,
+      value: this.#agility.value,
+      bonus: this.#agility.bonus,
       mod: this.#dexMod,
       init: this.#dexInitMod,
     };
   }
 
-  set dex(change) {
-    this.#dex = {
-      ...this.#dex,
+  set agility(change) {
+    this.#agility = {
+      ...this.#agility,
       ...change,
     };
   }
@@ -311,28 +311,28 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #dexMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#dex.value,
+      this.#agility.value,
     ) as number;
   }
 
   get #dexInitMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.cappedAttributeMods,
-      this.#dex.value,
+      this.#agility.value,
     ) as number;
   }
 
-  get con() {
+  get toughness() {
     return {
-      value: this.#con.value,
-      bonus: this.#con.bonus,
+      value: this.#toughness.value,
+      bonus: this.#toughness.bonus,
       mod: this.#conMod,
     };
   }
 
-  set con(change) {
-    this.#con = {
-      ...this.#con,
+  set toughness(change) {
+    this.#toughness = {
+      ...this.#toughness,
       ...change,
     };
   }
@@ -340,14 +340,14 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #conMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#con.value,
+      this.#toughness.value,
     ) as number;
   }
 
-  get cha() {
+  get leadership() {
     return {
-      value: this.#cha.value,
-      bonus: this.#cha.bonus,
+      value: this.#leadership.value,
+      bonus: this.#leadership.bonus,
       mod: this.#chaMod,
       loyalty: this.#chaLoyaltyMod,
       retain: this.#chaRetainMod,
@@ -355,9 +355,9 @@ export default class OseDataModelCharacterScores implements CharacterScores {
     };
   }
 
-  set cha(change) {
-    this.#cha = {
-      ...this.#cha,
+  set leadership(change) {
+    this.#leadership = {
+      ...this.#leadership,
       ...change,
     };
   }
@@ -365,14 +365,14 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   get #chaMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.standardAttributeMods,
-      this.#cha.value,
+      this.#leadership.value,
     ) as number;
   }
 
   get #chaReactionMod(): number {
     return OseDataModelCharacterScores.valueFromTable(
       OseDataModelCharacterScores.cappedAttributeMods,
-      this.#cha.value,
+      this.#leadership.value,
     ) as number;
   }
 

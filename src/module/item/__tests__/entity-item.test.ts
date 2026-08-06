@@ -224,7 +224,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
     it("Returns an object with two keys; label and icon", async () => {
       const item: OseItem = await createWorldTestItem("weapon");
       // eslint-disable-next-line no-underscore-dangle
-      const tag = item._getSaveTag({ save: "death" });
+      const tag = item._getSaveTag({ save: "poison" });
       expect(tag).not.to.be.undefined;
       expect(tag?.label).equal("Death Poison");
       expect(tag?.icon).equal("fa-skull");
@@ -448,7 +448,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
     });
     it("If saveTag exists, it is applied", async () => {
       const item: OseItem = await createWorldTestItem("spell");
-      await item.update({ system: { save: "death" } });
+      await item.update({ system: { save: "poison" } });
       const tagList = item.getAutoTagList();
       expect(tagList.length).equal(4);
       expect(tagList[3].label).equal("Death Poison");

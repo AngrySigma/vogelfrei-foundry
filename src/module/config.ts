@@ -17,7 +17,7 @@ import { CLASSIC_FANTASY_CLASSES } from "./classes/classic-fantasy-classes";
  */
 export type OseConfig = typeof OSE;
 
-/** An ability-score key: `str`, `int`, `wis`, `dex`, `con`, or `cha`. */
+/** An ability-score key: `strength`, `intelligence`, `willpower`, `agility`, `toughness`, or `leadership`. */
 export type Attribute = keyof OseConfig["scores"];
 
 /** An exploration skill key (e.g. listen at doors, open doors, forage, hunt). */
@@ -26,7 +26,7 @@ export type ExplorationSkill = keyof OseConfig["exploration_skills"];
 /** How a roll is compared against its target: exact result, at or above, or at or below. */
 export type RollType = keyof OseConfig["roll_type"];
 
-/** A saving-throw category key: `death`, `wand`, `paralysis`, `breath`, or `spell`. */
+/** A saving-throw category key: `poison`, `device`, `paralysis`, `breath`, or `magic`. */
 export type Save = keyof OseConfig["saves_long"];
 
 /** An armour category key: `unarmored`, `light`, `heavy`, or `shield`. */
@@ -79,21 +79,21 @@ export const OSE = {
   },
   /** Full ability-score names, as localization keys, keyed by ability. */
   scores: {
-    str: "VF.scores.str.long",
-    int: "VF.scores.int.long",
-    dex: "VF.scores.dex.long",
-    wis: "VF.scores.wis.long",
-    con: "VF.scores.con.long",
-    cha: "VF.scores.cha.long",
+    strength: "VF.scores.strength.long",
+    intelligence: "VF.scores.intelligence.long",
+    agility: "VF.scores.agility.long",
+    willpower: "VF.scores.willpower.long",
+    toughness: "VF.scores.toughness.long",
+    leadership: "VF.scores.leadership.long",
   },
   /** Abbreviated ability-score names, as localization keys, keyed by ability. */
   scores_short: {
-    str: "VF.scores.str.short",
-    int: "VF.scores.int.short",
-    dex: "VF.scores.dex.short",
-    wis: "VF.scores.wis.short",
-    con: "VF.scores.con.short",
-    cha: "VF.scores.cha.short",
+    strength: "VF.scores.strength.short",
+    intelligence: "VF.scores.intelligence.short",
+    agility: "VF.scores.agility.short",
+    willpower: "VF.scores.willpower.short",
+    toughness: "VF.scores.toughness.short",
+    leadership: "VF.scores.leadership.short",
   },
   /** Full exploration skill names, as localization keys, keyed by skill. */
   exploration_skills: {
@@ -121,19 +121,19 @@ export const OSE = {
   },
   /** Abbreviated saving-throw names, as localization keys, keyed by save category. */
   saves_short: {
-    death: "VF.saves.death.short",
-    wand: "VF.saves.wand.short",
+    poison: "VF.saves.poison.short",
+    device: "VF.saves.device.short",
     paralysis: "VF.saves.paralysis.short",
     breath: "VF.saves.breath.short",
-    spell: "VF.saves.spell.short",
+    magic: "VF.saves.magic.short",
   },
   /** Full saving-throw names, as localization keys, keyed by save category. */
   saves_long: {
-    death: "VF.saves.death.long",
-    wand: "VF.saves.wand.long",
+    poison: "VF.saves.poison.long",
+    device: "VF.saves.device.long",
     paralysis: "VF.saves.paralysis.long",
     breath: "VF.saves.breath.long",
-    spell: "VF.saves.spell.long",
+    magic: "VF.saves.magic.long",
   },
   /** Armour category names, as localization keys, keyed by category. */
   armor: {

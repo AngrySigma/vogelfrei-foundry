@@ -386,25 +386,25 @@ const OseDice = {
       },
       {
         action: "magic",
-        label: game.i18n.localize("VF.saves.magic.short"),
+        label: game.i18n.localize("VF.saveBonus.magic.short"),
         icon: "fas fa-magic",
         callback: (_event, button) => {
           rolled = true;
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.magic}`);
-          rollData.title += ` ${game.i18n.localize("VF.saves.magic.short")} (${rollData.data.roll.magic})`;
+          rollData.title += ` ${game.i18n.localize("VF.saveBonus.magic.short")} (${rollData.data.roll.magic})`;
           roll = OseDice.sendRoll(rollData);
         },
       },
       {
         action: "Poison",
-        label: game.i18n.localize("VF.saves.poison.short"),
+        label: game.i18n.localize("VF.saveBonus.poison.short"),
         icon: "fas fa-skull",
         callback: (event, button) => {
           rolled = true;
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.poison}`);
-          rollData.title += ` ${game.i18n.localize("VF.saves.poison.short")} (${rollData.data.roll.poison})`;
+          rollData.title += ` ${game.i18n.localize("VF.saveBonus.poison.short")} (${rollData.data.roll.poison})`;
           roll = OseDice.sendRoll(rollData);
         },
       },

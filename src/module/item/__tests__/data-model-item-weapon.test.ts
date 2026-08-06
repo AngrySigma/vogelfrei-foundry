@@ -143,13 +143,13 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
     it("A save tag is returned as expected", () => {
       const item = new OseDataModelWeapon();
-      item.save = "death";
+      item.save = "poison";
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
       expect(item.autoTags[0].label).equal("");
       expect(Object.keys(item.autoTags[2]).length).equal(2);
-      expect(item.autoTags[2].label).equal(game.i18n.localize("VF.saves.death.long"));
+      expect(item.autoTags[2].label).equal(game.i18n.localize("VF.saves.poison.long"));
       expect(item.autoTags[2].icon).equal("fa-skull");
     });
   });

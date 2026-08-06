@@ -38,7 +38,7 @@ export type OseClass = {
 
   /**
    * Minimum ability scores required to take the class, keyed by ability
-   * (`str`/`int`/`wis`/`dex`/`con`/`cha`). Abilities with no minimum are absent;
+   * (`strength`/`intelligence`/`willpower`/`agility`/`toughness`/`leadership`). Abilities with no minimum are absent;
    * an empty `{}` means the class has no ability-score requirement.
    */
   requirements: Partial<Record<Attribute, number>>;
@@ -59,7 +59,7 @@ export type OseClass = {
 
     /**
      * Saving-throw target numbers for this level, in OSE's canonical order:
-     * `[death, wand, paralysis, breath, spell]` — i.e. Death/Poison (D), Wands
+     * `[poison, device, paralysis, breath, spell]` — i.e. Death/Poison (D), Wands
      * (W), Paralysis/Petrification (P), Breath Attacks (B), Spells/Rods/Staves
      * (S). A roll meeting or exceeding the target succeeds.
      */

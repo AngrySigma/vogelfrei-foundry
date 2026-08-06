@@ -35,19 +35,19 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     it("has scores", async () => {
       const actor = await getMockActorKey(key);
       expect(actor?.system.scores).not.undefined;
-      expect(actor?.system.scores.str).not.undefined;
-      expect(actor?.system.scores.str.od).not.undefined;
-      expect(actor?.system.scores.int).not.undefined;
-      expect(actor?.system.scores.int.literacy).not.undefined;
-      expect(actor?.system.scores.int.spoken).not.undefined;
-      expect(actor?.system.scores.wis).not.undefined;
-      expect(actor?.system.scores.dex).not.undefined;
-      expect(actor?.system.scores.dex.init).not.undefined;
-      expect(actor?.system.scores.con).not.undefined;
-      expect(actor?.system.scores.cha).not.undefined;
-      expect(actor?.system.scores.cha.loyalty).not.undefined;
-      expect(actor?.system.scores.cha.retain).not.undefined;
-      expect(actor?.system.scores.cha.npc).not.undefined;
+      expect(actor?.system.scores.strength).not.undefined;
+      expect(actor?.system.scores.strength.od).not.undefined;
+      expect(actor?.system.scores.intelligence).not.undefined;
+      expect(actor?.system.scores.intelligence.literacy).not.undefined;
+      expect(actor?.system.scores.intelligence.spoken).not.undefined;
+      expect(actor?.system.scores.willpower).not.undefined;
+      expect(actor?.system.scores.agility).not.undefined;
+      expect(actor?.system.scores.agility.init).not.undefined;
+      expect(actor?.system.scores.toughness).not.undefined;
+      expect(actor?.system.scores.leadership).not.undefined;
+      expect(actor?.system.scores.leadership.loyalty).not.undefined;
+      expect(actor?.system.scores.leadership.retain).not.undefined;
+      expect(actor?.system.scores.leadership.npc).not.undefined;
     });
 
     it("has encumbrance", async () => {
@@ -152,10 +152,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
         field: "saves",
         subFields: [
           { subField: "breath", subSubField: ["value"] },
-          { subField: "death", subSubField: ["value"] },
+          { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
           { subField: "spell", subSubField: ["value"] },
-          { subField: "wand", subSubField: ["value"] },
+          { subField: "device", subSubField: ["value"] },
         ],
       },
     ];
@@ -210,10 +210,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     });
 
     it("adds str modifier", () => {
-      dataModel.scores.str = { mod: 10 };
+      dataModel.scores.strength = { mod: 10 };
       expect(dataModel.meleeMod).equal(10);
-      dataModel.scores.str.mod = 0;
-      expect(dataModel.scores.str.mod).equal(0);
+      dataModel.scores.strength.mod = 0;
+      expect(dataModel.scores.strength.mod).equal(0);
     });
 
     it("adds thac0 melee modifier", () => {
@@ -253,10 +253,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     });
 
     it("adds dex modifier", () => {
-      dataModel.scores.dex = { mod: 10 };
+      dataModel.scores.agility = { mod: 10 };
       expect(dataModel.rangedMod).equal(10);
-      dataModel.scores.dex.mod = 0;
-      expect(dataModel.scores.dex.mod).equal(0);
+      dataModel.scores.agility.mod = 0;
+      expect(dataModel.scores.agility.mod).equal(0);
     });
 
     it("adds thac0 missile modifier", () => {
@@ -274,12 +274,12 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
         {
           system: {
             scores: {
-              str: { value: 0 },
-              int: { value: 0 },
-              wis: { value: 0 },
-              dex: { value: 0 },
-              con: { value: 0 },
-              cha: { value: 0 },
+              strength: { value: 0 },
+              intelligence: { value: 0 },
+              willpower: { value: 0 },
+              agility: { value: 0 },
+              toughness: { value: 0 },
+              leadership: { value: 0 },
             },
           },
         },
@@ -294,12 +294,12 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
         {
           system: {
             scores: {
-              str: { value: 10 },
-              int: { value: 0 },
-              wis: { value: 0 },
-              dex: { value: 0 },
-              con: { value: 0 },
-              cha: { value: 0 },
+              strength: { value: 10 },
+              intelligence: { value: 0 },
+              willpower: { value: 0 },
+              agility: { value: 0 },
+              toughness: { value: 0 },
+              leadership: { value: 0 },
             },
           },
         },
@@ -315,10 +315,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
           system: {
             saves: {
               breath: { value: 0 },
-              death: { value: 0 },
+              poison: { value: 0 },
               paralysis: { value: 0 },
               spell: { value: 0 },
-              wand: { value: 0 },
+              device: { value: 0 },
             },
           },
         },
@@ -334,10 +334,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
           system: {
             saves: {
               breath: { value: 10 },
-              death: { value: 0 },
+              poison: { value: 0 },
               paralysis: { value: 0 },
               spell: { value: 0 },
-              wand: { value: 0 },
+              device: { value: 0 },
             },
           },
         },
@@ -734,14 +734,14 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
         await game.settings.set(game.system.id, "initiative", "individual");
         // Initialise the scores with a "standard" dexterity score
         dataModel.scores = new OseDataModelCharacterScores({
-          dex: { value: 9, bonus: 0, mod: 0 },
+          agility: { value: 9, bonus: 0, mod: 0 },
         });
       });
 
       it("returns 0 by default", () => {
         expect(dataModel.initiative.value).equal(0);
         expect(dataModel.initiative.mod).equal(0);
-        expect(dataModel.scores.dex.init).equal(0);
+        expect(dataModel.scores.agility.init).equal(0);
         expect(dataModel.init).equal(0);
       });
 
@@ -761,23 +761,23 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
 
       it("returns correctly with dex mod init set", async () => {
         // See the Ability Scores section in the OSE SRD for how dexterity affects initiative
-        dataModel.scores.dex = { value: 18 };
+        dataModel.scores.agility = { value: 18 };
         expect(dataModel.init).equal(2);
-        dataModel.scores.dex = { value: 9 };
-        expect(dataModel.scores.dex.init).equal(0);
+        dataModel.scores.agility = { value: 9 };
+        expect(dataModel.scores.agility.init).equal(0);
       });
 
       it("returns correctly with initiative value, mod, and dex mod init set", async () => {
         dataModel.initiative.value = 12;
         dataModel.initiative.mod = 10;
-        dataModel.scores.dex = { value: 18 };
+        dataModel.scores.agility = { value: 18 };
         expect(dataModel.init).equal(24);
         dataModel.initiative.value = 0;
         expect(dataModel.initiative.value).equal(0);
         dataModel.initiative.mod = 0;
         expect(dataModel.initiative.mod).equal(0);
-        dataModel.scores.dex = { value: 9 };
-        expect(dataModel.scores.dex.init).equal(0);
+        dataModel.scores.agility = { value: 9 };
+        expect(dataModel.scores.agility.init).equal(0);
       });
     });
   });

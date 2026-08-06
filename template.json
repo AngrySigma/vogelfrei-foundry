@@ -1,6 +1,9 @@
 {
   "Actor": {
-    "types": ["character", "monster"],
+    "types": [
+      "character",
+      "monster"
+    ],
     "templates": {
       "common": {
         "retainer": {
@@ -30,10 +33,10 @@
           }
         },
         "saves": {
-          "death": {
+          "poison": {
             "value": 0
           },
-          "wand": {
+          "device": {
             "value": 0
           },
           "paralysis": {
@@ -42,7 +45,7 @@
           "breath": {
             "value": 0
           },
-          "spell": {
+          "magic": {
             "value": 0
           }
         },
@@ -85,7 +88,10 @@
       }
     },
     "character": {
-      "templates": ["common", "spellcaster"],
+      "templates": [
+        "common",
+        "spellcaster"
+      ],
       "config": {
         "movementAuto": true
       },
@@ -115,27 +121,27 @@
         "hn": 1
       },
       "scores": {
-        "str": {
+        "strength": {
           "value": 0,
           "bonus": 0
         },
-        "int": {
+        "intelligence": {
           "value": 0,
           "bonus": 0
         },
-        "wis": {
+        "willpower": {
           "value": 0,
           "bonus": 0
         },
-        "dex": {
+        "agility": {
           "value": 0,
           "bonus": 0
         },
-        "con": {
+        "toughness": {
           "value": 0,
           "bonus": 0
         },
-        "cha": {
+        "leadership": {
           "value": 0,
           "bonus": 0
         }
@@ -145,7 +151,10 @@
       }
     },
     "monster": {
-      "templates": ["common", "spellcaster"],
+      "templates": [
+        "common",
+        "spellcaster"
+      ],
       "details": {
         "biography": "",
         "alignment": "",
@@ -165,7 +174,14 @@
     }
   },
   "Item": {
-    "types": ["item", "weapon", "armor", "spell", "ability", "container"],
+    "types": [
+      "item",
+      "weapon",
+      "armor",
+      "spell",
+      "ability",
+      "container"
+    ],
     "templates": {
       "common": {
         "description": "",
@@ -189,16 +205,27 @@
       }
     },
     "item": {
-      "templates": ["common", "physical"],
+      "templates": [
+        "common",
+        "physical"
+      ],
       "treasure": false,
       "isContainer": false
     },
     "container": {
-      "templates": ["common", "physical"],
+      "templates": [
+        "common",
+        "physical"
+      ],
       "itemIds": []
     },
     "weapon": {
-      "templates": ["common", "physical", "rollable", "equippable"],
+      "templates": [
+        "common",
+        "physical",
+        "rollable",
+        "equippable"
+      ],
       "range": {
         "short": 0,
         "medium": 0,
@@ -217,13 +244,24 @@
       }
     },
     "armor": {
-      "templates": ["common", "physical", "equippable"],
-      "ac": { "value": 9},
-      "aac": { "value": 10 },
+      "templates": [
+        "common",
+        "physical",
+        "equippable"
+      ],
+      "ac": {
+        "value": 9
+      },
+      "aac": {
+        "value": 10
+      },
       "type": "light"
     },
     "spell": {
-      "templates": ["common", "rollable"],
+      "templates": [
+        "common",
+        "rollable"
+      ],
       "lvl": 1,
       "class": "Magic-User",
       "duration": "",
@@ -233,7 +271,10 @@
       "cast": 0
     },
     "ability": {
-      "templates": ["common", "rollable"],
+      "templates": [
+        "common",
+        "rollable"
+      ],
       "pattern": "transparent",
       "requirements": "",
       "roll": "",

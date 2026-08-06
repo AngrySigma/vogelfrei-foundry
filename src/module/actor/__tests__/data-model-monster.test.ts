@@ -123,10 +123,10 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
         field: "saves",
         subFields: [
           { subField: "breath", subSubField: ["value"] },
-          { subField: "death", subSubField: ["value"] },
+          { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
           { subField: "spell", subSubField: ["value"] },
-          { subField: "wand", subSubField: ["value"] },
+          { subField: "device", subSubField: ["value"] },
         ],
       },
     ];
@@ -154,10 +154,10 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
           system: {
             saves: {
               breath: { value: 0 },
-              death: { value: 0 },
+              poison: { value: 0 },
               paralysis: { value: 0 },
               spell: { value: 0 },
-              wand: { value: 0 },
+              device: { value: 0 },
             },
           },
         },
@@ -173,10 +173,10 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
           system: {
             saves: {
               breath: { value: 10 },
-              death: { value: 0 },
+              poison: { value: 0 },
               paralysis: { value: 0 },
               spell: { value: 0 },
-              wand: { value: 0 },
+              device: { value: 0 },
             },
           },
         },

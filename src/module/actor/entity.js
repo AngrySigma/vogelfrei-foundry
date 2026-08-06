@@ -155,10 +155,10 @@ export default class OseActor extends Actor {
       "system.thac0.value": thac0,
       "system.thac0.bba": 19 - thac0,
       "system.saves": {
-        death: {
+        poison: {
           value: saves.d,
         },
-        wand: {
+        device: {
           value: saves.w,
         },
         paralysis: {
@@ -167,7 +167,7 @@ export default class OseActor extends Actor {
         breath: {
           value: saves.b,
         },
-        spell: {
+        magic: {
           value: saves.s,
         },
       },
@@ -194,7 +194,7 @@ export default class OseActor extends Actor {
       roll: {
         type: "above",
         target: actorData.saves[save].value,
-        magic: actorType === "character" ? actorData.scores.wis.mod + actorData.details.magic.bonus : 0,
+        magic: actorType === "character" ? actorData.scores.willpower.mod + actorData.details.magic.bonus : 0,
         poison: actorType === "character" ? actorData.details.magic.bonus : 0,
       },
       details: game.i18n.format("VF.roll.details.save", { save: label }),
@@ -352,7 +352,7 @@ export default class OseActor extends Actor {
       // A character always gains at least 1 hit point per Hit Die,
       // regardless of CON modifier.
       rollParts = [
-        `max(${actorData.hp.hd} + ${actorData.scores.con.mod * actorData.details.level}, ${actorData.hp.hd[0]})`,
+        `max(${actorData.hp.hd} + ${actorData.scores.toughness.mod * actorData.details.level}, ${actorData.hp.hd[0]})`,
       ];
     }
 
@@ -469,8 +469,8 @@ export default class OseActor extends Actor {
     }
 
     // Add Str to damage
-    if (attData.roll?.type === "melee" && data.scores.str.mod) {
-      dmgParts.push(data.scores.str.mod);
+    if (attData.roll?.type === "melee" && data.scores.strength.mod) {
+      dmgParts.push(data.scores.strength.mod);
     }
 
     // Damage roll
@@ -542,15 +542,15 @@ export default class OseActor extends Actor {
     if (ascending && data.thac0.bba) rollParts.push(data.thac0.bba);
 
     // for each type of attack, add the Tweaks bonus
-    // and str/dex modifier only if it's non-zero
+    // and Strength/Agility modifier only if it's non-zero
     let attackMods = [];
 
-    if (options.type === "melee") attackMods = [data.scores.str.mod, data.thac0.mod.melee];
+    if (options.type === "melee") attackMods = [data.scores.strength.mod, data.thac0.mod.melee];
 
     dmgParts.push(...removeFalsyElements(attackMods));
 
     // Add missile mod to attack roll only (missile attacks don't get bonus damage)
-    if (options.type === "missile") attackMods = [data.scores.dex.mod, data.thac0.mod.missile];
+    if (options.type === "missile") attackMods = [data.scores.agility.mod, data.thac0.mod.missile];
 
     // Add weapon bonus to attack roll only (already added to dmgParts)
     if (attData.item) attackMods.push(attData.item?.system?.bonus);

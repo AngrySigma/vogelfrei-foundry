@@ -12,7 +12,7 @@ export const options = {
 export default ({ describe, it, expect }: QuenchMethods) => {
   // An array from 0-
   const scoreSpread = Array.from({ length: 21 }, (_el, idx) => idx);
-  const scoreKeys = ["str", "int", "wis", "dex", "con", "cha"];
+  const scoreKeys = ["strength", "intelligence", "willpower", "agility", "toughness", "leadership"];
   const tables = [
     OseDataModelCharacterScores.standardAttributeMods,
     OseDataModelCharacterScores.cappedAttributeMods,
@@ -49,22 +49,22 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   describe("Standard attribute modifiers", () => spreadToModTests("Attribute"));
 
   describe("Strength modifiers", () => {
-    describe("Open Doors", () => scoreSpread.map((score) => buildTestCases(score, "str", "od", 2)));
+    describe("Open Doors", () => scoreSpread.map((score) => buildTestCases(score, "strength", "od", 2)));
   });
 
   describe("Intelligence modifiers", () => {
-    describe("Literacy", () => scoreSpread.map((score) => buildTestCases(score, "int", "literacy", 3)));
-    describe("Spoken Languages", () => scoreSpread.map((score) => buildTestCases(score, "int", "spoken", 4)));
+    describe("Literacy", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "literacy", 3)));
+    describe("Spoken Languages", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "spoken", 4)));
   });
 
   describe("Dexterity modifiers", () => {
-    describe("Initiative", () => scoreSpread.map((score) => buildTestCases(score, "dex", "init", 1)));
+    describe("Initiative", () => scoreSpread.map((score) => buildTestCases(score, "agility", "init", 1)));
   });
 
   describe("Charisma modifiers", () => {
-    describe("NPC Reaction", () => scoreSpread.map((score) => buildTestCases(score, "cha", "npc", 1)));
-    describe("Loyalty", () => scoreSpread.map((score) => buildTestCasesWithModifiers(score, "cha", "retain", 0, 4)));
+    describe("NPC Reaction", () => scoreSpread.map((score) => buildTestCases(score, "leadership", "npc", 1)));
+    describe("Loyalty", () => scoreSpread.map((score) => buildTestCasesWithModifiers(score, "leadership", "retain", 0, 4)));
     describe("Number of Retainers", () =>
-      scoreSpread.map((score) => buildTestCasesWithModifiers(score, "cha", "loyalty", 0, 7)));
+      scoreSpread.map((score) => buildTestCasesWithModifiers(score, "leadership", "loyalty", 0, 7)));
   });
 };

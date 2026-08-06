@@ -80,10 +80,10 @@ export default class OseDataModelCharacterEncumbranceItemBased
   #weightMod = 0;
 
   // eslint-disable-next-line sonarjs/cognitive-complexity, @typescript-eslint/no-unused-vars
-  constructor(max = 16, items: Item[] = [], options: { scores?: { str?: { mod?: number } } } = {}) {
+  constructor(max = 16, items: Item[] = [], options: { scores?: { strength?: { mod?: number } } } = {}) {
     super(OseDataModelCharacterEncumbranceItemBased.type, max);
     if (game.settings.get(game.system.id, "encumbranceItemStrengthMod")) {
-      this.#weightMod = Math.max(0, options.scores?.str?.mod ?? 0);
+      this.#weightMod = Math.max(0, options.scores?.strength?.mod ?? 0);
     } else {
       this.#weightMod = 0;
     }

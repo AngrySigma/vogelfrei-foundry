@@ -1,67 +1,67 @@
 <form autocomplete="off">
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.str.long'}}</label>
+    <label>{{localize 'VF.scores.strength.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.Melee'}} ({{mod @root.system.scores.str.mod}})
+        {{localize 'VF.Melee'}} ({{mod @root.system.scores.strength.mod}})
       </li>
       <li>
-        {{localize 'VF.exploration.od.long'}} ({{@root.system.scores.str.od}} in 6)
+        {{localize 'VF.exploration.od.long'}} ({{@root.system.scores.strength.od}} in 6)
       </li>
     </ol>
   </div>
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.int.long'}}</label>
+    <label>{{localize 'VF.scores.intelligence.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.SpokenLanguages'}} ({{localize @root.system.scores.int.spoken}})
+        {{localize 'VF.SpokenLanguages'}} ({{localize @root.system.scores.intelligence.spoken}})
       </li>
       <li>
-        {{localize 'VF.Literacy'}} ({{localize @root.system.scores.int.literacy}})
+        {{localize 'VF.Literacy'}} ({{localize @root.system.scores.intelligence.literacy}})
       </li>
     </ol>
   </div>
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.wis.long'}}</label>
+    <label>{{localize 'VF.scores.willpower.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.saves.magic.long'}} ({{mod @root.system.scores.wis.mod}})
+        {{localize 'VF.saveBonus.magic.long'}} ({{mod @root.system.scores.willpower.mod}})
       </li>
     </ol>
   </div>
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.dex.long'}}</label>
+    <label>{{localize 'VF.scores.agility.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.Missile'}} ({{mod @root.system.scores.dex.mod}})
+        {{localize 'VF.Missile'}} ({{mod @root.system.scores.agility.mod}})
       </li>
       <li>
-        {{localize 'VF.Initiative'}} ({{mod @root.system.scores.dex.init}})
+        {{localize 'VF.Initiative'}} ({{mod @root.system.scores.agility.init}})
       </li>
       <li>
-        {{localize 'VF.ArmorClass'}} ({{mod @root.system.scores.dex.mod}})
+        {{localize 'VF.ArmorClass'}} ({{mod @root.system.scores.agility.mod}})
       </li>
     </ol>
   </div>
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.con.long'}}</label>
+    <label>{{localize 'VF.scores.toughness.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.Health'}} ({{mod @root.system.scores.con.mod}})
+        {{localize 'VF.Health'}} ({{mod @root.system.scores.toughness.mod}})
       </li>
     </ol>
   </div>
   <div class="attribute-bonuses">
-    <label>{{localize 'VF.scores.cha.long'}}</label>
+    <label>{{localize 'VF.scores.leadership.long'}}</label>
     <ol>
       <li>
-        {{localize 'VF.NPCReaction'}} ({{mod @root.system.scores.cha.npc}})
+        {{localize 'VF.NPCReaction'}} ({{mod @root.system.scores.leadership.npc}})
       </li>
       <li>
-        {{localize 'VF.RetainersMax'}} ({{add @root.system.scores.cha.mod 4}})
+        {{localize 'VF.RetainersMax'}} ({{add @root.system.scores.leadership.mod 4}})
       </li>
       <li>
-        {{localize 'VF.Loyalty'}} ({{add @root.system.scores.cha.mod 7}})
+        {{localize 'VF.Loyalty'}} ({{add @root.system.scores.leadership.mod 7}})
       </li>
     </ol>
   </div>

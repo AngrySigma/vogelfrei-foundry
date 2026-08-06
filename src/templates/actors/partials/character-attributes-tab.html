@@ -2,57 +2,57 @@
     {{!-- Scores --}}
     <div class="attribute-group">
         <ul class="attributes">
-            <li class="attribute ability-score" data-score="str">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.str.long' }}">
-                    <a>{{ localize "VF.scores.str.short" }}</a>
+            <li class="attribute ability-score" data-score="strength">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.strength.long' }}">
+                    <a>{{ localize "VF.scores.strength.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.str.value" type="text" value="{{system.scores.str.value}}" placeholder="0"
+                    <input name="system.scores.strength.value" type="text" value="{{system.scores.strength.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
-            <li class="attribute ability-score" data-score="int">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.int.long' }}">
-                    <a>{{ localize "VF.scores.int.short" }}</a>
+            <li class="attribute ability-score" data-score="intelligence">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.intelligence.long' }}">
+                    <a>{{ localize "VF.scores.intelligence.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.int.value" type="text" value="{{system.scores.int.value}}" placeholder="0"
+                    <input name="system.scores.intelligence.value" type="text" value="{{system.scores.intelligence.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
-            <li class="attribute ability-score" data-score="wis">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.wis.long' }}">
-                    <a>{{ localize "VF.scores.wis.short" }}</a>
+            <li class="attribute ability-score" data-score="willpower">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.willpower.long' }}">
+                    <a>{{ localize "VF.scores.willpower.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.wis.value" type="text" value="{{system.scores.wis.value}}" placeholder="0"
+                    <input name="system.scores.willpower.value" type="text" value="{{system.scores.willpower.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
-            <li class="attribute ability-score" data-score="dex">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.dex.long' }}">
-                    <a>{{ localize "VF.scores.dex.short" }}</a>
+            <li class="attribute ability-score" data-score="agility">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.agility.long' }}">
+                    <a>{{ localize "VF.scores.agility.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.dex.value" type="text" value="{{system.scores.dex.value}}" placeholder="0"
+                    <input name="system.scores.agility.value" type="text" value="{{system.scores.agility.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
-            <li class="attribute ability-score" data-score="con">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.con.long' }}">
-                    <a>{{ localize "VF.scores.con.short" }}</a>
+            <li class="attribute ability-score" data-score="toughness">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.toughness.long' }}">
+                    <a>{{ localize "VF.scores.toughness.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.con.value" type="text" value="{{system.scores.con.value}}" placeholder="0"
+                    <input name="system.scores.toughness.value" type="text" value="{{system.scores.toughness.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
-            <li class="attribute ability-score" data-score="cha">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.cha.long' }}">
-                    <a>{{ localize "VF.scores.cha.short" }}</a>
+            <li class="attribute ability-score" data-score="leadership">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.scores.leadership.long' }}">
+                    <a>{{ localize "VF.scores.leadership.short" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.scores.cha.value" type="text" value="{{system.scores.cha.value}}" placeholder="0"
+                    <input name="system.scores.leadership.value" type="text" value="{{system.scores.leadership.value}}" placeholder="0"
                         data-dtype="Number" />
                 </div>
             </li>
@@ -114,7 +114,7 @@
                     <h4 class="attribute-name box-title" title="{{ localize 'VF.Initiative' }}">
                         {{ localize "VF.InitiativeShort" }}</h4>
                     <div class="attribute-value"
-                        title="{{localize 'VF.scores.dex.long'}}({{system.scores.dex.init}}) + {{localize 'VF.Modifier'}}({{system.initiative.mod}})">
+                        title="{{localize 'VF.scores.agility.long'}}({{system.scores.agility.init}}) + {{localize 'VF.Modifier'}}({{system.initiative.mod}})">
                         {{system.init}}
                     </div>
                 </li>
@@ -129,7 +129,7 @@
                     </h4>
                     <div class="flexrow">
                         <div class="attribute-value"
-                            title="{{localize 'VF.scores.str.long'}}({{system.scores.str.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.melee}})">
+                            title="{{localize 'VF.scores.strength.long'}}({{system.scores.strength.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.melee}})">
                             {{system.meleeMod}}
                         </div>
                     </div>
@@ -163,7 +163,7 @@
                     </h4>
                     <div class="flexrow">
                         <div class="attribute-value"
-                            title="{{localize 'VF.scores.dex.long'}}({{system.scores.dex.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.missile}})">
+                            title="{{localize 'VF.scores.agility.long'}}({{system.scores.agility.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.missile}})">
                             {{system.rangedMod}}
                         </div>
                     </div>
@@ -204,20 +204,20 @@
     {{!-- Saving throws --}}
     <div class="attribute-group">
         <ul class="attributes">
-            <li class="attribute saving-throw" data-save="death">
+            <li class="attribute saving-throw" data-save="poison">
                 <h4 class="attribute-name box-title">
-                    <a>{{ localize "VF.saves.death.long" }}</a>
+                    <a>{{ localize "VF.saves.poison.long" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.saves.death.value" type="text" value="{{system.saves.death.value}}" placeholder="0"
+                    <input name="system.saves.poison.value" type="text" value="{{system.saves.poison.value}}" placeholder="0"
                         data-dtype="Number" />
             </li>
-            <li class="attribute saving-throw" data-save="wand">
+            <li class="attribute saving-throw" data-save="device">
                 <h4 class="attribute-name box-title">
-                    <a>{{ localize "VF.saves.wand.long" }}</a>
+                    <a>{{ localize "VF.saves.device.long" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.saves.wand.value" type="text" value="{{system.saves.wand.value}}" placeholder="0"
+                    <input name="system.saves.device.value" type="text" value="{{system.saves.device.value}}" placeholder="0"
                         data-dtype="Number" />
             </li>
             <li class="attribute saving-throw" data-save="paralysis">
@@ -236,19 +236,19 @@
                     <input name="system.saves.breath.value" type="text" value="{{system.saves.breath.value}}"
                         placeholder="0" data-dtype="Number" />
             </li>
-            <li class="attribute saving-throw" data-save="spell">
+            <li class="attribute saving-throw" data-save="magic">
                 <h4 class="attribute-name box-title">
-                    <a>{{ localize "VF.saves.spell.long" }}</a>
+                    <a>{{ localize "VF.saves.magic.long" }}</a>
                 </h4>
                 <div class="attribute-value">
-                    <input name="system.saves.spell.value" type="text" value="{{system.saves.spell.value}}"
+                    <input name="system.saves.magic.value" type="text" value="{{system.saves.magic.value}}"
                         placeholder="0" />
             </li>
             <li class="attribute saving-throw">
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.saves.magic.long' }}">
-                    {{ localize "VF.saves.magic.long"}}</h4>
-                <div class="attribute-value flat" title="{{localize 'VF.scores.wis.long'}}({{system.scores.wis.mod}})+{{system.details.magic.bonus}}">
-                    {{add system.scores.wis.mod system.details.magic.bonus}}
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.saveBonus.magic.long' }}">
+                    {{ localize "VF.saveBonus.magic.long"}}</h4>
+                <div class="attribute-value flat" title="{{localize 'VF.scores.willpower.long'}}({{system.scores.willpower.mod}})+{{system.details.magic.bonus}}">
+                    {{add system.scores.willpower.mod system.details.magic.bonus}}
                 </div>
             </li>
         </ul>

@@ -21,7 +21,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
         significantTreasure: game.settings.get(game.system.id, "significantTreasure"),
         scores: this.scores,
       },
-      this.scores.str.mod,
+      this.scores.strength.mod,
     );
 
     this.movement = new OseDataModelCharacterMove(this.encumbrance, this.config.movementAuto, this.movement.base);
@@ -31,14 +31,14 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
     this.ac = new OseDataModelCharacterAC(
       false,
       getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped),
-      this.scores.dex.mod,
+      this.scores.agility.mod,
       this.ac.mod,
     );
 
     this.aac = new OseDataModelCharacterAC(
       true,
       getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped),
-      this.scores.dex.mod,
+      this.scores.agility.mod,
       this.aac.mod,
     );
 
@@ -71,12 +71,12 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       languages: new ObjectField(),
       saves: new SchemaField({
         breath: new SchemaField({ value: new NumberField({ integer: true }) }),
-        death: new SchemaField({ value: new NumberField({ integer: true }) }),
+        poison: new SchemaField({ value: new NumberField({ integer: true }) }),
         paralysis: new SchemaField({
           value: new NumberField({ integer: true }),
         }),
-        spell: new SchemaField({ value: new NumberField({ integer: true }) }),
-        wand: new SchemaField({ value: new NumberField({ integer: true }) }),
+        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
+        device: new SchemaField({ value: new NumberField({ integer: true }) }),
       }),
       exploration: new SchemaField({
         ft: new NumberField({ integer: true, positive: true, initial: 1 }),
@@ -134,17 +134,17 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
 
   get meleeMod() {
     const ascendingAcMod = this.usesAscendingAC ? this.thac0.bba || 0 : 0;
-    return (this.scores.str?.mod || 0) + (this.thac0?.mod?.melee || 0) + ascendingAcMod;
+    return (this.scores.strength?.mod || 0) + (this.thac0?.mod?.melee || 0) + ascendingAcMod;
   }
 
   get rangedMod() {
     const ascendingAcMod = this.usesAscendingAC ? this.thac0.bba || 0 : 0;
-    return (this.scores.dex?.mod || 0) + (this.thac0?.mod?.missile || 0) + ascendingAcMod;
+    return (this.scores.agility?.mod || 0) + (this.thac0?.mod?.missile || 0) + ascendingAcMod;
   }
 
   get isNew() {
-    const { str, int, wis, dex, con, cha } = this.scores;
-    return ![str, int, wis, dex, con, cha].reduce((acc, el) => acc + el.value, 0);
+    const { strength, intelligence, willpower, agility, toughness, leadership } = this.scores;
+    return ![strength, intelligence, willpower, agility, toughness, leadership].reduce((acc, el) => acc + el.value, 0);
   }
 
   get containers() {
@@ -204,6 +204,6 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
   get init() {
     const group = game.settings.get(game.system.id, "initiative") !== "group";
 
-    return group ? (this.initiative.value || 0) + (this.initiative.mod || 0) + this.scores.dex.init : 0;
+    return group ? (this.initiative.value || 0) + (this.initiative.mod || 0) + this.scores.agility.init : 0;
   }
 }

@@ -64,11 +64,11 @@
             {{/unless}} {{#if (eq e.type 'character')}}
             <div class="field-short" title="{{localize 'VF.Melee'}}">
               <i class="fas fa-fist-raised"></i>
-              {{add e.system.scores.str.mod e.system.thac0.mod.melee}}
+              {{add e.system.scores.strength.mod e.system.thac0.mod.melee}}
             </div>
             <div class="field-short" title="{{localize 'VF.Missile'}}">
               <i class="fas fa-bullseye"></i>
-              {{add e.system.scores.dex.mod e.system.thac0.mod.missile}}
+              {{add e.system.scores.agility.mod e.system.thac0.mod.missile}}
             </div>
             {{/if}}
             <div class="field-short flex2">
@@ -102,9 +102,9 @@
               {{/each}} {{#if (eq e.type 'character')}}<span
                 ><i
                   class="fas fa-magic"
-                  title="{{localize 'VF.saves.magic.long'}}"
+                  title="{{localize 'VF.saveBonus.magic.long'}}"
                 ></i
-                >{{mod e.system.scores.wis.mod}}</span
+                >{{mod e.system.scores.willpower.mod}}</span
               >{{/if}}
             </div>
           </div>

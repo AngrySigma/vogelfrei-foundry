@@ -85,12 +85,12 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
       languages: new ObjectField(),
       saves: new SchemaField({
         breath: new SchemaField({ value: new NumberField({ integer: true }) }),
-        death: new SchemaField({ value: new NumberField({ integer: true }) }),
+        poison: new SchemaField({ value: new NumberField({ integer: true }) }),
         paralysis: new SchemaField({
           value: new NumberField({ integer: true }),
         }),
-        spell: new SchemaField({ value: new NumberField({ integer: true }) }),
-        wand: new SchemaField({ value: new NumberField({ integer: true }) }),
+        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
+        device: new SchemaField({ value: new NumberField({ integer: true }) }),
       }),
       retainer: new SchemaField({
         enabled: new BooleanField(),

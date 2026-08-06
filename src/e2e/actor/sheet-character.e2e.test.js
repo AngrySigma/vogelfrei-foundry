@@ -186,27 +186,27 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
       });
 
       describe("Strength", () => {
-        describe("Can roll", () => canRollCheck("str"));
+        describe("Can roll", () => canRollCheck("strength"));
       });
 
       describe("Intelligence", () => {
-        describe("Can roll", () => canRollCheck("int"));
+        describe("Can roll", () => canRollCheck("intelligence"));
       });
 
       describe("Wisdom", () => {
-        describe("Can roll", () => canRollCheck("wis"));
+        describe("Can roll", () => canRollCheck("willpower"));
       });
 
       describe("Dexterity", () => {
-        describe("Can roll", () => canRollCheck("dex"));
+        describe("Can roll", () => canRollCheck("agility"));
       });
 
       describe("Constitution", () => {
-        describe("Can roll", () => canRollCheck("con"));
+        describe("Can roll", () => canRollCheck("toughness"));
       });
 
       describe("Charisma", () => {
-        describe("Can roll", () => canRollCheck("cha"));
+        describe("Can roll", () => canRollCheck("leadership"));
       });
     });
 
@@ -223,11 +223,11 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
       });
 
       describe("Death/Poison", () => {
-        describe("Can roll", () => canRollSave("death"));
+        describe("Can roll", () => canRollSave("poison"));
       });
 
       describe("Wands", () => {
-        describe("Can roll", () => canRollSave("wand"));
+        describe("Can roll", () => canRollSave("device"));
       });
 
       describe("Paralysis/Petrify", () => {

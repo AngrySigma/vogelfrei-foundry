@@ -65,12 +65,12 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
   // @todo: this is not tested separately as a dialog, should we test it more?
   describe("generateScores()", () => {
     const scores = {
-      str: 0,
-      int: 0,
-      dex: 0,
-      wis: 0,
-      con: 0,
-      cha: 0,
+      strength: 0,
+      intelligence: 0,
+      agility: 0,
+      willpower: 0,
+      toughness: 0,
+      leadership: 0,
     };
 
     it("renders the character creator", async () => {
@@ -136,12 +136,12 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       $(".creator footer button").trigger("submit");
       await waitForInput();
 
-      expect(actor?.system.scores.str.value).equal(scores.str);
-      expect(actor?.system.scores.dex.value).equal(scores.dex);
-      expect(actor?.system.scores.wis.value).equal(scores.wis);
-      expect(actor?.system.scores.int.value).equal(scores.int);
-      expect(actor?.system.scores.con.value).equal(scores.con);
-      expect(actor?.system.scores.cha.value).equal(scores.cha);
+      expect(actor?.system.scores.strength.value).equal(scores.strength);
+      expect(actor?.system.scores.agility.value).equal(scores.agility);
+      expect(actor?.system.scores.willpower.value).equal(scores.willpower);
+      expect(actor?.system.scores.intelligence.value).equal(scores.intelligence);
+      expect(actor?.system.scores.toughness.value).equal(scores.toughness);
+      expect(actor?.system.scores.leadership.value).equal(scores.leadership);
     });
 
     // @todo: Auto-roll testing
@@ -274,12 +274,12 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       await actor?.update({
         system: {
           scores: {
-            str: { value: 10 },
-            dex: { value: 10 },
-            int: { value: 10 },
-            con: { value: 10 },
-            wis: { value: 10 },
-            cha: { value: 10 },
+            strength: { value: 10 },
+            agility: { value: 10 },
+            intelligence: { value: 10 },
+            toughness: { value: 10 },
+            willpower: { value: 10 },
+            leadership: { value: 10 },
           },
         },
       });
@@ -306,12 +306,12 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       await actor?.update({
         system: {
           scores: {
-            str: { value: 10 },
-            dex: { value: 10 },
-            int: { value: 10 },
-            con: { value: 10 },
-            wis: { value: 10 },
-            cha: { value: 10 },
+            strength: { value: 10 },
+            agility: { value: 10 },
+            intelligence: { value: 10 },
+            toughness: { value: 10 },
+            willpower: { value: 10 },
+            leadership: { value: 10 },
           },
         },
       });

@@ -37,12 +37,12 @@ export default class OseCharacterCreator extends FormApplication {
     data.user = game.user;
     data.config = CONFIG.OSE;
     this.counters = {
-      str: 0,
-      wis: 0,
-      dex: 0,
-      int: 0,
-      cha: 0,
-      con: 0,
+      strength: 0,
+      willpower: 0,
+      agility: 0,
+      intelligence: 0,
+      leadership: 0,
+      toughness: 0,
       gold: 0,
     };
     this.stats = {
@@ -137,7 +137,7 @@ export default class OseCharacterCreator extends FormApplication {
     });
 
     html.find("a.auto-roll").click(async (ev) => {
-      const stats = ["str", "int", "dex", "wis", "con", "cha"];
+      const stats = ["strength", "intelligence", "agility", "willpower", "toughness", "leadership"];
       for (const char of stats) {
         const r = await this.rollScore(char, { event: ev, skipMessage: true });
         this.scores[char] = { value: r.total };

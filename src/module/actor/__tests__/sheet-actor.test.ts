@@ -809,7 +809,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
   // @todo: Refactor to entity and just use event parsing in sheet
   describe("_rollSave(event)", () => {
-    const saves = ["death", "wand", "paralysis", "breath", "spell"];
+    const saves = ["poison", "device", "paralysis", "breath", "spell"];
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const clickSave = async (save: string) => {

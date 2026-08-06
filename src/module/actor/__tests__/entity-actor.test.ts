@@ -214,7 +214,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: -99,
         high: 1,
-        death: 14,
+        poison: 14,
         wands: 15,
         paralysis: 16,
         breath: 17,
@@ -223,7 +223,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 1,
         high: 3,
-        death: 12,
+        poison: 12,
         wands: 13,
         paralysis: 14,
         breath: 15,
@@ -232,7 +232,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 4,
         high: 6,
-        death: 10,
+        poison: 10,
         wands: 11,
         paralysis: 12,
         breath: 13,
@@ -241,7 +241,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 7,
         high: 9,
-        death: 8,
+        poison: 8,
         wands: 9,
         paralysis: 10,
         breath: 10,
@@ -250,7 +250,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 10,
         high: 12,
-        death: 6,
+        poison: 6,
         wands: 7,
         paralysis: 8,
         breath: 8,
@@ -259,7 +259,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 10,
         high: 12,
-        death: 6,
+        poison: 6,
         wands: 7,
         paralysis: 8,
         breath: 8,
@@ -268,7 +268,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 13,
         high: 15,
-        death: 4,
+        poison: 4,
         wands: 5,
         paralysis: 6,
         breath: 5,
@@ -277,7 +277,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 16,
         high: 18,
-        death: 2,
+        poison: 2,
         wands: 3,
         paralysis: 4,
         breath: 3,
@@ -286,7 +286,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 19,
         high: 21,
-        death: 2,
+        poison: 2,
         wands: 2,
         paralysis: 2,
         breath: 2,
@@ -295,7 +295,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       {
         low: 22,
         high: 99,
-        death: 2,
+        poison: 2,
         wands: 2,
         paralysis: 2,
         breath: 2,
@@ -333,11 +333,11 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       actor?.generateSave(`${hd}`);
 
       it(`hd ${hd} generates correct saves`, () => {
-        expect(actor?.system.saves.death.value).equal(savesData?.death);
-        expect(actor?.system.saves.wand.value).equal(savesData?.wands);
+        expect(actor?.system.saves.poison.value).equal(savesData?.poison);
+        expect(actor?.system.saves.device.value).equal(savesData?.wands);
         expect(actor?.system.saves.paralysis.value).equal(savesData?.paralysis);
         expect(actor?.system.saves.breath.value).equal(savesData?.breath);
-        expect(actor?.system.saves.spell.value).equal(savesData?.spell);
+        expect(actor?.system.saves.magic.value).equal(savesData?.spell);
       });
 
       it(`hd ${hd} generates correct thac0`, () => {
@@ -382,7 +382,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await trashChat();
     });
 
-    const saves = ["death", "wand", "paralysis", "breath", "spell"];
+    const saves = ["poison", "device", "paralysis", "breath", "spell"];
     saves.forEach((save) => {
       it(`is functional for ${save} saves on character`, async () => {
         const actor = (await createMockActor("character")) as OseActor;
@@ -477,7 +477,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
   });
 
   describe("rollCheck(score, options)", () => {
-    const scores = ["str", "int", "dex", "wis", "con", "cha"];
+    const scores = ["strength", "intelligence", "agility", "willpower", "toughness", "leadership"];
 
     afterEach(async () => {
       await trashChat();
@@ -534,7 +534,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
           );
           expect(roll.terms[0].rolls[0].terms[1].operator).equal(modSign);
           expect(roll.terms[0].rolls[0].terms[2].expression).equal((modUnsigned * level).toString());
-          expect(actor?.system.scores.con.mod).equal(conMod);
+          expect(actor?.system.scores.toughness.mod).equal(conMod);
           await actor?.delete();
         });
       });
@@ -655,7 +655,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     it("Adds strength bonus if melee damage roll", async () => {
       const actor = (await createMockActor("character")) as OseActor;
       await actor?.update({ system: { scores: { str: { value: 1 } } } });
-      expect(actor.system.scores.str.value).equal(1);
+      expect(actor.system.scores.strength.value).equal(1);
       expect(game.messages?.size).equal(0);
       await actor.rollDamage({
         label: "test",

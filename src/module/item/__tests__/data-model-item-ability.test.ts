@@ -61,10 +61,10 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Save create autoTags", () => {
-      ability.updateSource({ save: "death" });
+      ability.updateSource({ save: "poison" });
       expect(ability.autoTags.length).equal(3);
       expect(Object.keys(ability.autoTags[2]).length).equal(2);
-      expect(ability.autoTags[2].label).equal(game.i18n.localize("VF.saves.death.long"));
+      expect(ability.autoTags[2].label).equal(game.i18n.localize("VF.saves.poison.long"));
       expect(ability.autoTags[2].icon).equal("fa-skull");
     });
 

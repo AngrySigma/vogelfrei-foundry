@@ -118,7 +118,7 @@ export const CLASSIC_FANTASY_CLASSES: Record<ClassicClassName, OseClass> = {
   Dwarf: {
     abilitiesPack: "classicfantasycompendium.abilities-dwarf",
     name: "Dwarf",
-    requirements: { con: 9 },
+    requirements: { toughness: 9 },
     source: CLASSIC_FANTASY_SOURCE,
     levels: [
       { xp: 0, hd: "1d8", thac0: 19, saves: [8, 9, 10, 13, 12] },
@@ -138,7 +138,7 @@ export const CLASSIC_FANTASY_CLASSES: Record<ClassicClassName, OseClass> = {
   Elf: {
     abilitiesPack: "classicfantasycompendium.abilities-elf",
     name: "Elf",
-    requirements: { int: 9 },
+    requirements: { intelligence: 9 },
     source: CLASSIC_FANTASY_SOURCE,
     spellsPack: CLASSIC_FANTASY_SPELLS_PACK,
     levels: [
@@ -239,7 +239,7 @@ export const CLASSIC_FANTASY_CLASSES: Record<ClassicClassName, OseClass> = {
   Halfling: {
     abilitiesPack: "classicfantasycompendium.abilities-halfling",
     name: "Halfling",
-    requirements: { dex: 9, con: 9 },
+    requirements: { agility: 9, toughness: 9 },
     source: CLASSIC_FANTASY_SOURCE,
     levels: [
       { xp: 0, hd: "1d6", thac0: 19, saves: [8, 9, 10, 13, 12] },
