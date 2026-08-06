@@ -35,9 +35,14 @@ const registerHelpers = async () => {
     return tagKey ? CONFIG.OSE.tag_images[tagKey] : null;
   });
 
-  Handlebars.registerHelper("counter", (status, value, max) =>
-    status ? Math.clamp((100 * value) / max, 0, 100) : Math.clamp(100 - (100 * value) / max, 0, 100),
-  );
+  // A gauge with no maximum reads as wholly empty rather than dividing by zero.
+  // Stamina starts at 0/0 until a class die sets it, and 0/0 produced NaN (an
+  // invalid height, so the gauge vanished) while n/0 produced Infinity (clamped
+  // to a full bar). Both looked like the widget was broken.
+  Handlebars.registerHelper("counter", (status, value, max) => {
+    const filled = max > 0 ? (100 * value) / max : 0;
+    return Math.clamp(status ? filled : 100 - filled, 0, 100);
+  });
 
   Handlebars.registerHelper("times", (n, block) => {
     let accum = "";
