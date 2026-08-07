@@ -364,7 +364,7 @@
   "VF.exploration.doors.short": "Open Doors",
   "VF.exploration.doors.abrev": "Doors",
   "VF.dialog.modifierSum": "Sum of modifiers",
-  "VF.dialog.arrayBelowZero": "This array sums below zero. You may keep it or roll again.",
+  "VF.dialog.arrayBelowZero": "This array sums below zero. Keep it, or roll again.",
   "VF.dialog.rollHint": "Roll 3d6 for each ability, in order.",
   "VF.dialog.swapHint": "Click two abilities to swap them. One swap only.",
   "VF.dialog.swapSpent": "Swap used.",
@@ -372,5 +372,6 @@
   "VF.dialog.accept": "Accept",
   "VF.dialog.generateCharacter": "Generate Character",
   "VF.dialog.characterName": "Character name",
-  "VF.dialog.newCharacter": "New Character"
+  "VF.dialog.newCharacter": "New Character",
+  "VF.dialog.arrayPlayable": "This array is playable, so it stands. Swap a pair if you like, then accept."
 }

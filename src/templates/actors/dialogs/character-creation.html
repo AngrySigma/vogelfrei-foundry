@@ -13,7 +13,7 @@
   {{#if rolled}}
   <div class="creator-summary{{#unless isValid}} invalid{{/unless}}">
     <span>{{localize "VF.dialog.modifierSum"}}: <b>{{numberFormat modifierSum decimals=0 sign=true}}</b></span>
-    {{#unless isValid}}<p class="hint">{{localize "VF.dialog.arrayBelowZero"}}</p>{{/unless}}
+    <p class="hint">{{#if isValid}}{{localize "VF.dialog.arrayPlayable"}}{{else}}{{localize "VF.dialog.arrayBelowZero"}}{{/if}}</p>
   </div>
   <p class="hint">
     {{#if canSwap}}{{localize "VF.dialog.swapHint"}}{{else}}{{localize "VF.dialog.swapSpent"}}{{/if}}
@@ -23,7 +23,7 @@
   {{/if}}
 
   <footer class="creator-buttons">
-    <button type="button" class="roll-array">
+    <button type="button" class="roll-array" {{#unless canReroll}}disabled{{/unless}}>
       <i class="fas fa-dice"></i> {{#if rolled}}{{localize "VF.dialog.reroll"}}{{else}}{{localize "VF.Roll"}}{{/if}}
     </button>
     <button type="submit" {{#unless rolled}}disabled{{/unless}}>

@@ -68,6 +68,9 @@ export default class OseCharacterCreator extends FormApplication {
     data.isValid = !rolled || data.modifierSum >= 0;
     data.canSwap = rolled && !this.swapUsed;
     data.swapUsed = this.swapUsed;
+    // A playable array is kept. Rerolling exists to escape one that sums below
+    // zero, not to fish for a better set once you already have a legal one.
+    data.canReroll = !rolled || !data.isValid;
     return data;
   }
 
@@ -114,6 +117,7 @@ export default class OseCharacterCreator extends FormApplication {
 
     html.find("button.roll-array").click((ev) => {
       ev.preventDefault();
+      if (Object.keys(this.scores).length > 0 && arrayIsValid(this.scores)) return;
       this.rollArray();
     });
 
