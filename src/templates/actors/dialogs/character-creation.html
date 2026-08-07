@@ -1,62 +1,33 @@
-<form autocomplete="off" onsubmit="event.preventDefault();">
-  <div class="flexrow">
-    <div class="attribute-list">
-      {{#each config.scores as |score id| }}
-      <div data-score="{{id}}" class="form-group">
-        <label
-          ><a class="score-roll"><i class="fas fa-dice"></i></a>
-          {{score}}</label
-        >
-        <div class="form-fields">
-          <input
-            class="score-value"
-            name="system.scores.{{id}}.value"
-            type="text"
-            value="0"
-            data-dtype="Number"
-          />
-        </div>
-      </div>
-      {{/each}}
-    </div>
-    <div class="roll-stats">
-      <div class="form-group">
-        <label>Auto <a class="auto-roll"><i class="fas fa-dice"></i></a></label>
-      </div>
-      <div class="form-group">
-        <label>Sum</label>
-        <div class="form-fields">
-          <span class="sum">0</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Avg</label>
-        <div class="form-fields">
-          <span class="avg">0</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>σ</label>
-        <div class="form-fields">
-          <span class="std">0</span>
-        </div>
-      </div>
-      <hr />
-      <div class="form-group">
-        <label>Gold&nbsp;</label>
-        <div class="form-fields">
-          <a class="gold-roll"><i class="fas fa-dice"></i></a>
-        </div>
-      </div>
-      <div></div>
-      <div class="form-group">
-        <input id="gold" class="gold-value" type="text" value="0" disabled />
-      </div>
-    </div>
+<form autocomplete="off" class="vf-creator">
+  <ol class="score-list">
+    {{#each scores}}
+    <li class="score-row{{#if this.pending}} pending{{/if}}{{#if @root.canSwap}} swappable{{/if}}"
+        data-score="{{this.key}}">
+      <span class="score-label">{{this.label}}</span>
+      <span class="score-value">{{#if this.value}}{{this.value}}{{else}}&mdash;{{/if}}</span>
+      <span class="score-mod">{{#if @root.rolled}}{{numberFormat this.mod decimals=0 sign=true}}{{/if}}</span>
+    </li>
+    {{/each}}
+  </ol>
+
+  {{#if rolled}}
+  <div class="creator-summary{{#unless isValid}} invalid{{/unless}}">
+    <span>{{localize "VF.dialog.modifierSum"}}: <b>{{numberFormat modifierSum decimals=0 sign=true}}</b></span>
+    {{#unless isValid}}<p class="hint">{{localize "VF.dialog.arrayBelowZero"}}</p>{{/unless}}
   </div>
-  <footer class="sheet-footer">
-    <button type="submit" disabled>
-      <i class="fas fa-save"></i>{{localize "Save Changes"}}
+  <p class="hint">
+    {{#if canSwap}}{{localize "VF.dialog.swapHint"}}{{else}}{{localize "VF.dialog.swapSpent"}}{{/if}}
+  </p>
+  {{else}}
+  <p class="hint">{{localize "VF.dialog.rollHint"}}</p>
+  {{/if}}
+
+  <footer class="creator-buttons">
+    <button type="button" class="roll-array">
+      <i class="fas fa-dice"></i> {{#if rolled}}{{localize "VF.dialog.reroll"}}{{else}}{{localize "VF.Roll"}}{{/if}}
+    </button>
+    <button type="submit" {{#unless rolled}}disabled{{/unless}}>
+      <i class="fas fa-check"></i> {{localize "VF.dialog.accept"}}
     </button>
   </footer>
 </form>

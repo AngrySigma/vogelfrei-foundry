@@ -86,7 +86,6 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
         languages: new NumberField({ integer: true, positive: true, initial: 1 }),
         search: new NumberField({ integer: true, positive: true, initial: 1 }),
         sleightOfHand: new NumberField({ integer: true, positive: true, initial: 1 }),
-        sneakAttack: new NumberField({ integer: true, positive: true, initial: 1 }),
         stealth: new NumberField({ integer: true, positive: true, initial: 1 }),
         tinkering: new NumberField({ integer: true, positive: true, initial: 1 }),
         doors: new NumberField({ integer: true, positive: true, initial: 1 }),

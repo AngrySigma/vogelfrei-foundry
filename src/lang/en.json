@@ -354,9 +354,6 @@
   "VF.exploration.sleightOfHand.long": "Sleight of Hand",
   "VF.exploration.sleightOfHand.short": "Sleight of Hand",
   "VF.exploration.sleightOfHand.abrev": "Slt",
-  "VF.exploration.sneakAttack.long": "Sneak Attack",
-  "VF.exploration.sneakAttack.short": "Sneak Attack",
-  "VF.exploration.sneakAttack.abrev": "Snk",
   "VF.exploration.stealth.long": "Stealth",
   "VF.exploration.stealth.short": "Stealth",
   "VF.exploration.stealth.abrev": "Stlth",
@@ -365,5 +362,12 @@
   "VF.exploration.tinkering.abrev": "Tink",
   "VF.exploration.doors.long": "Open Doors",
   "VF.exploration.doors.short": "Open Doors",
-  "VF.exploration.doors.abrev": "Doors"
+  "VF.exploration.doors.abrev": "Doors",
+  "VF.dialog.modifierSum": "Sum of modifiers",
+  "VF.dialog.arrayBelowZero": "This array sums below zero. You may keep it or roll again.",
+  "VF.dialog.rollHint": "Roll 3d6 for each ability, in order.",
+  "VF.dialog.swapHint": "Click two abilities to swap them. One swap only.",
+  "VF.dialog.swapSpent": "Swap used.",
+  "VF.dialog.reroll": "Roll again",
+  "VF.dialog.accept": "Accept"
 }

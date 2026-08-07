@@ -1,8 +1,31 @@
 /**
- * @file The Character Creator application
+ * @file The Character Creator application.
+ *
+ * Rolls a starting array: 3d6 six times, in order. An array whose modifiers sum
+ * below zero is flagged rather than discarded -- a player may want to keep it --
+ * and one pair of scores may be swapped afterwards.
+ *
+ * It sets ability scores and nothing else. Class, Wounds, Stamina and skills all
+ * need class data the system does not carry yet.
  */
+import OseDataModelCharacterScores from "../actor/data-model-classes/data-model-character-scores";
 import OSE from "../config";
-import OseDice from "../helpers-dice";
+
+/** The six abilities, in the order they are rolled and displayed. */
+const ABILITIES = ["strength", "intelligence", "willpower", "agility", "toughness", "leadership"];
+
+/** The modifier a score confers, from the same table the character sheet uses. */
+export const scoreModifier = (value) =>
+  OseDataModelCharacterScores.valueFromTable(OseDataModelCharacterScores.standardAttributeMods, value);
+
+/**
+ * An array is playable when its modifiers do not sum below zero.
+ *
+ * @param {Record<string, number>} scores - Ability scores keyed by ability.
+ * @returns {boolean} Whether the array is worth keeping.
+ */
+export const arrayIsValid = (scores) =>
+  Object.values(scores).reduce((total, value) => total + scoreModifier(value), 0) >= 0;
 
 export default class OseCharacterCreator extends FormApplication {
   static get defaultOptions() {
@@ -10,205 +33,130 @@ export default class OseCharacterCreator extends FormApplication {
       classes: ["ose", "dialog", "creator"],
       id: "character-creator",
       template: `${OSE.systemPath()}/templates/actors/dialogs/character-creation.html`,
-      width: 235,
+      width: 300,
     });
   }
 
-  /* -------------------------------------------- */
-
-  /**
-   * Add the Entity name into the window title
-   *
-   * @type {string}
-   */
   get title() {
     return `${this.object.name}: ${game.i18n.localize("VF.dialog.generator")}`;
   }
 
-  /* -------------------------------------------- */
+  /** Rolled scores, keyed by ability. Empty until the first roll. */
+  scores = {};
 
-  /**
-   * Construct and return the data object used to render the HTML template for this form application.
-   *
-   * @returns {object} - Render data for the form application
-   */
+  /** The ability awaiting a partner to swap with, if any. */
+  pendingSwap = null;
+
+  /** One swap of one pair is allowed per array. */
+  swapUsed = false;
+
   getData() {
     const data = foundry.utils.deepClone(this.object);
     data.user = game.user;
     data.config = CONFIG.OSE;
-    this.counters = {
-      strength: 0,
-      willpower: 0,
-      agility: 0,
-      intelligence: 0,
-      leadership: 0,
-      toughness: 0,
-      gold: 0,
-    };
-    this.stats = {
-      sum: 0,
-      avg: 0,
-      std: 0,
-    };
-    this.scores = {};
-    this.gold = 0;
+
+    const rolled = Object.keys(this.scores).length > 0;
+    data.rolled = rolled;
+    data.scores = ABILITIES.map((key) => ({
+      key,
+      label: game.i18n.localize(`VF.scores.${key}.long`),
+      value: this.scores[key] ?? null,
+      mod: rolled ? scoreModifier(this.scores[key]) : 0,
+      pending: this.pendingSwap === key,
+    }));
+    data.modifierSum = data.scores.reduce((total, { mod }) => total + mod, 0);
+    data.isValid = !rolled || data.modifierSum >= 0;
+    data.canSwap = rolled && !this.swapUsed;
+    data.swapUsed = this.swapUsed;
     return data;
   }
 
-  /* -------------------------------------------- */
-
-  doStats(ev) {
-    const list = $(ev.currentTarget).closest(".attribute-list");
-    const scores = Object.values(this.scores);
-    const n = scores.length;
-    const sum = scores.reduce((acc, next) => acc + next.value, 0);
-    const mean = Number.parseFloat(sum) / n;
-    const std = Math.sqrt(scores.map((x) => (x.value - mean) ** 2).reduce((acc, next) => acc + next, 0) / n);
-
-    const stats = list.siblings(".roll-stats");
-    stats.find(".sum").text(sum);
-    stats.find(".avg").text(Math.round((10 * sum) / n) / 10);
-    stats.find(".std").text(Math.round(100 * std) / 100);
-
-    if (n >= 6) {
-      $(ev.currentTarget).closest("form").find('button[type="submit"]').removeAttr("disabled");
+  /** Roll 3d6 for each ability, in order, replacing any previous array. */
+  async rollArray() {
+    const rolls = {};
+    for (const key of ABILITIES) {
+      const roll = new Roll("3d6");
+      // eslint-disable-next-line no-await-in-loop
+      await roll.evaluate();
+      rolls[key] = roll.total;
     }
-
-    this.object.stats = {
-      sum,
-      avg: Math.round((10 * sum) / n) / 10,
-      std: Math.round(100 * std) / 100,
-    };
+    this.scores = rolls;
+    this.pendingSwap = null;
+    this.swapUsed = false;
+    this.render();
   }
 
-  async rollScore(score, options = {}) {
-    // Increase counter
-    this.counters[score] += 1;
+  /**
+   * Swap two scores. The first click marks an ability, the second exchanges
+   * them and spends the single allowed swap.
+   *
+   * @param {string} key - The ability that was clicked.
+   */
+  swap(key) {
+    if (this.swapUsed || !this.scores[key]) return;
 
-    const label = score === "gold" ? "Gold" : game.i18n.localize(`VF.scores.${score}.long`);
-    const rollParts = ["3d6"];
-    const data = {
-      roll: {},
-    };
-    if (options.skipMessage) {
-      const skipMessagRoll = new Roll(rollParts[0]);
-      await skipMessagRoll.evaluate();
+    if (this.pendingSwap === null) {
+      this.pendingSwap = key;
+    } else if (this.pendingSwap === key) {
+      this.pendingSwap = null;
+    } else {
+      const other = this.pendingSwap;
+      [this.scores[key], this.scores[other]] = [this.scores[other], this.scores[key]];
+      this.pendingSwap = null;
+      this.swapUsed = true;
     }
-    // Roll and return
-    return OseDice.Roll({
-      event: options.event,
-      parts: rollParts,
-      data,
-      skipDialog: true,
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("VF.dialog.generateScore", {
-        score: label,
-        count: this.counters[score],
-      }),
-      title: game.i18n.format("VF.dialog.generateScore", {
-        score: label,
-        count: this.counters[score],
-      }),
-    });
+    this.render();
   }
 
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
-    html.find("a.score-roll").click((ev) => {
-      const el = ev.currentTarget.parentElement.parentElement;
-      const { score } = el.dataset;
-      this.rollScore(score, { event: ev }).then((r) => {
-        this.scores[score] = { value: r.total };
-        $(el).find("input").val(r.total).trigger("change");
-      });
+
+    html.find("button.roll-array").click((ev) => {
+      ev.preventDefault();
+      this.rollArray();
     });
 
-    html.find("a.gold-roll").click((ev) => {
-      const el = ev.currentTarget.parentElement.parentElement.parentElement;
-      this.rollScore("gold", { event: ev }).then((r) => {
-        this.gold = 10 * r.total;
-        $(el).find(".gold-value").val(this.gold);
-      });
+    html.find(".score-row").click((ev) => {
+      const { score } = ev.currentTarget.dataset;
+      this.swap(score);
     });
-
-    html.find("input.score-value").change((ev) => {
-      this.doStats(ev);
-    });
-
-    html.find("a.auto-roll").click(async (ev) => {
-      const stats = ["strength", "intelligence", "agility", "willpower", "toughness", "leadership"];
-      for (const char of stats) {
-        const r = await this.rollScore(char, { event: ev, skipMessage: true });
-        this.scores[char] = { value: r.total };
-      }
-      this.doStats(ev);
-      const r = await this.rollScore("gold", { event: ev, skipMessage: true });
-      this.gold = 10 * r.total;
-      this.submit();
-    });
-  }
-
-  // eslint-disable-next-line no-underscore-dangle
-  async _onSubmit(event, { updateData = null, preventClose = false, preventRender = false } = {}) {
-    const extendedData = { ...updateData, system: { scores: this.scores } };
-    // eslint-disable-next-line no-underscore-dangle
-    super._onSubmit(event, {
-      updateData: extendedData,
-      preventClose,
-      preventRender,
-    });
-
-    // Gather scores
-    const speaker = ChatMessage.getSpeaker({ actor: this.object.actor });
-    const templateData = {
-      config: CONFIG.OSE,
-      scores: this.scores,
-      title: game.i18n.localize("VF.dialog.generator"),
-      stats: this.object.stats,
-      gold: this.gold,
-    };
-    const content = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/chat/roll-creation.html`,
-      templateData,
-    );
-
-    await ChatMessage.create({
-      content,
-      speaker,
-    });
-
-    // Generate gold
-    const itemData = {
-      name: game.i18n.localize("VF.items.gp.short"),
-      type: "item",
-      img: `${OSE.assetsPath}/gold.png`,
-      system: {
-        treasure: true,
-        cost: 1,
-        weight: 1,
-        quantity: {
-          value: this.gold,
-        },
-      },
-    };
-    this.object.createEmbeddedDocuments("Item", [itemData]);
   }
 
   /**
-   * This method is called upon form submission after form data is validated
+   * Write the array onto the actor. Ability scores only.
    *
-   * @param {Event} event - The initial triggering submission event
-   * @param {object} formData - The object of validated form data with which to update the object
-   * @private
+   * @param {Event} event - The submission event.
    */
   // eslint-disable-next-line no-underscore-dangle
-  async _updateObject(event, formData) {
+  async _updateObject(event) {
     event.preventDefault();
-    // Update the actor
-    await this.object.update(formData);
+    if (Object.keys(this.scores).length === 0) return;
 
-    // Re-draw the updated sheet
+    await this.object.update({
+      system: {
+        scores: Object.fromEntries(ABILITIES.map((key) => [key, { value: this.scores[key] }])),
+      },
+    });
+
+    const summary = ABILITIES.map((key) => ({
+      label: game.i18n.localize(`VF.scores.${key}.long`),
+      value: this.scores[key],
+      mod: scoreModifier(this.scores[key]),
+    }));
+    const content = await foundry.applications.handlebars.renderTemplate(
+      `${OSE.systemPath()}/templates/chat/roll-creation.html`,
+      {
+        title: game.i18n.localize("VF.dialog.generator"),
+        scores: summary,
+        modifierSum: summary.reduce((total, { mod }) => total + mod, 0),
+      },
+    );
+    await ChatMessage.create({
+      content,
+      speaker: ChatMessage.getSpeaker({ actor: this.object }),
+    });
+
     this.object.sheet.render(true);
   }
 }

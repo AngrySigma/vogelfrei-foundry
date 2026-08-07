@@ -2,28 +2,18 @@
     <div class="ose chat-block">
         <div class="flexrow chat-header">
             <div class="chat-title"><h2>{{title}}</h2></div>
-            <div class="chat-img" style="background-image:url('{{data.actor.img}}')"></div>
         </div>
-        <div class="flexrow">
-            <ol class="flex2">
-                {{#each scores as |score id|}}
-                <li class="flexrow">
-                    <div style="text-align:right;">
-                        {{lookup ../config.scores id}}
-                    </div>
-                    <div style="text-align:center;">
-                        {{score.value}}
-                    </div>
-                </li>
-                {{/each}}
-            </ol>
-            <div style="margin: 0.5em 0">
-                <div>Sum: {{stats.sum}}</div>
-                <div>Avg: {{stats.avg}}</div>
-                <div>σ: {{stats.std}}</div>
-                <hr>
-                <div>Gold: {{gold}}</div>
-            </div>
+        <ol class="creation-scores">
+            {{#each scores}}
+            <li class="flexrow">
+                <span class="flex2">{{this.label}}</span>
+                <span style="text-align:center;">{{this.value}}</span>
+                <span style="text-align:right;">{{numberFormat this.mod decimals=0 sign=true}}</span>
+            </li>
+            {{/each}}
+        </ol>
+        <div class="chat-details">
+            {{localize "VF.dialog.modifierSum"}}: <b>{{numberFormat modifierSum decimals=0 sign=true}}</b>
         </div>
     </div>
 </section>
