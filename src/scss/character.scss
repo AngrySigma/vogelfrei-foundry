@@ -349,3 +349,9 @@
     margin-top: 6px;
   }
 }
+
+// Generate Character, beside Create Actor in the sidebar
+.vf-generate-character {
+  flex: 1;
+  white-space: nowrap;
+}

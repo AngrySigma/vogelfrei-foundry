@@ -2,21 +2,21 @@
   <img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}" />
   {{#if isOwnerOrObserver}}
     <div class="modifiers-btn">
-      {{#unless isNew}}
+      {{!-- All three stay reachable. OSE showed the generator only while every
+            score was still 0, so it vanished the moment you touched the sheet
+            and there was no way back to it. --}}
       <a data-action="modifiers" title="{{localize 'VF.Modifiers'}}"
         ><i class="fas fa-book"></i
       ></a>
       <a data-action="gp-cost" title="{{localize 'VF.dialog.shoppingCart'}}"
         ><i class="fas fa-coins"></i
       ></a>
-      {{else}}
       <a
-        class="blinking"
+        class="{{#if isNew}}blinking{{/if}}"
         data-action="generate-scores"
         title="{{localize 'VF.dialog.generateScores'}}"
         ><i class="fa fa-dice"></i
       ></a>
-      {{/unless}}
     </div>
   {{/if}}
 </div>

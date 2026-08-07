@@ -369,5 +369,8 @@
   "VF.dialog.swapHint": "Click two abilities to swap them. One swap only.",
   "VF.dialog.swapSpent": "Swap used.",
   "VF.dialog.reroll": "Roll again",
-  "VF.dialog.accept": "Accept"
+  "VF.dialog.accept": "Accept",
+  "VF.dialog.generateCharacter": "Generate Character",
+  "VF.dialog.characterName": "Character name",
+  "VF.dialog.newCharacter": "New Character"
 }

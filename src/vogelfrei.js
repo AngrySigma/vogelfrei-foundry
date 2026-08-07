@@ -24,6 +24,7 @@ import OseDataModelContainer from "./module/item/data-model-container";
 import OseDataModelItem from "./module/item/data-model-item";
 import OseDataModelSpell from "./module/item/data-model-spell";
 import OseDataModelWeapon from "./module/item/data-model-weapon";
+import registerActorDirectoryButton from "./module/actor/directory-button";
 import registerArmourEquipHooks from "./module/item/equip-armour";
 import OseItem from "./module/item/entity";
 import OseItemSheet from "./module/item/item-sheet";
@@ -83,6 +84,7 @@ Hooks.once("init", async () => {
   // Register APIs of Foundry VTT Modules we explicitly support that provide custom hooks
   registerFVTTModuleAPIs();
   registerArmourEquipHooks();
+  registerActorDirectoryButton();
 
   CONFIG.Actor.documentClass = OseActor;
   CONFIG.Item.documentClass = OseItem;
