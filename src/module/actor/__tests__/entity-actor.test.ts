@@ -643,7 +643,11 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.delete();
     });
 
-    it("Adds strength bonus if melee damage roll", async () => {
+    // Kept as the record of a rule Vogelfrei does not use: OSE added the
+    // Strength modifier to melee damage, and this asserted the roll contained
+    // "15 - 3". Damage is now the weapon die alone. If Strength on damage ever
+    // comes back, this is the test that should go red.
+    it("Adds no strength bonus to a melee damage roll", async () => {
       const actor = (await createMockActor("character")) as OseActor;
       await actor?.update({ system: { scores: { strength: { value: 1 } } } });
       expect(actor.system.scores.strength.value).equal(1);
@@ -655,7 +659,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(`test - ${game.i18n.localize("VF.Damage")}`);
-      expect(game.messages?.contents[0].content).contain("15 - 3");
+      expect(game.messages?.contents[0].content).not.contain("15 - 3");
       await actor.delete();
     });
   });
@@ -841,7 +845,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     // @todo: How to verify if possible to miss, thus obfuscating dmg roll?
-    it("If melee attack, add str mod to damage roll", async () => {
+    it("A melee attack's damage is the weapon die alone", async () => {
       // Ensure the dice roll is a 10 to make sure the attack is successful
       const existingRandomFunction = CONFIG.Dice.randomUniform;
       CONFIG.Dice.randomUniform = () => rollSpecificNumber(10, 20);
@@ -854,7 +858,9 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(game.i18n.localize("VF.messages.InflictsDamage"));
-      expect(game.messages?.contents[0].content).contain("1d6 + 3");
+      // Strength reaches the attack roll but not the damage.
+      expect(game.messages?.contents[0].content).contain("1d6");
+      expect(game.messages?.contents[0].content).not.contain("1d6 + 3");
       await actor.delete();
 
       // Restore the original random function

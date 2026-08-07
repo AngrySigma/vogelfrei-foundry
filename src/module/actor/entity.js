@@ -458,10 +458,10 @@ export default class OseActor extends Actor {
       dmgParts.push("1d6");
     }
 
-    // Add Str to damage
-    if (attData.roll?.type === "melee" && data.scores.strength.mod) {
-      dmgParts.push(data.scores.strength.mod);
-    }
+    // Damage is the weapon die alone. Combat Actions.md step 4 adds no ability
+    // modifier to it, where OSE added Strength in melee. To restore it, push
+    // data.scores.strength.mod here and in rollAttack's dmgParts -- both, or
+    // the same weapon deals different damage depending on which path rolled it.
 
     // Damage roll
     return OseDice.Roll({
