@@ -1,4 +1,5 @@
 <div class="ose chat-card item-card" data-actor-id="{{data.actor._id}}" data-item-id="{{data.item._id}}"
+    {{#if result.isCritical}}data-critical="true" {{/if}}
     {{#if tokenId}}data-token-id="{{tokenId}}" {{/if}}>
     <div class="ose chat-block">
         <div class="flexrow chat-header">

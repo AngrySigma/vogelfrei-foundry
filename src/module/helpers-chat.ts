@@ -12,13 +12,20 @@ import OseActor from "./actor/entity";
  * @param {string} amount - The amount of damage to apply
  * @param {1 | -1} multiplier - The multiplier to apply to the damage
  * @param {string} nameOrId - The name or ID of the target actor
+ * @param {boolean} critical - Whether the attack was a natural 20
  */
-async function applyDamageToTarget(actor: Actor | null, amount: string, multiplier: 1 | -1, nameOrId: string) {
+async function applyDamageToTarget(
+  actor: Actor | null,
+  amount: string,
+  multiplier: 1 | -1,
+  nameOrId: string,
+  critical = false,
+) {
   if (!game.user?.isGM || !(actor instanceof OseActor)) {
     ui.notifications?.error(game.i18n.format("VF.error.cantDealDamageTo", { nameOrId }));
     return;
   }
-  await actor.applyDamage(amount, multiplier);
+  await actor.applyDamage(amount, multiplier, { critical });
 }
 
 /**
@@ -33,20 +40,25 @@ function applyChatCardDamage(html: HTMLElement, multiplier: 1 | -1) {
   const lastDiceTotalTarget = diceTotalTargets[diceTotalTargets.length - 1] as HTMLElement;
   const amount = lastDiceTotalTarget?.textContent || "0";
   const dmgTgt = game.settings.get(game.system.id, "applyDamageOption");
+  // A natural 20 bypasses Stamina, or doubles against a target that has none.
+  // Healing is never a critical. The marker sits on the card, and `html` is
+  // either that card or the chat message wrapping it, so check both.
+  const critical =
+    multiplier > 0 && (html.matches?.("[data-critical]") || html.querySelector("[data-critical]") !== null);
   if (dmgTgt === CONFIG.OSE.apply_damage_options.originalTarget) {
     const victimId = (html.querySelector(".chat-target") as HTMLElement)?.dataset.id;
     (async () => {
       const actor = ((await fromUuid(victimId || "")) as TokenDocument)?.actor;
-      await applyDamageToTarget(actor, amount, multiplier, actor?.name || victimId || "original target");
+      await applyDamageToTarget(actor, amount, multiplier, actor?.name || victimId || "original target", critical);
     })();
   }
   if (dmgTgt === CONFIG.OSE.apply_damage_options.targeted) {
     // biome-ignore lint/suspicious/useIterableCallbackReturn: async function called for side effects, promises intentionally not awaited
-    game.user?.targets.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name));
+    game.user?.targets.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name, critical));
   }
   if (dmgTgt === CONFIG.OSE.apply_damage_options.selected) {
     // biome-ignore lint/suspicious/useIterableCallbackReturn: async function called for side effects, promises intentionally not awaited
-    canvas.tokens?.controlled.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name));
+    canvas.tokens?.controlled.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name, critical));
   }
 }
 
