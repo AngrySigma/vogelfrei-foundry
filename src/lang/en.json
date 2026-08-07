@@ -346,5 +346,12 @@
   "VF.BallisticSkill": "Ballistic Skill",
   "VF.BallisticSkillShort": "BS",
   "VF.items.ArmorACMelee": "Melee AC Bonus",
-  "VF.items.ArmorACRanged": "Ranged AC Bonus"
+  "VF.items.ArmorACRanged": "Ranged AC Bonus",
+  "VF.ac.target": "Target AC",
+  "VF.WeaponLength": "Weapon Length",
+  "VF.weaponLength.equal": "Equal or longer (0)",
+  "VF.weaponLength.shorter": "Shorter weapon (-2)",
+  "VF.weaponLength.unarmed": "Unarmed (-4)",
+  "VF.messages.AttackNatural20": "Natural 20 — a Critical Hit. Damage goes straight to Wounds.",
+  "VF.messages.AttackNatural1": "Natural 1 — an automatic miss."
 }

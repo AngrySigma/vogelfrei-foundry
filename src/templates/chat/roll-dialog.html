@@ -8,6 +8,24 @@
         <label>{{localize "VF.Formula"}}</label>
         <input type="text" name="formula" value="{{formula}}" disabled />
     </div>
+    {{#if isAttack}}
+    <div class="form-group">
+        <label>{{localize "VF.ac.target"}}</label>
+        <select name="acVariant">
+            {{#each acVariants}}
+            <option value="{{this.key}}">{{localize this.label}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{{localize "VF.WeaponLength"}}</label>
+        <select name="weaponLength">
+            <option value="0">{{localize "VF.weaponLength.equal"}}</option>
+            <option value="-2">{{localize "VF.weaponLength.shorter"}}</option>
+            <option value="-4">{{localize "VF.weaponLength.unarmed"}}</option>
+        </select>
+    </div>
+    {{/if}}
     <div class="form-group">
         <label>{{localize "VF.SitMod"}}</label>
         <input type="text" name="bonus" value="" placeholder="{{localize 'VF.RollExample'}}" />

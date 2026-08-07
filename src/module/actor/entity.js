@@ -538,20 +538,15 @@ export default class OseActor extends Actor {
       dmgParts.push(attData.item?.system?.bonus);
 
     const rollParts = ["1d20"];
-    const ascending = game.settings.get(game.system.id, "ascendingAC");
 
-    if (ascending && data.thac0.bba) rollParts.push(data.thac0.bba);
-
-    // for each type of attack, add the Tweaks bonus
-    // and Strength/Agility modifier only if it's non-zero
-    let attackMods = [];
-
-    if (options.type === "melee") attackMods = [data.scores.strength.mod, data.thac0.mod.melee];
-
-    dmgParts.push(...removeFalsyElements(attackMods));
-
-    // Add missile mod to attack roll only (missile attacks don't get bonus damage)
-    if (options.type === "missile") attackMods = [data.scores.agility.mod, data.thac0.mod.missile];
+    // Vogelfrei attack roll: d20 + Weapon Skill and Strength in melee, or
+    // Ballistic Skill and Agility at range. There is no THAC0 and no attack
+    // bonus from Hit Dice. Damage is the weapon die alone -- Combat Actions.md
+    // step 4 adds no ability modifier to it.
+    const attackMods =
+      options.type === "missile"
+        ? [data.bs, data.scores.agility.mod]
+        : [data.ws, data.scores.strength.mod];
 
     // Add weapon bonus to attack roll only (already added to dmgParts)
     if (attData.item) attackMods.push(attData.item?.system?.bonus);
@@ -564,7 +559,6 @@ export default class OseActor extends Actor {
       itemId: attData.item?._id,
       roll: {
         type: options.type,
-        thac0: data.thac0.value,
         dmg: dmgParts,
         save: attData.roll.save,
         target: attData.roll.target,

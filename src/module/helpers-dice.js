@@ -198,40 +198,37 @@ const OseDice = {
       target: "",
       total: roll.total,
     };
-    result.target = data.roll.thac0;
+    // Vogelfrei is ascending-only and hits on equal or greater. The defender's
+    // AC depends on which variant the attacker chose in the dialog; against no
+    // target we report the total and leave the call to the Referee.
     const targetActorData = data.roll.target?.actor?.system || null;
+    const variant = data.roll.acVariant || (data.roll.type === "missile" ? "ranged" : "melee");
+    const targetAc = targetActorData?.ac?.values?.[variant] ?? null;
 
-    const targetAc = data.roll.target ? targetActorData?.ac?.value : 9;
-    const targetAac = data.roll.target ? targetActorData?.aac?.value : 10;
     result.victim = data.roll.target || null;
+    result.target = targetAc;
 
-    if (game.settings.get(game.system.id, "ascendingAC")) {
-      const attackBonus = 0; // Attack bonus is already included in the roll
-      if (this.attackIsSuccess(roll, targetAac, attackBonus) || result.victim == null) {
-        result.details = game.i18n.format("VF.messages.AttackAscendingSuccess", {
-          result: roll.total,
-        });
-        result.isSuccess = true;
-      } else {
-        result.details = game.i18n.format("VF.messages.AttackAscendingFailure", {
-          bonus: result.target,
-        });
-        result.isFailure = true;
-      }
-    } else if (this.attackIsSuccess(roll, result.target, targetAc) || result.victim == null) {
-      // Show result in chat card
-      const value = result.target - roll.total;
-      result.details = game.i18n.format("VF.messages.AttackSuccess", {
-        result: value,
-        bonus: result.target,
-      });
+    // A natural 20 always hits and is a critical; a natural 1 always misses.
+    const natural = roll.terms[0]?.total ?? roll.dice[0]?.total ?? null;
+    result.isCritical = natural === 20;
+
+    if (natural === 1) {
+      result.details = game.i18n.localize("VF.messages.AttackNatural1");
+      result.isFailure = true;
+    } else if (result.isCritical) {
+      result.details = game.i18n.localize("VF.messages.AttackNatural20");
+      result.isSuccess = true;
+    } else if (targetAc === null) {
+      result.details = game.i18n.format("VF.messages.AttackAscendingSuccess", { result: roll.total });
+      result.isSuccess = true;
+    } else if (roll.total >= targetAc) {
+      result.details = game.i18n.format("VF.messages.AttackAscendingSuccess", { result: roll.total });
       result.isSuccess = true;
     } else {
-      result.details = game.i18n.format("VF.messages.AttackFailure", {
-        bonus: result.target,
-      });
+      result.details = game.i18n.format("VF.messages.AttackAscendingFailure", { bonus: targetAc });
       result.isFailure = true;
     }
+
     return result;
   },
 
@@ -285,6 +282,12 @@ const OseDice = {
 
     // Optionally include a situational bonus
     if (form?.bonus.value) parts.push(form.bonus.value);
+
+    // Weapon length: a shorter weapon pays to work past a longer one.
+    if (form?.weaponLength?.value && Number(form.weaponLength.value) !== 0) parts.push(form.weaponLength.value);
+
+    // Which of the defender's armour classes this attack is measured against.
+    if (form?.acVariant?.value) data.roll.acVariant = form.acVariant.value;
 
     const roll = new Roll(parts.join("+"), data);
     await roll.evaluate();
@@ -444,9 +447,13 @@ const OseDice = {
   } = {}) {
     let rolled = false;
     const template = `${OSE.systemPath()}/templates/chat/roll-dialog.html`;
+    const isAttack = ["melee", "missile", "attack"].includes(data.roll.type);
     const dialogData = {
       formula: parts.join(" "),
       data,
+      isAttack,
+      // Only offer the ACs that can answer this kind of attack.
+      acVariants: ARMOUR_CLASS_VARIANTS.filter((v) => v.ranged === (data.roll.type === "missile")),
       rollMode: data.roll.blindroll ? "blindroll" : getRollMode(),
       rollModes: getRollModes(),
     };

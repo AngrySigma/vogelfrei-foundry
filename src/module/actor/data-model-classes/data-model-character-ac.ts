@@ -78,11 +78,13 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     formula: (c) => RANGED_BASE + c.agility + c.armourRanged + c.shieldRanged + c.mod,
   },
   {
-    // An unaware target keeps only what it is wearing.
+    // An unaware target keeps only what it is wearing. Surprise takes away the
+    // benefit of being nimble, not the penalty of being clumsy -- a negative
+    // Agility modifier still tells against you, a positive one stops helping.
     key: "surprised",
     label: "VF.ac.surprised",
     ranged: false,
-    formula: (c) => MELEE_BASE + c.armourMelee + c.mod,
+    formula: (c) => MELEE_BASE + Math.min(0, c.agility) + c.armourMelee + c.mod,
   },
   {
     key: "noShield",
