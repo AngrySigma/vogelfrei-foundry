@@ -226,7 +226,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       // eslint-disable-next-line no-underscore-dangle
       const tag = item._getSaveTag({ save: "poison" });
       expect(tag).not.to.be.undefined;
-      expect(tag?.label).equal("Death Poison");
+      expect(tag?.label).equal("Poison");
       expect(tag?.icon).equal("fa-skull");
     });
   });
@@ -433,9 +433,12 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       const item: OseItem = await createWorldTestItem("ability");
       await item.update({ system: { requirements: "alice,bob" } });
       const tagList = item.getAutoTagList();
-      expect(tagList.length).equal(2);
+      // A new ability defaults to the 1d6 skill roll every skill starts at, so
+      // it carries a roll tag alongside its requirements.
+      expect(tagList.length).equal(3);
       expect(tagList[0].label).equal("alice");
       expect(tagList[1].label).equal("bob");
+      expect(tagList[2].label).contain("1d6");
       item.delete();
     });
     it("If rollTag exists, it is applied", async () => {
@@ -451,7 +454,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       await item.update({ system: { save: "poison" } });
       const tagList = item.getAutoTagList();
       expect(tagList.length).equal(4);
-      expect(tagList[3].label).equal("Death Poison");
+      expect(tagList[3].label).equal("Poison");
       expect(tagList[3].icon).equal("fa-skull");
       item.delete();
     });

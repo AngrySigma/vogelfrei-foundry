@@ -98,14 +98,15 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
 
-      Object.keys(scores).forEach(async (score) => {
-        $(`.creator div[data-score="${score}"] a.score-roll`).trigger("click");
-        await waitForInput();
+      // One button rolls the whole array, in order, rather than a die per
+      // ability.
+      $(".creator button.roll-array").trigger("click");
+      await delay(400);
 
-        const scoreValue = document.querySelector(`.creator div[data-score="${score}"] input.score-value`);
-        const { value } = scoreValue;
-        expect(Number.parseInt(value, 10) > 0).equal(true);
-      });
+      for (const score of Object.keys(scores)) {
+        const cell = document.querySelector(`.creator .score-row[data-score="${score}"] .score-value`);
+        expect(Number.parseInt(cell?.textContent ?? "0", 10) >= 3).equal(true);
+      }
 
       for (const window of windows) {
         await window.close();
@@ -123,17 +124,17 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
 
-      for (const score of Object.keys(scores)) {
-        $(`.creator div[data-score="${score}"] a.score-roll`).trigger("click");
-        await waitForInput();
+      $(".creator button.roll-array").trigger("click");
+      await delay(400);
 
-        const scoreValue = document.querySelector(`.creator div[data-score="${score}"] input.score-value`);
-        const { value } = scoreValue;
-        expect(Number.parseInt(value, 10) > 0).equal(true);
-        scores[score] = Number.parseInt(value, 10);
+      for (const score of Object.keys(scores)) {
+        const cell = document.querySelector(`.creator .score-row[data-score="${score}"] .score-value`);
+        const value = Number.parseInt(cell?.textContent ?? "0", 10);
+        expect(value >= 3).equal(true);
+        scores[score] = value;
       }
 
-      $(".creator footer button").trigger("submit");
+      $(".creator button[type='submit']").trigger("submit");
       await waitForInput();
 
       expect(actor?.system.scores.strength.value).equal(scores.strength);
@@ -144,8 +145,11 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       expect(actor?.system.scores.leadership.value).equal(scores.leadership);
     });
 
-    // @todo: Auto-roll testing
-    // @todo: Gold rolling testing
+    afterEach(async () => {
+      // An array that was rolled but not accepted stays on the user, so clear
+      // it or the next test opens the generator holding the previous one.
+      await game.user?.unsetFlag(game.system.id, "pendingRoll");
+    });
 
     afterEach(async () => {
       // Don't delete actors or close windows in bulk, as it interferes with the

@@ -239,7 +239,7 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
       });
 
       describe("Spells/Rods/Staves", () => {
-        describe("Can roll", () => canRollSave("spell"));
+        describe("Can roll", () => canRollSave("magic"));
       });
     });
   });

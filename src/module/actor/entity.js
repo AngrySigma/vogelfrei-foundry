@@ -532,10 +532,13 @@ export default class OseActor extends Actor {
     // Ballistic Skill and Agility at range. There is no THAC0 and no attack
     // bonus from Hit Dice. Damage is the weapon die alone -- Combat Actions.md
     // step 4 adds no ability modifier to it.
-    const attackMods =
-      options.type === "missile"
-        ? [data.bs, data.scores.agility.mod]
-        : [data.ws, data.scores.strength.mod];
+    // Monsters have no ability scores -- they roll their attack bonus alone --
+    // so the ability modifier has to be optional rather than assumed. Monster
+    // attacks use type "attack", which falls here alongside melee.
+    const isMissile = options.type === "missile";
+    const attackMods = isMissile
+      ? [data.bs, data.scores?.agility?.mod]
+      : [data.ws, data.scores?.strength?.mod];
 
     // Add weapon bonus to attack roll only (already added to dmgParts)
     if (attData.item) attackMods.push(attData.item?.system?.bonus);

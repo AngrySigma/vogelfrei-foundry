@@ -345,7 +345,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       hdSpread.forEach((hd) => {
         it(`${hd} hd with ${con} Con correctly rolls HP`, async () => {
           await actor?.update({
-            system: { wounds: { hd: `1d${hd}` }, scores: { con: { value: con } } },
+            system: { wounds: { hd: `1d${hd}` }, scores: { toughness: { value: con } } },
           });
           await actor?.rollHP();
           assert(actor?.system.wounds.max - conBonusSpread[idx] >= 1);
@@ -363,7 +363,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await trashChat();
     });
 
-    const saves = ["poison", "device", "paralysis", "breath", "spell"];
+    const saves = ["poison", "device", "paralysis", "breath", "magic"];
     saves.forEach((save) => {
       it(`is functional for ${save} saves on character`, async () => {
         const actor = (await createMockActor("character")) as OseActor;
@@ -502,7 +502,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
             system: {
               details: { level },
               wounds: { hd: `${level}d8` },
-              scores: { con: { value: con } },
+              scores: { toughness: { value: con } },
             },
           });
           const roll = await actor.rollHitDice();
@@ -645,7 +645,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("Adds strength bonus if melee damage roll", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor?.update({ system: { scores: { str: { value: 1 } } } });
+      await actor?.update({ system: { scores: { strength: { value: 1 } } } });
       expect(actor.system.scores.strength.value).equal(1);
       expect(game.messages?.size).equal(0);
       await actor.rollDamage({
@@ -791,6 +791,8 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("rolls a d20 if supplied no data", async () => {
       const actor = (await createMockActor("character")) as OseActor;
+      // A score of 0 maps to -3, so neutralise Strength to assert a bare d20.
+      await actor.update({ system: { scores: { strength: { value: 10 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { skipDialog: true });
       expect(rolldata.formula).equal("1d20");
@@ -801,6 +803,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("Provided an item, adds item damage to dmgParts", async () => {
       const actor = await createMockActor("character");
+      await actor?.update({ system: { scores: { strength: { value: 10 } } } });
       const item = await createWorldTestItem("weapon");
       expect(item?.system.damage).is.not.undefined;
       expect(game.messages?.size).equal(0);
@@ -828,7 +831,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("If melee attack, add str mod to attack roll", async () => {
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { scores: { str: { value: 18 } } } });
+      await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
       expect(rolldata.formula).equal("1d20 + 3");
@@ -844,7 +847,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       CONFIG.Dice.randomUniform = () => rollSpecificNumber(10, 20);
 
       const actor = (await createMockActor("character")) as OseActor;
-      await actor.update({ system: { scores: { str: { value: 18 } } } });
+      await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
       expect(rolldata.formula).equal("1d20 + 3");
@@ -860,6 +863,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("If item provided with a bonus, it is added as bonus to attack roll", async () => {
       const actor = (await createMockActor("character")) as OseActor;
+      await actor.update({ system: { scores: { strength: { value: 10 } } } });
       const item = await createWorldTestItem("weapon");
       await item?.update({ system: { bonus: 18 } });
       expect(game.messages?.size).equal(0);
@@ -943,7 +947,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       const actor = (await createMockActor("character")) as OseActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
-      await actor.applyDamage(-20);
+      await actor.applyDamage(20, -1);
       expect(actor.system.wounds.value).equal(10);
       await actor.delete();
     });

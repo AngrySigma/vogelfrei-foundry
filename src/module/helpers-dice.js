@@ -210,7 +210,10 @@ const OseDice = {
     result.target = targetAc;
 
     // A natural 20 always hits and is a critical; a natural 1 always misses.
-    const natural = roll.terms[0]?.total ?? roll.dice[0]?.total ?? null;
+    // Read the die face itself rather than the term's total: for `1d20` they
+    // agree, but the face is what the rule is about, and it is how
+    // attackIsSuccess has always read it.
+    const natural = roll.terms?.[0]?.results?.[0]?.result ?? null;
     result.isCritical = natural === 20;
 
     if (natural === 1) {
