@@ -597,7 +597,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     it("for monster", async () => {
       const actor = (await createMockActor("monster")) as OseActor;
       expect(game.messages?.size).equal(0);
-      await actor.rollExploration("ld", { fastForward: true });
+      await actor.rollExploration("architecture", { fastForward: true });
       await waitForInput();
       expect(game.messages?.size).equal(0);
       await actor.delete();

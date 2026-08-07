@@ -258,7 +258,7 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
       });
 
       describe("Listen Door", () => {
-        describe("Can roll", () => canRollExploration("ld"));
+        describe("Can roll", () => canRollExploration("architecture"));
       });
 
       describe("Open Door", () => {
