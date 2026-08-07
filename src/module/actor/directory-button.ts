@@ -6,6 +6,7 @@
  * roller is reachable without knowing to hover a portrait.
  */
 import OseCharacterCreator from "../dialog/character-creation";
+import OsePendingRolls from "../dialog/pending-rolls";
 
 /** Ask for a name, create the character, and open the generator on it. */
 async function generateCharacter() {
@@ -64,5 +65,23 @@ export default function registerActorDirectoryButton() {
     // Sits next to Create Actor rather than replacing it -- an empty actor is
     // still the right thing when you are statting an NPC from a book.
     actions.append(button);
+
+    // Referees also get at the outstanding arrays, to release one when a
+    // rewrite has been agreed.
+    if (game.user?.isGM && !actions.querySelector(".vf-pending-rolls-btn")) {
+      const pending = document.createElement("button");
+      pending.type = "button";
+      pending.className = "vf-pending-rolls-btn";
+      const pendingIcon = document.createElement("i");
+      pendingIcon.className = "fa fa-dice-d20";
+      pendingIcon.toggleAttribute("inert", true);
+      const pendingLabel = document.createElement("span");
+      pendingLabel.textContent = game.i18n.localize("VF.dialog.pendingRolls");
+      pending.append(pendingIcon, pendingLabel);
+      pending.addEventListener("click", () => {
+        new OsePendingRolls().render(true);
+      });
+      actions.append(pending);
+    }
   });
 }

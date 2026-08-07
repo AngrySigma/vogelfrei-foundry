@@ -23,6 +23,7 @@ const preloadHandlebarsTemplates = async () => {
     `${OSE.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
     // Party Sheet
     `${OSE.systemPath()}/templates/apps/party-sheet.html`,
+    `${OSE.systemPath()}/templates/apps/pending-rolls.html`,
     // `${OSE.systemPath()}/templates/apps/party-xp.html`,
     // Combat Tab
     `${OSE.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`,

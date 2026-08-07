@@ -1,0 +1,36 @@
+<form autocomplete="off" class="vf-pending-rolls">
+  {{#if any}}
+  <p class="hint">{{localize "VF.dialog.pendingRollsHint"}}</p>
+  <ol class="pending-list">
+    {{#each rows}}
+    <li class="pending-row">
+      <div class="pending-head">
+        <span class="pending-name" style="border-left: 4px solid {{this.colour}}">{{this.name}}</span>
+        <span class="pending-sum">
+          {{localize "VF.dialog.modifierSum"}}: <b>{{numberFormat this.modifierSum decimals=0 sign=true}}</b>
+        </span>
+        <a data-action="release" data-user-id="{{this.userId}}" title="{{localize 'VF.dialog.release'}}">
+          <i class="fas fa-trash"></i>
+        </a>
+      </div>
+      <div class="pending-scores">
+        {{#each this.scores}}
+        <span class="pending-score">
+          <b>{{this.short}}</b> {{this.value}}
+          <em>({{numberFormat this.mod decimals=0 sign=true}})</em>
+        </span>
+        {{/each}}
+      </div>
+      {{#if this.swapUsed}}<span class="hint">{{localize "VF.dialog.swapSpent"}}</span>{{/if}}
+    </li>
+    {{/each}}
+  </ol>
+  <footer class="creator-buttons">
+    <button type="button" data-action="release-all">
+      <i class="fas fa-trash"></i> {{localize "VF.dialog.releaseAll"}}
+    </button>
+  </footer>
+  {{else}}
+  <p class="hint">{{localize "VF.dialog.noPendingRolls"}}</p>
+  {{/if}}
+</form>

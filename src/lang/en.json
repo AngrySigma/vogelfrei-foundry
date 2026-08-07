@@ -375,5 +375,12 @@
   "VF.dialog.newCharacter": "New Character",
   "VF.dialog.arrayPlayable": "This array is playable, so it stands. Swap a pair if you like, then accept.",
   "VF.dialog.rolledArray": "Rolled an array",
-  "VF.dialog.pendingArray": "This array is yours until you accept it. Closing and starting over brings it back."
+  "VF.dialog.pendingArray": "This array is yours until you accept it. Closing and starting over brings it back.",
+  "VF.dialog.pendingRolls": "Pending Rolls",
+  "VF.dialog.pendingRollsHint": "Arrays rolled but not yet accepted. Releasing one lets that player roll fresh.",
+  "VF.dialog.noPendingRolls": "No outstanding arrays.",
+  "VF.dialog.release": "Release this array",
+  "VF.dialog.releaseAll": "Release all",
+  "VF.dialog.confirmReleaseAll": "Release every outstanding array? Each of those players will be able to roll again.",
+  "VF.dialog.releasedFor": "Released {name}'s array."
 }
