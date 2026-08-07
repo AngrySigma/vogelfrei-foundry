@@ -41,6 +41,16 @@ export default class OseCharacterCreator extends FormApplication {
     return `${this.object.name}: ${game.i18n.localize("VF.dialog.generator")}`;
   }
 
+  /**
+   * The flag holding a player's outstanding array.
+   *
+   * The array belongs to the player, not the character. Binding it to the actor
+   * would stop nothing: a player who dislikes a roll can close the dialog and
+   * generate a different character. Held here, the same array comes back --
+   * whichever character they open the generator on -- until they accept it.
+   */
+  static FLAG = "pendingRoll";
+
   /** Rolled scores, keyed by ability. Empty until the first roll. */
   scores = {};
 
@@ -49,6 +59,23 @@ export default class OseCharacterCreator extends FormApplication {
 
   /** One swap of one pair is allowed per array. */
   swapUsed = false;
+
+  constructor(...args) {
+    super(...args);
+    const pending = game.user?.getFlag(game.system.id, OseCharacterCreator.FLAG);
+    if (pending?.scores) {
+      this.scores = { ...pending.scores };
+      this.swapUsed = Boolean(pending.swapUsed);
+    }
+  }
+
+  /** Remember the array against the player until it is accepted. */
+  async #persist() {
+    await game.user?.setFlag(game.system.id, OseCharacterCreator.FLAG, {
+      scores: this.scores,
+      swapUsed: this.swapUsed,
+    });
+  }
 
   getData() {
     const data = foundry.utils.deepClone(this.object);
@@ -86,6 +113,11 @@ export default class OseCharacterCreator extends FormApplication {
     this.scores = rolls;
     this.pendingSwap = null;
     this.swapUsed = false;
+    await this.#persist();
+    // Post every array as it is rolled, so a reroll is visible rather than
+    // merely prevented. The flag stops the casual dodge; the chat log is what
+    // a Referee can actually check.
+    await this.#announce("VF.dialog.rolledArray");
     this.render();
   }
 
@@ -107,8 +139,31 @@ export default class OseCharacterCreator extends FormApplication {
       [this.scores[key], this.scores[other]] = [this.scores[other], this.scores[key]];
       this.pendingSwap = null;
       this.swapUsed = true;
+      this.#persist();
     }
     this.render();
+  }
+
+  /**
+   * Post the current array to chat.
+   *
+   * @param {string} titleKey - Localization key for the message title.
+   */
+  async #announce(titleKey) {
+    const summary = ABILITIES.map((key) => ({
+      label: game.i18n.localize(`VF.scores.${key}.long`),
+      value: this.scores[key],
+      mod: scoreModifier(this.scores[key]),
+    }));
+    const content = await foundry.applications.handlebars.renderTemplate(
+      `${OSE.systemPath()}/templates/chat/roll-creation.html`,
+      {
+        title: game.i18n.localize(titleKey),
+        scores: summary,
+        modifierSum: summary.reduce((total, { mod }) => total + mod, 0),
+      },
+    );
+    await ChatMessage.create({ content, speaker: ChatMessage.getSpeaker({ actor: this.object }) });
   }
 
   /** @override */
@@ -143,23 +198,9 @@ export default class OseCharacterCreator extends FormApplication {
       },
     });
 
-    const summary = ABILITIES.map((key) => ({
-      label: game.i18n.localize(`VF.scores.${key}.long`),
-      value: this.scores[key],
-      mod: scoreModifier(this.scores[key]),
-    }));
-    const content = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/chat/roll-creation.html`,
-      {
-        title: game.i18n.localize("VF.dialog.generator"),
-        scores: summary,
-        modifierSum: summary.reduce((total, { mod }) => total + mod, 0),
-      },
-    );
-    await ChatMessage.create({
-      content,
-      speaker: ChatMessage.getSpeaker({ actor: this.object }),
-    });
+    // The array is spent: the next generator opens fresh.
+    await game.user?.unsetFlag(game.system.id, OseCharacterCreator.FLAG);
+    await this.#announce("VF.dialog.generator");
 
     this.object.sheet.render(true);
   }

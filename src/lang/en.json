@@ -373,5 +373,7 @@
   "VF.dialog.generateCharacter": "Generate Character",
   "VF.dialog.characterName": "Character name",
   "VF.dialog.newCharacter": "New Character",
-  "VF.dialog.arrayPlayable": "This array is playable, so it stands. Swap a pair if you like, then accept."
+  "VF.dialog.arrayPlayable": "This array is playable, so it stands. Swap a pair if you like, then accept.",
+  "VF.dialog.rolledArray": "Rolled an array",
+  "VF.dialog.pendingArray": "This array is yours until you accept it. Closing and starting over brings it back."
 }
