@@ -12,6 +12,13 @@ import { explorationSkillTotal } from "./exploration-skills";
  */
 const removeFalsyElements = (arr) => arr.filter((b) => b);
 
+/**
+ * Damage for a blow struck with no weapon Item behind it: a fist, a rock, a
+ * chair leg. Melee Weapons.md lists Improvised at d3, length 0. OSE defaulted
+ * this to 1d6, which is a shortsword.
+ */
+const IMPROVISED_DAMAGE = "1d3";
+
 export default class OseActor extends Actor {
   static migrateData(source) {
     // Fixing missing img
@@ -511,17 +518,22 @@ export default class OseActor extends Actor {
   rollAttack(attData, options = {}) {
     const data = this.system;
 
+    // A character with no weapon Item is swinging something improvised; a
+    // monster with no weapon Item is using the claws it was born with, and
+    // keeps the die it always had.
+    const improvised = !attData.item && this.type === "character";
+
     const label = attData.item
       ? game.i18n.format("VF.roll.attacksWith", {
           name: attData.item.name,
         })
-      : game.i18n.format("VF.roll.attacks", {
+      : game.i18n.format(improvised ? "VF.roll.attacksImprovised" : "VF.roll.attacks", {
           name: this.name,
         });
 
     const dmgParts = removeFalsyElements([
-      // Weapon damage roll value
-      attData.item?.system?.damage ?? "1d6",
+      // Weapon damage roll value, or an improvised blow when there is no weapon
+      attData.item?.system?.damage ?? (improvised ? IMPROVISED_DAMAGE : "1d6"),
     ]);
 
     // Weapon Damage Bonus

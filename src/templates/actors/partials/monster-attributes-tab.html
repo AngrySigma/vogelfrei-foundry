@@ -20,22 +20,16 @@
                     <input name="system.wounds.hd" type="text" value="{{system.wounds.hd}}" data-dtype="String" />
                 </div>
             </li>
+            {{!-- One ascending AC, typed by the Referee. The old pair of fields
+                  meant the one you edited depended on a setting, and the attack
+                  roll reads system.ac.value either way. --}}
             <li class="attribute">
-                {{#if config.ascendingAC}}
-                <h4 class="attribute-name box-title" title="{{ localize 'VF.ArmorClass' }}">
-                    {{ localize "VF.AscArmorClassShort" }}</h4>
-                <div class="attribute-value">
-                    <input name="system.aac.value" type="text" value="{{system.aac.value}}" data-dtype="Number"
-                        placeholder="10" data-dtype="Number" />
-                </div>
-                {{else}}
                 <h4 class="attribute-name box-title" title="{{ localize 'VF.ArmorClass' }}">
                     {{ localize "VF.ArmorClassShort" }}</h4>
                 <div class="attribute-value">
                     <input name="system.ac.value" type="text" value="{{system.ac.value}}" data-dtype="Number"
-                        placeholder="9" data-dtype="Number" />
+                        placeholder="8" />
                 </div>
-                {{/if}}
             </li>
             <li class="attribute attack">
                 {{#if config.ascendingAC}}

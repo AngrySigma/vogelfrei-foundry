@@ -204,7 +204,13 @@ const OseDice = {
     // target we report the total and leave the call to the Referee.
     const targetActorData = data.roll.target?.actor?.system || null;
     const variant = data.roll.acVariant || (data.roll.type === "missile" ? "ranged" : "melee");
-    const targetAc = targetActorData?.ac?.values?.[variant] ?? null;
+
+    // A character carries a table of ACs, one per variant; a monster carries
+    // the single number the Referee typed. Reading only the table left every
+    // attack on a monster with no AC to beat, which reported as a hit.
+    const targetAcData = targetActorData?.ac;
+    const variantAc = targetAcData?.values?.[variant];
+    const targetAc = (typeof variantAc === "number" ? variantAc : targetAcData?.value) ?? null;
 
     result.victim = data.roll.target || null;
     result.target = targetAc;

@@ -109,8 +109,11 @@
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">
-                <li class="attribute">
-                    <h4 class="attribute-name box-title" title="{{ localize 'VF.WeaponSkill' }}">
+                {{!-- Weapon Skill and Ballistic Skill are the attack rolls: the
+                      skill is what you add, so clicking it swings. With no
+                      weapon Item behind it that is an improvised blow, d3. --}}
+                <li class="attribute attack" data-attack="melee">
+                    <h4 class="attribute-name box-title" title="{{ localize 'VF.roll.improvisedMelee' }}">
                         <a>{{ localize "VF.WeaponSkillShort" }}</a>
                     </h4>
                     <div class="attribute-value">
@@ -118,8 +121,8 @@
                             data-dtype="Number" />
                     </div>
                 </li>
-                <li class="attribute">
-                    <h4 class="attribute-name box-title" title="{{ localize 'VF.BallisticSkill' }}">
+                <li class="attribute attack" data-attack="missile">
+                    <h4 class="attribute-name box-title" title="{{ localize 'VF.roll.improvisedMissile' }}">
                         <a>{{ localize "VF.BallisticSkillShort" }}</a>
                     </h4>
                     <div class="attribute-value">
@@ -150,43 +153,15 @@
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">
-                <li class="attribute attribute-secondaries attack" data-attack="melee">
-                    <h4 class="attribute-name box-title" title="{{localize 'VF.Melee'}}">
-                        <a>{{localize 'VF.MeleeShort'}}</a>
-                    </h4>
-                    <div class="flexrow">
-                        <div class="attribute-value"
-                            title="{{localize 'VF.scores.strength.long'}}({{system.scores.strength.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.melee}})">
-                            {{system.meleeMod}}
-                        </div>
-                    </div>
-                </li>
                 <li class="attribute hit-dice">
                     <h4 class="attribute-name box-title" title="{{ localize 'VF.HitDice' }}">
-                        {{ localize "VF.HitDiceShort" }}
+                        <a>{{ localize "VF.HitDiceShort" }}</a>
                     </h4>
-                    <div class="flexrow">
-                        <div class="attribute-value">
-                            <input name="system.wounds.hd" type="text" value="{{system.wounds.hd}}" placeholder=""
-                                data-dtype="String" />
-                        </div>
+                    <div class="attribute-value">
+                        <input name="system.wounds.hd" type="text" value="{{system.wounds.hd}}" placeholder=""
+                            data-dtype="String" />
                     </div>
                 </li>
-                <li class="attribute attribute-secondaries attack" data-attack="missile">
-                    <h4 class="attribute-name box-title" title="{{localize 'VF.Missile'}}">
-                        <a>{{localize 'VF.MissileShort'}}</a>
-                    </h4>
-                    <div class="flexrow">
-                        <div class="attribute-value"
-                            title="{{localize 'VF.scores.agility.long'}}({{system.scores.agility.mod}}) + {{localize 'VF.Modifier'}}({{system.thac0.mod.missile}})">
-                            {{system.rangedMod}}
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="flexrow">
-            <ul class="attributes flexrow">
                 <li class="attribute attribute-secondaries">
                     <h4 class="attribute-name box-title" title="{{localize 'VF.movement.overland.long'}}">
                         {{localize 'VF.movement.overland.short'}}</h4>

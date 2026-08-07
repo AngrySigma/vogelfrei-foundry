@@ -306,7 +306,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
   });
 
   describe("digestAttackResult(data, roll)", () => {
-    /** A defender carrying the five Vogelfrei armour classes. */
+    /** A character defender, carrying the whole Vogelfrei armour class table. */
     const defender = (values: Record<string, number>) => ({
       roll: {
         type: "melee",
@@ -364,6 +364,43 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     it("Flags a natural 20 as a critical", () => {
       expect(OseDice.digestAttackResult(data, createMockRoll(0, [20])).isCritical).equal(true);
       expect(OseDice.digestAttackResult(data, createMockRoll(14, [14])).isCritical).equal(false);
+    });
+
+    describe("Monsters, which carry one AC rather than a table", () => {
+      /** A monster defender: the single number the Referee typed. */
+      const monster = (value: number) => ({
+        roll: {
+          type: "melee",
+          target: { actor: { system: { ac: { value } } } },
+        },
+      });
+
+      it("Reads the monster's single AC", () => {
+        expect(OseDice.digestAttackResult(monster(12), createMockRoll(12)).target).equal(12);
+      });
+
+      it("Hits a monster on equal or above", () => {
+        expect(OseDice.digestAttackResult(monster(12), createMockRoll(12)).isSuccess).equal(true);
+        expect(OseDice.digestAttackResult(monster(12), createMockRoll(13)).isSuccess).equal(true);
+      });
+
+      it("Misses a monster below its AC", () => {
+        // Before the single-AC fallback this came back as a hit: the variant
+        // lookup found nothing and the roll was treated as untargeted.
+        const result = OseDice.digestAttackResult(monster(12), createMockRoll(11));
+        expect(result.isSuccess).equal(false);
+        expect(result.isFailure).equal(true);
+      });
+
+      it("Prefers the variant table when the defender has one", () => {
+        const both = {
+          roll: {
+            type: "melee",
+            target: { actor: { system: { ac: { value: 99, values: { melee: 14 } } } } },
+          },
+        };
+        expect(OseDice.digestAttackResult(both, createMockRoll(14)).target).equal(14);
+      });
     });
 
     it("Reports the total when there is no target, rather than inventing a defender", () => {
