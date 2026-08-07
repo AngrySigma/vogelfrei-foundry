@@ -84,7 +84,10 @@ export default class OseActorSheetCharacter extends OseActorSheet {
     // Prepare owned items
     this._prepareItems(data);
 
-    data.explorationSkills = prepareExplorationSkills(this.actor.system.exploration);
+    data.explorationSkills = prepareExplorationSkills(
+      this.actor.system.exploration,
+      this.actor.system.scores.strength.mod,
+    );
 
     data.enrichedBiography = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
       this.object.system.details.biography,

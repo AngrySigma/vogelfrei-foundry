@@ -2,6 +2,7 @@ import skipRollDialogCheck from "../helpers-behaviour";
 import OseDice from "../helpers-dice";
 import OseItem from "../item/entity";
 import { applyDamageToPools } from "./damage";
+import { explorationSkillTotal } from "./exploration-skills";
 
 /**
  * Used in the rollAttack function to remove zeroes from rollParts arrays
@@ -431,7 +432,7 @@ export default class OseActor extends Actor {
       actor: this,
       roll: {
         type: "below",
-        target: actorData.exploration[expl],
+        target: explorationSkillTotal(expl, actorData.exploration[expl] ?? 0, actorData.scores.strength.mod),
         blindroll: true,
       },
       details: game.i18n.format("VF.roll.details.exploration", {

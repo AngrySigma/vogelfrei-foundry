@@ -10,9 +10,12 @@ export default class OseDataModelAbility extends foundry.abstract.TypeDataModel 
       save: new StringField(),
       pattern: new StringField(),
       requirements: new StringField(),
-      roll: new StringField(),
-      rollType: new StringField(),
-      rollTarget: new NumberField(),
+      // Abilities are how extra skills are added, so a new one arrives ready to
+      // roll as one: 1d6 at or below the character's chance, which every skill
+      // starts at 1 in 6. Anything else is a couple of edits away.
+      roll: new StringField({ initial: "1d6" }),
+      rollType: new StringField({ initial: "below" }),
+      rollTarget: new NumberField({ integer: true, initial: 1 }),
       blindroll: new BooleanField(),
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),

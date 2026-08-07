@@ -119,12 +119,16 @@
         }
       },
       "exploration": {
-        "ld": 1,
-        "od": 2,
-        "sd": 1,
-        "ft": 1,
-        "fg": 2,
-        "hn": 1
+        "architecture": 1,
+        "bushcraft": 1,
+        "climbing": 1,
+        "languages": 1,
+        "search": 1,
+        "sleightOfHand": 1,
+        "sneakAttack": 1,
+        "stealth": 1,
+        "tinkering": 1,
+        "doors": 1
       },
       "scores": {
         "strength": {
@@ -279,9 +283,9 @@
       ],
       "pattern": "transparent",
       "requirements": "",
-      "roll": "",
-      "rollType": "result",
-      "rollTarget": 0,
+      "roll": "1d6",
+      "rollType": "below",
+      "rollTarget": 1,
       "blindroll": false
     }
   }

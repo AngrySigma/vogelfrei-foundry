@@ -33,11 +33,8 @@ type BaseScore = IncomingScore & {
  * Charisma-driven retainer stats).
  */
 export interface CharacterScores {
-  /** Strength, plus the character's open-doors chance. */
-  strength: BaseScore & {
-    /** Chance (in 6) to force open a stuck door, derived from Strength. */
-    od: number;
-  };
+  /** Strength. */
+  strength: BaseScore;
 
   /** Intelligence, plus derived literacy and spoken-language information. */
   intelligence: BaseScore & {
@@ -120,20 +117,6 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   };
 
   /**
-   * Modifier tables for the Open Door exploration skill, from 0 to 5.
-   * Applied to:
-   * - `strength.od`
-   */
-  static openDoorMods = {
-    0: 0,
-    3: 1,
-    9: 2,
-    13: 3,
-    16: 4,
-    18: 5,
-  };
-
-  /**
    * Mapping tables for character literacy.
    * Applied to:
    * - `intelligence.literacy`
@@ -207,7 +190,6 @@ export default class OseDataModelCharacterScores implements CharacterScores {
       value: this.#strength.value,
       bonus: this.#strength.bonus,
       mod: this.#strMod,
-      od: this.#strOpenDoorsMod,
     };
   }
 
@@ -225,12 +207,6 @@ export default class OseDataModelCharacterScores implements CharacterScores {
     ) as number;
   }
 
-  get #strOpenDoorsMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.openDoorMods,
-      this.#strength.value,
-    ) as number;
-  }
 
   get intelligence() {
     return {
