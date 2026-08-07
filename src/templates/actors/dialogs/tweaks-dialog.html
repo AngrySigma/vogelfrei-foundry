@@ -57,6 +57,13 @@
     </div>
   </div>
   <div class="form-group">
+    <label>{{localize "VF.details.nonmagic.bonus"}}</label>
+    <div class="form-fields">
+      <input type="text" name="system.details.nonmagic.bonus" id="nonmagic"
+        value="{{@root.system.details.nonmagic.bonus}}" data-dtype="Number" />
+    </div>
+  </div>
+  <div class="form-group">
     <label>{{localize "VF.MeleeBonus"}}</label>
     <div class="form-fields">
       <input type="text" name="system.thac0.mod.melee" id="melee" value="{{@root.system.thac0.mod.melee}}"
@@ -73,11 +80,9 @@
   <div class="form-group">
     <label>{{localize "VF.ArmorClassBonus"}}</label>
     <div class="form-fields">
-      {{#if config.ascendingAC}}
-      <input type="text" name="system.aac.mod" id="ac" value="{{@root.system.aac.mod}}" data-dtype="Number" />
-      {{else}}
+      {{!-- One AC object, so one modifier. The old ascending branch wrote to
+            system.aac.mod, which nothing has read since the AC rewrite. --}}
       <input type="text" name="system.ac.mod" id="ac" value="{{@root.system.ac.mod}}" data-dtype="Number" />
-      {{/if}}
     </div>
   </div>
   <div class="form-group">

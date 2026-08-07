@@ -184,8 +184,13 @@ export default class OseActor extends Actor {
       roll: {
         type: "above",
         target: actorData.saves[save].value,
-        magic: actorType === "character" ? actorData.scores.willpower.mod + actorData.details.magic.bonus : 0,
-        poison: actorType === "character" ? actorData.details.magic.bonus : 0,
+        // Ability Scores.md: Intelligence is added to saving throws against
+        // Magic-User spells; Willpower to every save that is not spell-related.
+        // Which one applies is the Referee's call at the table, so the dialog
+        // offers all three and the roll takes whichever button was pressed.
+        magic: actorType === "character" ? actorData.scores.intelligence.mod + actorData.details.magic.bonus : 0,
+        nonmagic:
+          actorType === "character" ? actorData.scores.willpower.mod + (actorData.details.nonmagic?.bonus ?? 0) : 0,
       },
       details: game.i18n.format("VF.roll.details.save", { save: label }),
     };

@@ -17,17 +17,24 @@ const armour = (type: string, acMelee: number, acRanged: number) =>
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("ARMOUR_CLASS_VARIANTS", () => {
-    it("Carries five armour classes", () => {
-      expect(ARMOUR_CLASS_VARIANTS.length).equal(5);
+    it("Carries four armour classes", () => {
+      expect(ARMOUR_CLASS_VARIANTS.length).equal(4);
     });
 
-    it("Names them melee, meleeMonster, ranged, surprised and noShield", () => {
+    it("Names them melee, meleeMonster, ranged and surprised", () => {
       expect(ARMOUR_CLASS_VARIANTS.map((v) => v.key)).deep.equal([
         "melee",
         "meleeMonster",
         "ranged",
         "surprised",
-        "noShield",
+      ]);
+    });
+
+    it("Keeps only the three a character carries about on the sheet", () => {
+      expect(ARMOUR_CLASS_VARIANTS.filter((v) => v.onSheet).map((v) => v.key)).deep.equal([
+        "melee",
+        "meleeMonster",
+        "ranged",
       ]);
     });
 
@@ -118,10 +125,10 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(ac.values.ranged).equal(16);
     });
 
-    it("Excludes the shield from the No Shield variant", () => {
+    it("Adds the shield to melee AC on top of body armour", () => {
       const ac = new OseDataModelCharacterAC([armour("light", 2, 2), armour("shield", 2, 3)], 2, 2, 0);
       expect(ac.values.melee).equal(16);
-      expect(ac.values.noShield).equal(14);
+      expect(ac.values.ranged).equal(18);
     });
   });
 
@@ -156,10 +163,19 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("list()", () => {
-    const list = new OseDataModelCharacterAC([armour("light", 2, 2)], 2, 2, 0).list;
+    const ac = new OseDataModelCharacterAC([armour("light", 2, 2)], 2, 2, 0);
+    const list = ac.list;
 
     it("Returns one entry per variant", () => {
       expect(list.length).equal(ARMOUR_CLASS_VARIANTS.length);
+    });
+
+    it("Narrows to the sheet variants in sheetList", () => {
+      expect(ac.sheetList.map((entry) => entry.key)).deep.equal(["melee", "meleeMonster", "ranged"]);
+    });
+
+    it("Leaves the situational variants out of sheetList", () => {
+      expect(ac.sheetList.some((entry) => entry.key === "surprised")).equal(false);
     });
 
     it("Pairs each label with its computed value", () => {

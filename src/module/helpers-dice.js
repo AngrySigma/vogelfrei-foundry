@@ -404,14 +404,14 @@ const OseDice = {
         },
       },
       {
-        action: "Poison",
-        label: game.i18n.localize("VF.saveBonus.poison.short"),
-        icon: "fas fa-skull",
-        callback: (event, button) => {
+        action: "nonmagic",
+        label: game.i18n.localize("VF.saveBonus.nonmagic.short"),
+        icon: "fas fa-hand-fist",
+        callback: (_event, button) => {
           rolled = true;
           rollData.form = button.form;
-          rollData.parts.push(`${rollData.data.roll.poison}`);
-          rollData.title += ` ${game.i18n.localize("VF.saveBonus.poison.short")} (${rollData.data.roll.poison})`;
+          rollData.parts.push(`${rollData.data.roll.nonmagic}`);
+          rollData.title += ` ${game.i18n.localize("VF.saveBonus.nonmagic.short")} (${rollData.data.roll.nonmagic})`;
           roll = OseDice.sendRoll(rollData);
         },
       },

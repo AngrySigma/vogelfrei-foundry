@@ -108,6 +108,11 @@
         }
       }
     }
+    // Gauges and captions travel together; see the template comment.
+    .resource-block {
+      display: flex;
+      flex-direction: column;
+    }
     .armour-classes {
       flex: 1;
       display: flex;
@@ -118,8 +123,10 @@
         display: flex;
         justify-content: space-between;
         align-items: baseline;
-        padding: 0 4px;
-        line-height: 1.15;
+        padding: 0 10px;
+        line-height: 1.1;
+        text-shadow: 0 0 2px white, 0 1px 2px white, 1px 0 2px white,
+          1px 1px 2px white;
       }
       .ac-label {
         font-size: var(--font-size-11);
@@ -129,7 +136,7 @@
         white-space: nowrap;
       }
       .ac-value {
-        font-size: var(--font-size-16);
+        font-size: var(--font-size-15);
         font-weight: bolder;
       }
     }
@@ -153,14 +160,11 @@
       &.stamina {
         --gauge-full: #1d5b73;
       }
-      &.armor-class {
-        background: url("../assets/shield.png") no-repeat center;
+      // The three ACs a character carries sit on the same shield the single
+      // OSE AC used to.
+      &.armour-classes {
+        background: url("../assets/shield.png") no-repeat center top;
         background-size: 70px;
-        .shield {
-          text-align: right;
-          padding: 0 14px;
-          font-size: var(--font-size-18);
-        }
       }
       height: 70px;
       position: relative;

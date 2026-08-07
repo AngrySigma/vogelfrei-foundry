@@ -69,6 +69,7 @@
   "VF.details.experience.share": "Experience Share",
   "VF.details.experience.award": "XP Award",
   "VF.details.magic.bonus": "Magic Resist Bonus",
+  "VF.details.nonmagic.bonus": "Non-Magic Resist Bonus",
   "VF.details.special.abilities": "Special Abilities",
   "VF.details.treasure": "Treasure type",
   "VF.details.treasureTable": "Table",
@@ -107,7 +108,8 @@
   "VF.saves.magic.long": "Magic",
   "VF.saveBonus.magic.long": "Bonus vs Magic",
   "VF.saveBonus.magic.short": "vs Magic",
-  "VF.saveBonus.poison.short": "vs Poison",
+  "VF.saveBonus.nonmagic.long": "Bonus vs Non-Magic",
+  "VF.saveBonus.nonmagic.short": "vs Non-Magic",
   "VF.Health": "Wounds",
   "VF.HealthMax": "Maximum Wounds",
   "VF.HealthShort": "WND",
@@ -321,8 +323,7 @@
   "VF.ac.meleeMonster": "vs. Monster",
   "VF.ac.ranged": "Ranged",
   "VF.ac.surprised": "Surprised",
-  "VF.ac.noShield": "No Shield",
-  "VF.ac.mod": "AC Modifier",
+  "VF.ac.mod": "Armour Class Modifier",
   "VF.WeaponSkill": "Weapon Skill",
   "VF.WeaponSkillShort": "WS",
   "VF.BallisticSkill": "Ballistic Skill",
@@ -382,5 +383,6 @@
   "VF.dialog.release": "Release this array",
   "VF.dialog.releaseAll": "Release all",
   "VF.dialog.confirmReleaseAll": "Release every outstanding array? Each of those players will be able to roll again.",
-  "VF.dialog.releasedFor": "Released {name}'s array."
+  "VF.dialog.releasedFor": "Released {name}'s array.",
+  "VF.ac.modShort": "AC Mod"
 }

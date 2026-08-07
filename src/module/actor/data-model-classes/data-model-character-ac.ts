@@ -45,6 +45,13 @@ export type ArmourClassVariant = {
   /** Whether this variant answers a ranged attack. Melee otherwise. */
   ranged: boolean;
 
+  /**
+   * Whether the sheet shows this number. Situational variants are false: they
+   * are still offered in the attack dialog, but a defender does not carry them
+   * around, and printing every one of them makes the block unreadable.
+   */
+  onSheet: boolean;
+
   formula: (components: ArmourClassComponents) => number;
 };
 
@@ -61,6 +68,7 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     key: "melee",
     label: "VF.ac.melee",
     ranged: false,
+    onSheet: true,
     formula: (c) => MELEE_BASE + c.agility + c.weaponSkill + c.armourMelee + c.shieldMelee + c.mod,
   },
   {
@@ -69,28 +77,28 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     key: "meleeMonster",
     label: "VF.ac.meleeMonster",
     ranged: false,
+    onSheet: true,
     formula: (c) => MELEE_BASE + c.agility + c.armourMelee + c.shieldMelee + c.mod,
   },
   {
     key: "ranged",
     label: "VF.ac.ranged",
     ranged: true,
+    onSheet: true,
     formula: (c) => RANGED_BASE + c.agility + c.armourRanged + c.shieldRanged + c.mod,
   },
   {
     // An unaware target keeps only what it is wearing. Surprise takes away the
     // benefit of being nimble, not the penalty of being clumsy -- a negative
     // Agility modifier still tells against you, a positive one stops helping.
+    //
+    // Situational: the attacker picks it in the dialog, so it stays off the
+    // sheet.
     key: "surprised",
     label: "VF.ac.surprised",
     ranged: false,
+    onSheet: false,
     formula: (c) => MELEE_BASE + Math.min(0, c.agility) + c.armourMelee + c.mod,
-  },
-  {
-    key: "noShield",
-    label: "VF.ac.noShield",
-    ranged: false,
-    formula: (c) => MELEE_BASE + c.agility + c.weaponSkill + c.armourMelee + c.mod,
   },
 ] as const;
 
@@ -153,15 +161,21 @@ export default class OseDataModelCharacterAC {
     return Object.fromEntries(ARMOUR_CLASS_VARIANTS.map((v) => [v.key, v.formula(components)]));
   }
 
-  /** Every AC as label/value pairs, for the sheet and the attack dialog. */
-  get list(): { key: string; label: string; ranged: boolean; value: number }[] {
+  /** Every AC as label/value pairs, for the attack dialog. */
+  get list(): { key: string; label: string; ranged: boolean; onSheet: boolean; value: number }[] {
     const components = this.components;
-    return ARMOUR_CLASS_VARIANTS.map(({ key, label, ranged, formula }) => ({
+    return ARMOUR_CLASS_VARIANTS.map(({ key, label, ranged, onSheet, formula }) => ({
       key,
       label,
       ranged,
+      onSheet,
       value: formula(components),
     }));
+  }
+
+  /** The ACs a character carries about with them, for the sheet. */
+  get sheetList(): { key: string; label: string; ranged: boolean; onSheet: boolean; value: number }[] {
+    return this.list.filter(({ onSheet }) => onSheet);
   }
 
   /** The default AC, for anywhere that still wants a single number. */

@@ -104,9 +104,17 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
   static migrateData(source) {
     OseDataModelCharacter.#migrateCantrips(source);
 
-    // Add magic resist bonus field for characters, defaulting to 0
+    // Two save bonuses, one per source. Ability Scores.md gives Intelligence to
+    // saves against spells and Willpower to everything else; these are the flat
+    // additions on top of those, for whatever the class or a career grants.
     if (source?.details && source?.details?.magic?.bonus === undefined) {
       source.details.magic = {
+        bonus: 0,
+      };
+    }
+
+    if (source?.details && source?.details?.nonmagic?.bonus === undefined) {
+      source.details.nonmagic = {
         bonus: 0,
       };
     }

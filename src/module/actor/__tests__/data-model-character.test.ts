@@ -82,7 +82,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       expect(actor?.system.ac.values).not.undefined;
       expect(actor?.system.ac.values.melee).not.undefined;
       expect(actor?.system.ac.values.ranged).not.undefined;
-      expect(actor?.system.ac.list.length).equal(5);
+      expect(actor?.system.ac.list.length).equal(4);
     });
 
     it("has weapon and ballistic skill", async () => {
