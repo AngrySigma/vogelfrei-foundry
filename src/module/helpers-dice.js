@@ -1,6 +1,7 @@
 /**
  * @file Helpful methods for dealing with OSE-specific dice logic
  */
+import { ARMOUR_CLASS_VARIANTS } from "./actor/data-model-classes/data-model-character-ac";
 import OSE from "./config";
 import { getRollMode, getRollModes } from "./helpers-message-mode";
 
