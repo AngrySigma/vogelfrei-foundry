@@ -306,146 +306,71 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
   });
 
   describe("digestAttackResult(data, roll)", () => {
-    const data = {
+    /** A defender carrying the five Vogelfrei armour classes. */
+    const defender = (values: Record<string, number>) => ({
       roll: {
-        thac0: 15,
-        target: {
-          actor: {
-            system: {
-              ac: { value: 0 },
-              aac: { value: 9 },
-            },
-          },
-        },
+        type: "melee",
+        target: { actor: { system: { ac: { values } } } },
       },
-    };
-
-    describe("Ascending AC", () => {
-      before(async () => {
-        await game.settings.set(game.system.id, "ascendingAC", true);
-      });
-
-      it("Natural 1 terms is unsuccessful", async () => {
-        expect(game.settings.get(game.system.id, "ascendingAC")).equal(true);
-        const rollTargetOne = createMockRoll(1, [1]);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isFailure).equal(true);
-        const rollTargetTwenty = createMockRoll(20, [1]);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isFailure).equal(true);
-      });
-
-      it("Attack rolls with a modified result of 1 are allowed to succeed if hits target AC. Issue#340", () => {
-        const attackBonus = -1;
-        const targetData = {
-          roll: {
-            thac0: 19,
-            target: {
-              actor: {
-                system: {
-                  ac: { value: 0 },
-                  aac: { value: 1 },
-                },
-              },
-            },
-          },
-        };
-
-        const roll = createMockRoll(1, [2, attackBonus]);
-        expect(OseDice.digestAttackResult(targetData, roll).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(targetData, roll).isFailure).equal(false);
-      });
-
-      it("Lower than target AC is unsuccessful", () => {
-        const roll = createMockRoll(data.roll.target.actor.system.aac.value - 1);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
-      });
-
-      it("Equal than target AC is successful", () => {
-        const roll = createMockRoll(data.roll.target.actor.system.aac.value);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
-      });
-
-      it("Higher than target AC is successful", () => {
-        const roll = createMockRoll(data.roll.target.actor.system.aac.value + 1);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
-      });
-
-      it("Attack rolls with a modified result of 20 are allowed to fail if doesn't hit target AC. Issue#340", () => {
-        const attackBonus = 1;
-        const targetData = {
-          roll: {
-            thac0: 19,
-            target: {
-              actor: {
-                system: {
-                  ac: { value: 0 },
-                  aac: { value: 21 },
-                },
-              },
-            },
-          },
-        };
-
-        const roll = createMockRoll(20, [19, attackBonus]);
-        expect(OseDice.digestAttackResult(targetData, roll).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(targetData, roll).isFailure).equal(true);
-      });
-
-      it("Natural 20 is successful", () => {
-        const rollTargetOne = createMockRoll(1, [20]);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isFailure).equal(false);
-        const rollTargetTwenty = createMockRoll(20, [20]);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isFailure).equal(false);
-      });
     });
 
-    describe("Descending AC, ac=0", () => {
-      before(async () => {
-        await game.settings.set(game.system.id, "ascendingAC", false);
-      });
+    const data = defender({ melee: 14, meleeMonster: 12, ranged: 15, surprised: 10, noShield: 12 });
 
-      it("Natural 1 terms is unsuccessful", async () => {
-        expect(game.settings.get(game.system.id, "ascendingAC")).equal(false);
-        const rollTargetOne = createMockRoll(1, [1]);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isFailure).equal(true);
-        const rollTargetTwenty = createMockRoll(20, [1]);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isFailure).equal(true);
-      });
+    it("Hits on equal to the target's AC", () => {
+      // The book's example: a total of exactly 14 against AC 14 lands.
+      const roll = createMockRoll(14);
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
+      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
+    });
 
-      it("Lower than thac0 is unsuccessful", () => {
-        const roll = createMockRoll(data.roll.thac0 - 1);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
-      });
+    it("Hits above the target's AC", () => {
+      const roll = createMockRoll(15);
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
+    });
 
-      it("Equal to thac0 is successful", () => {
-        const roll = createMockRoll(data.roll.thac0);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
-      });
+    it("Misses below the target's AC", () => {
+      const roll = createMockRoll(13);
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
+    });
 
-      it("Higher than thac0 is successful", () => {
-        const roll = createMockRoll(data.roll.thac0 + 1);
-        expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
-      });
+    it("Uses the AC variant the attacker chose", () => {
+      const vsMonster = { roll: { ...data.roll, acVariant: "meleeMonster" } };
+      const roll = createMockRoll(12);
+      // 12 misses AC 14 but lands on the monster variant's 12.
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(OseDice.digestAttackResult(vsMonster, roll).isSuccess).equal(true);
+    });
 
-      it("Natural 20 is successful", () => {
-        const rollTargetOne = createMockRoll(1, [20]);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, rollTargetOne).isFailure).equal(false);
-        const rollTargetTwenty = createMockRoll(20, [20]);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(data, rollTargetTwenty).isFailure).equal(false);
-      });
+    it("Defaults a ranged attack to the ranged AC", () => {
+      const ranged = { roll: { ...data.roll, type: "missile" } };
+      const roll = createMockRoll(15);
+      expect(OseDice.digestAttackResult(ranged, roll).isSuccess).equal(true);
+      expect(OseDice.digestAttackResult(ranged, createMockRoll(14)).isSuccess).equal(false);
+    });
+
+    it("Natural 1 always misses, whatever the total", () => {
+      const roll = createMockRoll(100, [1]);
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
+    });
+
+    it("Natural 20 always hits, whatever the total", () => {
+      const roll = createMockRoll(0, [20]);
+      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
+      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
+    });
+
+    it("Flags a natural 20 as a critical", () => {
+      expect(OseDice.digestAttackResult(data, createMockRoll(0, [20])).isCritical).equal(true);
+      expect(OseDice.digestAttackResult(data, createMockRoll(14, [14])).isCritical).equal(false);
+    });
+
+    it("Reports the total when there is no target, rather than inventing a defender", () => {
+      const noTarget = { roll: { type: "melee" } };
+      const roll = createMockRoll(3);
+      expect(OseDice.digestAttackResult(noTarget, roll).isSuccess).equal(true);
+      expect(OseDice.digestAttackResult(noTarget, roll).target).equal(null);
     });
   });
 

@@ -1,8 +1,14 @@
 name: Release Creation
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "*"
+
+# ncipollo/release-action creates the Release, which GITHUB_TOKEN cannot do
+# under the read-only default that newer repositories ship with.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -33,10 +39,10 @@ jobs:
         env:
           id: vogelfrei
           title: "Vogelfrei"
-          version: ${{github.event.release.tag_name}}
+          version: ${{github.ref_name}}
           url: https://github.com/${{github.repository}}
           manifest: https://github.com/${{github.repository}}/releases/latest/download/system.json
-          download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/system.zip
+          download: https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/system.zip
 
       # The zip's root must contain system.json for Foundry to install it.
       - name: Create zip file
@@ -52,14 +58,17 @@ jobs:
             NOTICE \
             AUTHORS
 
-      - name: Update Release with Files
+      # Creates the Release as well as attaching to it, so pushing a tag is the
+      # single action that publishes. Triggering on `release: published` meant a
+      # tag alone did nothing and the manifest URL 404'd.
+      - name: Publish release with assets
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          name: ${{ github.event.release.name }}
+          name: ${{ github.ref_name }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "./system.json, ./system.zip"
-          tag: ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }}
+          tag: ${{ github.ref_name }}
+          generateReleaseNotes: true

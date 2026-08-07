@@ -46,36 +46,17 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
   });
 
   describe("update(data, options)", () => {
-    // Armor class values cannot be modified directly as they are derived from
-    // armor, shield, and modifier values.
-    it("AAC to AC", async () => {
+    // AC is derived from armour, Agility, Weapon Skill and the free-form
+    // modifier, so it is not set directly and there is no second scheme to
+    // mirror it into.
+    it("AC modifier feeds every armour class", async () => {
       const actor = await createMockActor("character");
-      expect(actor?.system.ac.value).equal(12);
-      expect(actor?.system.aac.value).equal(7);
-      await actor?.update({ "system.ac.mod": 1 });
-      expect(actor?.system.ac.value).equal(11);
-      expect(actor?.system.aac.value).equal(19 - 11);
+      const before = actor?.system.ac.values.melee;
       await actor?.update({ "system.ac.mod": 2 });
-      expect(actor?.system.ac.value).equal(10);
-      expect(actor?.system.aac.value).equal(19 - 10);
+      expect(actor?.system.ac.values.melee).equal(before + 2);
+      expect(actor?.system.ac.values.surprised).equal(actor?.system.ac.values.surprised);
       await actor?.update({ "system.ac.mod": -1 });
-      expect(actor?.system.ac.value).equal(13);
-      expect(actor?.system.aac.value).equal(19 - 13);
-    });
-
-    it("AC to AAC", async () => {
-      const actor = await createMockActor("character");
-      expect(actor?.system.ac.value).equal(12);
-      expect(actor?.system.aac.value).equal(7);
-      await actor?.update({ "system.aac.mod": 1 });
-      expect(actor?.system.aac.value).equal(8);
-      expect(actor?.system.ac.value).equal(19 - 8);
-      await actor?.update({ "system.aac.mod": 2 });
-      expect(actor?.system.aac.value).equal(9);
-      expect(actor?.system.ac.value).equal(19 - 9);
-      await actor?.update({ "system.aac.mod": -1 });
-      expect(actor?.system.aac.value).equal(6);
-      expect(actor?.system.ac.value).equal(19 - 6);
+      expect(actor?.system.ac.values.melee).equal(before - 1);
     });
 
     it("THAC0 to BBA", async () => {
@@ -587,7 +568,17 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await trashChat();
     });
 
-    const explorationOptions: ExplorationSkill[] = ["ld", "od", "sd", "ft", "fg", "hn"];
+    const explorationOptions: ExplorationSkill[] = [
+      "architecture",
+      "bushcraft",
+      "climbing",
+      "languages",
+      "search",
+      "sleightOfHand",
+      "stealth",
+      "tinkering",
+      "doors",
+    ];
     explorationOptions.forEach((expl) => {
       it("for character", async () => {
         const actor = (await createMockActor("character")) as OseActor;
@@ -768,9 +759,8 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
         roll: {
           blindroll: false,
           dmg: ["1d6"],
-          thac0: 15,
           target: {
-            actor: { system: { ac: { value: 0 }, aac: { value: 9 } } },
+            actor: { system: { ac: { values: { melee: 12, ranged: 13 } } } },
           },
         },
       };

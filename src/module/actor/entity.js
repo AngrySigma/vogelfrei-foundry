@@ -33,26 +33,14 @@ export default class OseActor extends Actor {
   async update(data, options = {}) {
     const newData = { ...data };
     const {
-      "system.ac.value": acValue,
-      "system.aac.value": aacValue,
-      "system.ac.mod": acMod,
-      "system.aac.mod": aacMod,
       "system.thac0.bba": bbaValue,
       "system.thac0.value": thac0Value,
     } = newData;
-    // Compute AAC from AC
-    if (acValue !== undefined) {
-      newData["system.aac.value"] = 19 - acValue;
-    } else if (aacValue !== undefined) {
-      newData["system.ac.value"] = 19 - aacValue;
-    }
 
-    // Ensure AAC and AC have the same mod value
-    if (acMod !== undefined) {
-      newData["system.aac.mod"] = acMod;
-    } else if (aacMod !== undefined) {
-      newData["system.ac.mod"] = aacMod;
-    }
+    // OSE kept ac and aac mirrored, each 19 minus the other, so a world could
+    // be played either way round. Vogelfrei is ascending-only and its AC is
+    // derived from armour, Agility, Weapon Skill and a modifier, so mirroring
+    // it would write nonsense over the modifier the sheet just set.
 
     // Compute Thac0 from BBA
     if (thac0Value !== undefined) {

@@ -16,7 +16,6 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   const tables = [
     OseDataModelCharacterScores.standardAttributeMods,
     OseDataModelCharacterScores.cappedAttributeMods,
-    OseDataModelCharacterScores.openDoorMods,
     OseDataModelCharacterScores.literacyMods,
     OseDataModelCharacterScores.spokenMods,
   ];
@@ -48,20 +47,16 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
   describe("Standard attribute modifiers", () => spreadToModTests("Attribute"));
 
-  describe("Strength modifiers", () => {
-    describe("Open Doors", () => scoreSpread.map((score) => buildTestCases(score, "strength", "od", 2)));
-  });
-
   describe("Intelligence modifiers", () => {
-    describe("Literacy", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "literacy", 3)));
-    describe("Spoken Languages", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "spoken", 4)));
+    describe("Literacy", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "literacy", 2)));
+    describe("Spoken Languages", () => scoreSpread.map((score) => buildTestCases(score, "intelligence", "spoken", 3)));
   });
 
-  describe("Dexterity modifiers", () => {
+  describe("Agility modifiers", () => {
     describe("Initiative", () => scoreSpread.map((score) => buildTestCases(score, "agility", "init", 1)));
   });
 
-  describe("Charisma modifiers", () => {
+  describe("Leadership modifiers", () => {
     describe("NPC Reaction", () => scoreSpread.map((score) => buildTestCases(score, "leadership", "npc", 1)));
     describe("Loyalty", () => scoreSpread.map((score) => buildTestCasesWithModifiers(score, "leadership", "retain", 0, 4)));
     describe("Number of Retainers", () =>

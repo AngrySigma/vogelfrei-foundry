@@ -106,6 +106,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
 
     const recursiveFields = [
       { field: "wounds", subFields: ["hd", "value", "max"] },
+      { field: "stamina", subFields: ["value", "max"] },
       { field: "retainer", subFields: ["enabled", "loyalty", "wage"] },
     ];
     recursiveFields.forEach(({ field, subFields }) => {
@@ -125,7 +126,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
           { subField: "breath", subSubField: ["value"] },
           { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
-          { subField: "spell", subSubField: ["value"] },
+          { subField: "magic", subSubField: ["value"] },
           { subField: "device", subSubField: ["value"] },
         ],
       },

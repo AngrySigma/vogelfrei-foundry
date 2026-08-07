@@ -36,7 +36,6 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       const actor = await getMockActorKey(key);
       expect(actor?.system.scores).not.undefined;
       expect(actor?.system.scores.strength).not.undefined;
-      expect(actor?.system.scores.strength.od).not.undefined;
       expect(actor?.system.scores.intelligence).not.undefined;
       expect(actor?.system.scores.intelligence.literacy).not.undefined;
       expect(actor?.system.scores.intelligence.spoken).not.undefined;
@@ -74,23 +73,22 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     });
 
     it("has ac", async () => {
+      // Vogelfrei is ascending-only: one AC object carrying several values,
+      // not a descending/ascending pair with base/naked/shield.
       const actor = await getMockActorKey(key);
       expect(actor?.system.ac).not.undefined;
-      expect(actor?.system.ac.base).not.undefined;
-      expect(actor?.system.ac.naked).not.undefined;
-      expect(actor?.system.ac.shield).not.undefined;
       expect(actor?.system.ac.value).not.undefined;
       expect(actor?.system.ac.mod).not.undefined;
+      expect(actor?.system.ac.values).not.undefined;
+      expect(actor?.system.ac.values.melee).not.undefined;
+      expect(actor?.system.ac.values.ranged).not.undefined;
+      expect(actor?.system.ac.list.length).equal(5);
     });
 
-    it("has aac", async () => {
+    it("has weapon and ballistic skill", async () => {
       const actor = await getMockActorKey(key);
-      expect(actor?.system.aac).not.undefined;
-      expect(actor?.system.aac.base).not.undefined;
-      expect(actor?.system.aac.naked).not.undefined;
-      expect(actor?.system.aac.shield).not.undefined;
-      expect(actor?.system.aac.value).not.undefined;
-      expect(actor?.system.aac.mod).not.undefined;
+      expect(actor?.system.ws).not.undefined;
+      expect(actor?.system.bs).not.undefined;
     });
 
     describe("has spells", () => {
@@ -134,7 +132,8 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
 
     const recursiveFields = [
       { field: "wounds", subFields: ["hd", "value", "max"] },
-      { field: "exploration", subFields: ["ft", "ld", "od", "sd", "fg", "hn"] },
+      { field: "stamina", subFields: ["value", "max"] },
+      { field: "exploration", subFields: ["architecture", "bushcraft", "climbing", "languages", "search", "sleightOfHand", "stealth", "tinkering", "doors"] },
       { field: "retainer", subFields: ["enabled", "loyalty", "wage"] },
     ];
     recursiveFields.forEach(({ field, subFields }) => {
@@ -154,7 +153,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
           { subField: "breath", subSubField: ["value"] },
           { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
-          { subField: "spell", subSubField: ["value"] },
+          { subField: "magic", subSubField: ["value"] },
           { subField: "device", subSubField: ["value"] },
         ],
       },

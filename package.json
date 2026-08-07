@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "vogelfrei",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vogelfrei \u2014 an OSR game system for Foundry VTT, derived from Old-School Essentials.",
   "type": "module",
   "scripts": {
