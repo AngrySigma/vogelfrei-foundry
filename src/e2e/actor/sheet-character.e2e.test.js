@@ -257,20 +257,20 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
         await trashChat();
       });
 
-      describe("Listen Door", () => {
+      describe("Architecture", () => {
         describe("Can roll", () => canRollExploration("architecture"));
       });
 
-      describe("Open Door", () => {
-        describe("Can roll", () => canRollExploration("od"));
+      describe("Open Doors", () => {
+        describe("Can roll", () => canRollExploration("doors"));
       });
 
-      describe("Find Secret Doors", () => {
-        describe("Can roll", () => canRollExploration("sd"));
+      describe("Search", () => {
+        describe("Can roll", () => canRollExploration("search"));
       });
 
-      describe("Find Traps", () => {
-        describe("Can roll", () => canRollExploration("ft"));
+      describe("Stealth", () => {
+        describe("Can roll", () => canRollExploration("stealth"));
       });
     });
 
