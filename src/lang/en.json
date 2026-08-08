@@ -389,5 +389,20 @@
   "VF.dialog.releaseAll": "Release all",
   "VF.dialog.confirmReleaseAll": "Release every outstanding array? Each of those players will be able to roll again.",
   "VF.dialog.releasedFor": "Released {name}'s array.",
-  "VF.ac.modShort": "AC Mod"
+  "VF.ac.modShort": "AC Mod",
+  "VF.armor.medium": "Medium",
+  "VF.Setting.EncumbranceVogelfrei": "Vogelfrei (points)",
+  "VF.itemEncumbrance.label": "Encumbrance",
+  "VF.itemEncumbrance.hint": "How this item counts: one of many, too small to count, or too big to carry as one of many.",
+  "VF.itemEncumbrance.normal": "Normal",
+  "VF.itemEncumbrance.none": "Non-Encumbering",
+  "VF.itemEncumbrance.oversized": "Oversized",
+  "VF.itemEncumbrance.stackSize": "Stack Size",
+  "VF.itemEncumbrance.stackSizeHint": "How many of this item count as one. 20 arrows with a stack size of 20 are one item; 21 are two. 0 or 1 means each counts on its own.",
+  "VF.encumbrance.unencumbered": "Unencumbered",
+  "VF.encumbrance.light": "Lightly Encumbered",
+  "VF.encumbrance.heavy": "Heavily Encumbered",
+  "VF.encumbrance.severe": "Severely Encumbered",
+  "VF.encumbrance.over": "Overencumbered",
+  "VF.encumbrance.breakdown": "{items} items ({itemPoints}), oversized {oversized}, armour {armour}"
 }

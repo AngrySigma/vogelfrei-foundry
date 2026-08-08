@@ -1,6 +1,7 @@
 /**
  * @file The data model for Items of type Container
  */
+import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 export default class OseDataModelContainer extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, ArrayField, ObjectField, BooleanField } = foundry.data.fields;
@@ -17,6 +18,11 @@ export default class OseDataModelContainer extends foundry.abstract.TypeDataMode
       }),
       weight: new NumberField({ min: 0, initial: 0 }),
       itemslots: new NumberField({ min: 0, initial: 1 }),
+encumbrance: new StringField({
+        initial: DEFAULT_ITEM_ENCUMBRANCE,
+        choices: [...ITEM_ENCUMBRANCE_TYPES],
+      }),
+      stackSize: new NumberField({ min: 0, integer: true, initial: 0 }),
     };
   }
 

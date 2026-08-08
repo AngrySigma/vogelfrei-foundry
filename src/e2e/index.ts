@@ -46,6 +46,10 @@ import actorAlignmentTests, {
   key as actorAlignmentKey,
   options as actorAlignmentOptions,
 } from "../module/actor/__tests__/alignment.test";
+import actorEncumbranceTests, {
+  key as actorEncumbranceKey,
+  options as actorEncumbranceOptions,
+} from "../module/actor/__tests__/encumbrance-points.test";
 import actorDamageTests, {
   key as actorDamageKey,
   options as actorDamageOptions,
@@ -187,6 +191,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(actorEntityKey, actorEntityTests, actorEntityOptions);
   quench.registerBatch(actorDamageKey, actorDamageTests, actorDamageOptions);
   quench.registerBatch(actorAlignmentKey, actorAlignmentTests, actorAlignmentOptions);
+  quench.registerBatch(actorEncumbranceKey, actorEncumbranceTests, actorEncumbranceOptions);
 
   quench.registerBatch(actorSheetKey, actorSheetTests, actorSheetOptions);
   quench.registerBatch(actorSheetDragNDropKey, actorSheetDragNDropTests, actorSheetDragNDropOptions);

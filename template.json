@@ -206,7 +206,9 @@
         },
         "weight": 0,
         "cost": 0,
-        "containerId": ""
+        "containerId": "",
+        "encumbrance": "normal",
+        "stackSize": 0
       },
       "rollable": {
         "save": ""

@@ -1,10 +1,12 @@
 /**
  * @file The data model for Items of type Armor
  */
+import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
     unarmored: "VF.armor.unarmored",
     light: "VF.armor.light",
+    medium: "VF.armor.medium",
     heavy: "VF.armor.heavy",
     shield: "VF.armor.shield",
   };
@@ -32,6 +34,11 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       }),
       weight: new NumberField({ min: 0, initial: 0 }),
       itemslots: new NumberField({ min: 0, initial: 1 }),
+encumbrance: new StringField({
+        initial: DEFAULT_ITEM_ENCUMBRANCE,
+        choices: [...ITEM_ENCUMBRANCE_TYPES],
+      }),
+      stackSize: new NumberField({ min: 0, integer: true, initial: 0 }),
     };
   }
 

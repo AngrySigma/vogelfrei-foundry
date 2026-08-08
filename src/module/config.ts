@@ -6,6 +6,8 @@ import OseDataModelCharacterEncumbranceComplete from "./actor/data-model-classes
 import OseDataModelCharacterEncumbranceDetailed from "./actor/data-model-classes/data-model-character-encumbrance-detailed";
 import OseDataModelCharacterEncumbranceDisabled from "./actor/data-model-classes/data-model-character-encumbrance-disabled";
 import OseDataModelCharacterEncumbranceItemBased from "./actor/data-model-classes/data-model-character-encumbrance-item-based";
+import OseDataModelCharacterEncumbranceVogelfrei from "./actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
+import { ITEM_ENCUMBRANCE_TYPES } from "./actor/encumbrance-points";
 
 import { CLASSIC_FANTASY_CLASSES } from "./classes/classic-fantasy-classes";
 
@@ -41,7 +43,7 @@ export type Color = keyof OseConfig["colors"];
 /** A weapon/item quality tag key (e.g. `melee`, `missile`, `slow`, `twohanded`). */
 export type InventoryItemTag = keyof OseConfig["tags"];
 
-/** An encumbrance-scheme key: `basic`, `detailed`, `complete`, `disabled`, or `itembased`. */
+/** An encumbrance-scheme key: `vogelfrei`, `basic`, `detailed`, `complete`, `disabled`, or `itembased`. */
 export type EncumbranceOption = keyof OseConfig["encumbranceOptions"];
 
 /** Which token(s) damage is applied to: the `selected`, the `targeted`, or the `originalTarget`. */
@@ -79,7 +81,15 @@ export const OSE = {
     complete: OseDataModelCharacterEncumbranceComplete,
     disabled: OseDataModelCharacterEncumbranceDisabled,
     itembased: OseDataModelCharacterEncumbranceItemBased,
+    vogelfrei: OseDataModelCharacterEncumbranceVogelfrei,
   },
+  /**
+   * How an Item counts towards encumbrance, as localization keys. See
+   * ITEM_ENCUMBRANCE_TYPES for what each one means.
+   */
+  item_encumbrance: Object.fromEntries(
+    ITEM_ENCUMBRANCE_TYPES.map((kind) => [kind, `VF.itemEncumbrance.${kind}`]),
+  ) as Record<(typeof ITEM_ENCUMBRANCE_TYPES)[number], string>,
   /** Full ability-score names, as localization keys, keyed by ability. */
   scores: {
     strength: "VF.scores.strength.long",
@@ -158,6 +168,7 @@ export const OSE = {
   armor: {
     unarmored: "VF.armor.unarmored",
     light: "VF.armor.light",
+    medium: "VF.armor.medium",
     heavy: "VF.armor.heavy",
     shield: "VF.armor.shield",
   },

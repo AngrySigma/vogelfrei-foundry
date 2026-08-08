@@ -1,4 +1,7 @@
-<div class="encumbrance {{#if encumbered}}encumbered{{/if}}">
+{{!-- The Vogelfrei scheme names the state it puts you in and where the points
+      came from; the weight-based schemes have neither, hence the guard. --}}
+<div class="encumbrance {{#if encumbered}}encumbered{{/if}}"
+  {{#if stateLabel}}data-tooltip aria-label="{{localize stateLabel}} &mdash; {{localize 'VF.encumbrance.breakdown' items=itemCount itemPoints=itemPoints oversized=oversizedPoints armour=armourPoints}}"{{/if}}>
   <span class="encumbrance-bar" style="width:{{pct}}%"></span>
   {{#each steps as |s|}}
   <i class="encumbrance-breakpoint arrow-up" style="left:{{s}}%"></i>

@@ -56,7 +56,7 @@ const registerSettings = () => {
   game.settings.register(game.system.id, "encumbranceOption", {
     name: game.i18n.localize("VF.Setting.Encumbrance"),
     hint: game.i18n.localize("VF.Setting.EncumbranceHint"),
-    default: "detailed",
+    default: "vogelfrei",
     scope: "world",
     type: String,
     config: true,
