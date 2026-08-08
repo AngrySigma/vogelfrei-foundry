@@ -2,7 +2,7 @@
   "private": true,
   "name": "vogelfrei",
   "version": "0.2.0",
-  "description": "Vogelfrei \u2014 an OSR game system for Foundry VTT, derived from Old-School Essentials.",
+  "description": "Vogelfrei — an OSR game system for Foundry VTT, derived from Old-School Essentials.",
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist .types-build",
@@ -31,6 +31,7 @@
     "@league-of-foundry-developers/foundry-vtt-types": "13.346.0-beta.20251209192131",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/livereload": "^0.9.2",
+    "classic-level": "^3.0.0",
     "fs-extra": "^8.1.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^4.55.1",
