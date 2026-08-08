@@ -105,8 +105,7 @@
         "biography": "",
         "notes": "",
         "class": "",
-        "title": "",
-        "alignment": "",
+        "alignment": "neutrality",
         "level": 1,
         "xp": {
           "share": 100,
@@ -115,6 +114,9 @@
           "bonus": 0
         },
         "magic": {
+          "bonus": 0
+        },
+        "nonmagic": {
           "bonus": 0
         }
       },
@@ -166,7 +168,7 @@
       ],
       "details": {
         "biography": "",
-        "alignment": "",
+        "alignment": "neutrality",
         "xp": 0,
         "specialAbilities": 0,
         "treasure": {

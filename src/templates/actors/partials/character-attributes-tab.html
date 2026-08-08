@@ -92,20 +92,42 @@
                     <div class="health-empty" style="height:{{counter false system.stamina.value system.stamina.max}}%"></div>
                     <div class="health-full" style="height:{{counter true system.stamina.value system.stamina.max}}%"></div>
                 </div>
-                <div class="health armour-classes">
-                    {{#each system.ac.sheetList}}
-                    <div class="ac-entry" title="{{localize this.label}}">
-                        <span class="ac-label">{{localize this.label}}</span>
-                        <span class="ac-value">{{this.value}}</span>
-                    </div>
-                    {{/each}}
+                <div class="health hit-dice">
+                    <input class="health-value hit-dice-value" name="system.wounds.hd" type="text"
+                        value="{{system.wounds.hd}}" placeholder="1d8" data-dtype="String"
+                        title="{{localize 'VF.HitDice'}}" />
+                    <a class="hit-dice-roll" title="{{localize 'VF.HitDice'}}"><i class="fas fa-dice-d20"></i></a>
                 </div>
             </div>
             <div class="flexrow resource-labels">
                 <div>{{localize 'VF.Health'}}</div>
                 <div>{{localize 'VF.Stamina'}}</div>
-                <div>{{localize 'VF.ArmorClassShort'}}</div>
+                <div>{{localize 'VF.HitDiceShort'}}</div>
             </div>
+        </div>
+        {{!-- The ACs a character carries, one per sheet variant, and the
+              free-form modifier that feeds all of them. Icons come from
+              .ac-entry[data-key] in character.scss. --}}
+        <div class="flexrow">
+            <ul class="attributes flexrow armour-classes">
+                {{#each system.ac.sheetList}}
+                <li class="attribute ac-entry" data-key="{{this.key}}" title="{{localize this.label}}">
+                    <h4 class="attribute-name box-title">
+                        <span class="ac-icon"></span>{{localize this.label}}
+                    </h4>
+                    <div class="attribute-value ac-value">{{this.value}}</div>
+                </li>
+                {{/each}}
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{ localize 'VF.ac.mod' }}">
+                        {{ localize "VF.ac.modShort" }}
+                    </h4>
+                    <div class="attribute-value">
+                        <input name="system.ac.mod" type="text" value="{{system.ac.mod}}" placeholder="0"
+                            data-dtype="Number" />
+                    </div>
+                </li>
+            </ul>
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">
@@ -130,15 +152,6 @@
                             data-dtype="Number" />
                     </div>
                 </li>
-                <li class="attribute">
-                    <h4 class="attribute-name box-title" title="{{ localize 'VF.ac.mod' }}">
-                        {{ localize "VF.ac.modShort" }}
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.ac.mod" type="text" value="{{system.ac.mod}}" placeholder="0"
-                            data-dtype="Number" />
-                    </div>
-                </li>
                 {{#if config.initiative}}
                 <li class="attribute">
                     <h4 class="attribute-name box-title" title="{{ localize 'VF.Initiative' }}">
@@ -153,15 +166,6 @@
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">
-                <li class="attribute hit-dice">
-                    <h4 class="attribute-name box-title" title="{{ localize 'VF.HitDice' }}">
-                        <a>{{ localize "VF.HitDiceShort" }}</a>
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.wounds.hd" type="text" value="{{system.wounds.hd}}" placeholder=""
-                            data-dtype="String" />
-                    </div>
-                </li>
                 <li class="attribute attribute-secondaries">
                     <h4 class="attribute-name box-title" title="{{localize 'VF.movement.overland.long'}}">
                         {{localize 'VF.movement.overland.short'}}</h4>

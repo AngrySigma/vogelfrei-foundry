@@ -32,6 +32,9 @@ export type Save = keyof OseConfig["saves_long"];
 /** An armour category key: `unarmored`, `light`, `heavy`, or `shield`. */
 export type Armor = keyof OseConfig["armor"];
 
+/** An alignment key: `order`, `neutrality`, or `chaos`. */
+export type Alignment = keyof OseConfig["alignments"];
+
 /** A UI colour key used by the system's theming. */
 export type Color = keyof OseConfig["colors"];
 
@@ -140,6 +143,16 @@ export const OSE = {
     paralysis: "VF.saves.paralysis.long",
     breath: "VF.saves.breath.long",
     magic: "VF.saves.magic.long",
+  },
+  /**
+   * The three alignments, as localization keys. Character/Alignment.md: "The
+   * three alignments are Order, Neutrality, and Chaos." Neutrality is where
+   * every mortal starts.
+   */
+  alignments: {
+    order: "VF.alignment.order",
+    neutrality: "VF.alignment.neutrality",
+    chaos: "VF.alignment.chaos",
   },
   /** Armour category names, as localization keys, keyed by category. */
   armor: {

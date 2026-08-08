@@ -48,7 +48,8 @@ export type ArmourClassVariant = {
   /**
    * Whether the sheet shows this number. Situational variants are false: they
    * are still offered in the attack dialog, but a defender does not carry them
-   * around, and printing every one of them makes the block unreadable.
+   * around, and printing every one of them makes the block unreadable. A sheet
+   * variant also wants an icon -- see .ac-entry[data-key] in character.scss.
    */
   onSheet: boolean;
 
@@ -77,7 +78,7 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     key: "meleeMonster",
     label: "VF.ac.meleeMonster",
     ranged: false,
-    onSheet: true,
+    onSheet: false,
     formula: (c) => MELEE_BASE + c.agility + c.armourMelee + c.shieldMelee + c.mod,
   },
   {

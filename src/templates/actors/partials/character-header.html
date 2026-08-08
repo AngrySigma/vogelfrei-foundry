@@ -41,25 +41,12 @@
       />
       <label>{{localize 'VF.RetainerWage'}}</label>
     </li>
-    {{else}}
-    <li>
-      <input
-        type="text"
-        name="system.details.title"
-        value="{{system.details.title}}"
-        data-dtype="String"
-      />
-      <label>{{localize 'VF.details.title'}}</label>
-    </li>
     {{/if}}
     {{#if isOwnerOrObserver}}
       <li>
-        <input
-          type="text"
-          name="system.details.alignment"
-          value="{{system.details.alignment}}"
-          data-dtype="String"
-        />
+        <select name="system.details.alignment" data-dtype="String">
+          {{selectOptions config.alignments selected=system.details.alignment localize=true}}
+        </select>
         <label>{{localize 'VF.details.alignment'}}</label>
       </li>
     {{/if}}
@@ -97,6 +84,18 @@
         {{#if system.details.xp.bonus}}
         <span class="xp-bonus">+{{system.details.xp.bonus}}%</span>
         {{/if}}
+      </li>
+      {{!-- What the next level costs. The class XP tables are not in the system,
+            so this is typed rather than derived; it already drove the "enough
+            XP" highlight on the level box. --}}
+      <li class="flex2">
+        <input
+          type="text"
+          name="system.details.xp.next"
+          value="{{system.details.xp.next}}"
+          data-dtype="Number"
+        />
+        <label>{{localize 'VF.details.experience.next'}}</label>
       </li>
     </ul>
   {{/if}}

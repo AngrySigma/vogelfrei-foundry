@@ -30,12 +30,8 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       ]);
     });
 
-    it("Keeps only the three a character carries about on the sheet", () => {
-      expect(ARMOUR_CLASS_VARIANTS.filter((v) => v.onSheet).map((v) => v.key)).deep.equal([
-        "melee",
-        "meleeMonster",
-        "ranged",
-      ]);
+    it("Keeps only the two a character carries about on the sheet", () => {
+      expect(ARMOUR_CLASS_VARIANTS.filter((v) => v.onSheet).map((v) => v.key)).deep.equal(["melee", "ranged"]);
     });
 
     it("Marks only Ranged as answering a ranged attack", () => {
@@ -171,11 +167,15 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Narrows to the sheet variants in sheetList", () => {
-      expect(ac.sheetList.map((entry) => entry.key)).deep.equal(["melee", "meleeMonster", "ranged"]);
+      expect(ac.sheetList.map((entry) => entry.key)).deep.equal(["melee", "ranged"]);
     });
 
     it("Leaves the situational variants out of sheetList", () => {
-      expect(ac.sheetList.some((entry) => entry.key === "surprised")).equal(false);
+      expect(ac.sheetList.some((entry) => ["surprised", "meleeMonster"].includes(entry.key))).equal(false);
+    });
+
+    it("Still offers every variant to the attack dialog", () => {
+      expect(ac.list.map((entry) => entry.key)).deep.equal(["melee", "meleeMonster", "ranged", "surprised"]);
     });
 
     it("Pairs each label with its computed value", () => {

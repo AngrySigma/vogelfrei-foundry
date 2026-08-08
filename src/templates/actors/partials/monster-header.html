@@ -14,11 +14,9 @@
     <ul class="summary flexrow">
       <li class="flex2 flexrow check-field">
         <div>
-          <input
-            type="text"
-            name="system.details.alignment"
-            value="{{system.details.alignment}}"
-          />
+          <select name="system.details.alignment" data-dtype="String">
+            {{selectOptions config.alignments selected=system.details.alignment localize=true}}
+          </select>
           <label>{{localize 'VF.details.alignment'}}</label>
         </div>
         <div

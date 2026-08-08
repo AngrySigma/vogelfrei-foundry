@@ -1,6 +1,7 @@
 /**
  * @file The data model for Actors of type Character.
  */
+import { normaliseAlignment } from "./alignment";
 import OseDataModelCharacterAC from "./data-model-classes/data-model-character-ac";
 import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
 import OseDataModelCharacterScores from "./data-model-classes/data-model-character-scores";
@@ -117,6 +118,12 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       source.details.nonmagic = {
         bonus: 0,
       };
+    }
+
+    // Alignment is a dropdown now, and a dropdown cannot show a value that is
+    // not one of its options.
+    if (source?.details) {
+      source.details.alignment = normaliseAlignment(source.details.alignment);
     }
 
     // biome-ignore lint/complexity/noThisInStatic: super.migrateData() correctly calls parent static method

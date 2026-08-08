@@ -2,6 +2,7 @@
  * @file The data model for Actors of type Monster
  */
 // Encumbrance schemes
+import { normaliseAlignment } from "./alignment";
 import OseDataModelCharacterEncumbranceDisabled from "./data-model-classes/data-model-character-encumbrance-disabled";
 import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
 import OseDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
@@ -23,6 +24,11 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
   static migrateData(source) {
     OseDataModelMonster.#migrateMonsterLanguages(source);
     OseDataModelMonster.#migrateCantrips(source);
+
+    // Same dropdown as the character sheet, same normalising.
+    if (source?.details) {
+      source.details.alignment = normaliseAlignment(source.details.alignment);
+    }
 
     // biome-ignore lint/complexity/noThisInStatic: super.migrateData() correctly calls parent static method
     return super.migrateData(source);
