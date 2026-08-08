@@ -4,6 +4,7 @@
  */
 import OseActorSheetCharacter from "./module/actor/character-sheet";
 import OseDataModelCharacter from "./module/actor/data-model-character";
+import OseDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import OseDataModelMonster from "./module/actor/data-model-monster";
 import OseActor from "./module/actor/entity";
 import OseActorSheetMonster from "./module/actor/monster-sheet";
@@ -155,8 +156,31 @@ Hooks.once("ready", async () => {
     return true;
   });
 
+  await adoptVogelfreiEncumbrance();
   await promptTokenRingSelection();
 });
+
+/**
+ * Move a world off whichever OSE weight scheme it was created with, once.
+ *
+ * Settings store the value a world was made with, so raising the registered
+ * default leaves existing worlds weighing coins: the new per-item fields show
+ * up, but movement keeps coming from weight and nothing the player does to
+ * their inventory changes it. Runs once per world and then leaves the setting
+ * alone, so a Referee who deliberately picks a weight scheme keeps it.
+ */
+async function adoptVogelfreiEncumbrance() {
+  if (!game.user.isGM) return;
+  if (game.settings.get(game.system.id, "encumbranceSchemeAdopted")) return;
+
+  await game.settings.set(game.system.id, "encumbranceSchemeAdopted", true);
+
+  const current = game.settings.get(game.system.id, "encumbranceOption");
+  if (current === OseDataModelCharacterEncumbranceVogelfrei.type) return;
+
+  await game.settings.set(game.system.id, "encumbranceOption", OseDataModelCharacterEncumbranceVogelfrei.type);
+  ui.notifications?.info(game.i18n.localize("VF.messages.EncumbranceAdopted"));
+}
 
 // Party sheet control
 Hooks.on("activateActorDirectory", party.addControl);

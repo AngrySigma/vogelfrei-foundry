@@ -148,6 +148,31 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
   });
 
+  describe("Items created without a quantity", () => {
+    // Weapons and armour are created with quantity 0 -- they are one of
+    // themselves, not a pile. Reading that as "none" made a shield free.
+    const bare = (type: string, system: Record<string, unknown>) => ({ type, system }) as never;
+
+    it("Still charges for a shield", () => {
+      expect(encumbranceBreakdown([bare("armor", { type: "shield", equipped: true, encumbrance: "oversized" })]).points).equal(1);
+    });
+
+    it("Counts a weapon as one item", () => {
+      expect(encumbranceBreakdown([bare("weapon", { equipped: true })]).itemCount).equal(1);
+      expect(encumbranceBreakdown(many(6, () => bare("weapon", {}))).points).equal(1);
+    });
+
+    it("Still keeps worn armour out of the tally and charges its type", () => {
+      const worn = encumbranceBreakdown([bare("armor", { type: "medium", equipped: true })]);
+      expect(worn.itemCount).equal(0);
+      expect(worn.armourPoints).equal(1);
+    });
+
+    it("Lets an explicit quantity win", () => {
+      expect(encumbranceBreakdown([bare("item", { quantity: { value: 21 }, stackSize: 20 })]).itemCount).equal(2);
+    });
+  });
+
   describe("A whole character", () => {
     // Eleven odds and ends, a shield in hand, and a suit of heavy armour.
     const loaded = encumbranceBreakdown([...many(11, item), shield(), armour("heavy")]);

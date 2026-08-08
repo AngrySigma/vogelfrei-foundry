@@ -21,6 +21,9 @@
             />
           </div>
         </div>
+        {{!-- The point scheme weighs nothing and has no slots, so neither
+              box would do anything. --}}
+        {{#unless (eq @root.config.encumbrance 'vogelfrei')}}
         {{#unless (eq @root.config.encumbrance 'itembased')}}
         <div class="form-group">
           <label>{{localize 'VF.items.Weight'}}</label>
@@ -47,6 +50,7 @@
             />
           </div>
         </div>
+        {{/unless}}
         {{/unless}}
         {{!-- Vogelfrei encumbrance: how this item counts, and how many of it
               make one countable item. Time and Movement.md#encumbrance --}}

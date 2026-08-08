@@ -151,7 +151,11 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = []): Encumbrance
       continue;
     }
 
-    const counted = countedItems(item.system.quantity?.value ?? 1, item.system.stackSize);
+    // Weapons and armour are created with a quantity of 0 -- they are one of
+    // themselves, not a pile -- so a missing or zero quantity means "one of
+    // it". A positive quantity is a real count and stacks as usual.
+    const held = item.system.quantity?.value ?? 0;
+    const counted = held > 0 ? countedItems(held, item.system.stackSize) : 1;
     const kind = item.system.encumbrance ?? DEFAULT_ITEM_ENCUMBRANCE;
 
     if (kind === "none") continue;

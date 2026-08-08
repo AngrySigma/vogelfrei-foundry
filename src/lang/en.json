@@ -404,5 +404,7 @@
   "VF.encumbrance.heavy": "Heavily Encumbered",
   "VF.encumbrance.severe": "Severely Encumbered",
   "VF.encumbrance.over": "Overencumbered",
-  "VF.encumbrance.breakdown": "{items} items ({itemPoints}), oversized {oversized}, armour {armour}"
+  "VF.encumbrance.breakdown": "{items} items ({itemPoints}), oversized {oversized}, armour {armour}",
+  "VF.messages.EncumbranceAdopted": "Encumbrance switched to the Vogelfrei point scheme. Weight is no longer tracked.",
+  "VF.itemEncumbrance.contributes": "Counts as {count} item(s)"
 }

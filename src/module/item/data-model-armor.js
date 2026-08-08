@@ -1,7 +1,7 @@
 /**
  * @file The data model for Items of type Armor
  */
-import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
+import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES, countedItems } from "../actor/encumbrance-points";
 export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
     unarmored: "VF.armor.unarmored",
@@ -40,6 +40,16 @@ encumbrance: new StringField({
       }),
       stackSize: new NumberField({ min: 0, integer: true, initial: 0 }),
     };
+  }
+
+  /**
+   * How many countable items this row is worth under the Vogelfrei point
+   * scheme, after stacking. Oversized and non-encumbering rows still report a
+   * count -- the sheet shows what kind they are alongside it.
+   */
+  get encumbranceCount() {
+    const held = this.quantity?.value ?? 0;
+    return held > 0 ? countedItems(held, this.stackSize) : 1;
   }
 
   get manualTags() {

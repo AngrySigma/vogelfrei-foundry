@@ -3,7 +3,7 @@
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
     <div class="category-name">{{localize "VF.items.Weapons"}}</div>
     <div class="icon-row">{{localize "VF.items.Qualities"}}</div>
-    <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
+    <div class="field-short">{{#if (eq @root.config.encumbrance "vogelfrei")}}<i class="fas fa-boxes-stacked" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.label'}}"></i>{{else}}<i class="fas fa-weight-hanging"></i>{{/if}}</div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
@@ -41,9 +41,9 @@
           {{/unless}} {{/each}}
         </div>
         <div class="field-short">
-          {{#if (eq @root.config.encumbrance
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq item.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq item.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=item.system.encumbranceCount}}">{{item.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance
           "basic")}}_{{else if (eq @root.config.encumbrance
-            "itembased")}}{{item.system.itemslots}}{{else}}{{item.system.weight}}{{/if}}
+            "itembased")}}{{item.system.itemslots}}{{else}}{{item.system.weight}}{{/if}}{{/if}}
         </div>
         {{#if @root.owner }}
         <div class="item-controls">
@@ -82,7 +82,7 @@
     {{else}}
     <div class="field-short">{{localize "VF.items.ArmorAC"}}</div>
     {{/if}}
-    <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
+    <div class="field-short">{{#if (eq @root.config.encumbrance "vogelfrei")}}<i class="fas fa-boxes-stacked" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.label'}}"></i>{{else}}<i class="fas fa-weight-hanging"></i>{{/if}}</div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
@@ -108,9 +108,9 @@
           {{item.system.ac.value}} {{/if}}
         </div>
         <div class="field-short">
-          {{#if (eq @root.config.encumbrance
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq item.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq item.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=item.system.encumbranceCount}}">{{item.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance
           "basic")}}_{{else if (eq @root.config.encumbrance
-          "itembased")}}{{item.system.itemslots}}{{else}}{{item.system.weight}}{{/if}}
+          "itembased")}}{{item.system.itemslots}}{{else}}{{item.system.weight}}{{/if}}{{/if}}
         </div>
         {{#if @root.owner }}
         <div class="item-controls">
@@ -146,7 +146,7 @@
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
     <div class="category-name">{{localize "VF.items.Containers"}}</div>
     <div class="field-short"><i class="fas fa-suitcase"></i></div>
-    <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
+    <div class="field-short">{{#if (eq @root.config.encumbrance "vogelfrei")}}<i class="fas fa-boxes-stacked" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.label'}}"></i>{{else}}<i class="fas fa-weight-hanging"></i>{{/if}}</div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
@@ -169,18 +169,18 @@
         <div class="category-caret"><i class="fas fa-caret-down"></i></div>
         <h4 class="item-name" title="{{bag.name}}">{{bag.name~}}</h4>
         <div class="field-short container-total-weight">
-          {{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}&mdash;{{else}}{{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
           @root.config.encumbrance
           "detailed")}}_{{else if (eq
             @root.config.encumbrance
-            "itembased")}}_{{else}}{{bag.system.totalWeight}}{{/if}}
+            "itembased")}}_{{else}}{{bag.system.totalWeight}}{{/if}}{{/if}}
         </div>
         <div class="field-short container-item-weight">
-          {{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq bag.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq bag.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=bag.system.encumbranceCount}}">{{bag.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
           @root.config.encumbrance
           "detailed")}}_{{else if (and (eq @root.config.encumbrance
             "itembased") (eq bag.system.contents.length 0))}}{{bag.system.itemslots}}{{else if (and (eq @root.config.encumbrance
-              "itembased") (gt bag.system.contents.length 0))}}_{{else}}{{bag.system.weight}}{{/if}}
+              "itembased") (gt bag.system.contents.length 0))}}_{{else}}{{bag.system.weight}}{{/if}}{{/if}}
         </div>
         {{#if @root.owner}}
         <div class="item-controls">
@@ -231,10 +231,10 @@
               item.system.quantity.max}}<span>/{{item.system.quantity.max}}</span>{{/if}}
             </div>
             <div class="field-short">
-              {{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
+              {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq item.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq item.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=item.system.encumbranceCount}}">{{item.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
               @root.config.encumbrance
               "detailed")}}_{{else if (eq @root.config.encumbrance
-                "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}
+                "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}{{/if}}
             </div>
             {{#if @root.owner}}
             <div class="item-controls">
@@ -279,7 +279,7 @@
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
     <div class="category-name">{{localize "VF.items.Misc"}}</div>
     <div class="field-short"><i class="fas fa-hashtag"></i></div>
-    <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
+    <div class="field-short">{{#if (eq @root.config.encumbrance "vogelfrei")}}<i class="fas fa-boxes-stacked" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.label'}}"></i>{{else}}<i class="fas fa-weight-hanging"></i>{{/if}}</div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
@@ -310,10 +310,10 @@
           item.system.quantity.max}}<span>/{{item.system.quantity.max}}</span>{{/if}}
         </div>
         <div class="field-short">
-          {{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq item.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq item.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=item.system.encumbranceCount}}">{{item.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance "basic")}}_{{else if (eq
           @root.config.encumbrance
           "detailed")}}_{{else if (eq @root.config.encumbrance
-            "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}
+            "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}{{/if}}
         </div>
         {{#if @root.owner}}
         <div class="item-controls">
@@ -365,7 +365,7 @@
       {{treasure}} <i class="fas fa-circle"></i>
     </div>
     <div class="field-short"><i class="fas fa-hashtag"></i></div>
-    <div class="field-short"><i class="fas fa-weight-hanging"></i></div>
+    <div class="field-short">{{#if (eq @root.config.encumbrance "vogelfrei")}}<i class="fas fa-boxes-stacked" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.label'}}"></i>{{else}}<i class="fas fa-weight-hanging"></i>{{/if}}</div>
     {{#if @root.owner}}
     <div class="item-controls">
       <a
@@ -402,8 +402,8 @@
           {{/if}}
         </div>
         <div class="field-short">
-          {{#if (eq @root.config.encumbrance
-          "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}
+          {{#if (eq @root.config.encumbrance "vogelfrei")}}{{#if (eq item.system.encumbrance "none")}}<i class="fas fa-feather" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.none'}}"></i>{{else if (eq item.system.encumbrance "oversized")}}<i class="fas fa-expand" data-tooltip aria-label="{{localize 'VF.itemEncumbrance.oversized'}}"></i>{{else}}<span data-tooltip aria-label="{{localize 'VF.itemEncumbrance.contributes' count=item.system.encumbranceCount}}">{{item.system.encumbranceCount}}</span>{{/if}}{{else}}{{#if (eq @root.config.encumbrance
+          "itembased")}}{{item.system.cumulativeItemslots}}{{else}}{{item.system.cumulativeWeight}}{{/if}}{{/if}}
         </div>
         {{#if @root.owner}}
         <div class="item-controls">

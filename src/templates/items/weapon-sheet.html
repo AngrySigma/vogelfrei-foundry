@@ -20,7 +20,10 @@
               />
             </div>
           </div>
-          {{#unless (eq @root.config.encumbrance 'itembased')}}
+          {{!-- The point scheme weighs nothing and has no slots, so neither
+              box would do anything. --}}
+        {{#unless (eq @root.config.encumbrance 'vogelfrei')}}
+        {{#unless (eq @root.config.encumbrance 'itembased')}}
           <div class="form-group">
             <label title="{{localize 'VF.items.WeightLong'}}"
               ><i class="fas fa-weight-hanging"></i
@@ -49,6 +52,7 @@
             </div>
           </div>
           {{/unless}}
+        {{/unless}}
           {{!-- Vogelfrei encumbrance: how this item counts, and how many of it
                 make one countable item. Time and Movement.md#encumbrance --}}
           <div class="form-group">

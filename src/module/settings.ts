@@ -67,6 +67,17 @@ const registerSettings = () => {
     }, {}) as SettingConfig<EncumbranceOption>["choices"],
   });
 
+  // A world stores the value it was created with, so changing the default
+  // above does nothing to worlds that already exist -- they stay on whichever
+  // OSE weight scheme they were made with, which is not how Vogelfrei counts.
+  // Flip those once, then never touch the setting again.
+  game.settings.register(game.system.id, "encumbranceSchemeAdopted", {
+    scope: "world",
+    type: Boolean,
+    default: false,
+    config: false,
+  });
+
   game.settings.register(game.system.id, "encumbranceItemStrengthMod", {
     name: game.i18n.localize("VF.Setting.EncumbranceItemStrengthMod"),
     hint: game.i18n.localize("VF.Setting.EncumbranceItemStrengthModHint"),
@@ -139,6 +150,7 @@ declare global {
       "ose.ascendingAC": boolean;
       "ose.morale": boolean;
       "ose.encumbranceOption": EncumbranceOption;
+      "ose.encumbranceSchemeAdopted": boolean;
       "ose.significantTreasure": number;
       "ose.languages": string;
       "ose.applyDamageOption": ApplyDamageOption;
