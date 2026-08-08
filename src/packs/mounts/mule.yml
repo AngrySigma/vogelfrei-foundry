@@ -1,0 +1,24 @@
+_id: "vAFjxtEV6VbPd8h2"
+_key: "!items!vAFjxtEV6VbPd8h2"
+name: "Mule"
+type: "item"
+img: "icons/svg/mounted-knight.svg"
+system:
+  cost: 600
+  costRural: 300
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,24 @@
+_id: "hXhFyaLC03WoI2ND"
+_key: "!items!hXhFyaLC03WoI2ND"
+name: "Holy Symbol, Silver"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 300
+  costRural: 300
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

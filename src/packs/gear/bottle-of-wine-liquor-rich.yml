@@ -1,0 +1,24 @@
+_id: "gKuFJfb6kqcGQEkQ"
+_key: "!items!gKuFJfb6kqcGQEkQ"
+name: "Bottle of Wine/Liquor, Rich"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 120
+  costRural: null
+  costMinimum: true
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

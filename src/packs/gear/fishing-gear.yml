@@ -1,0 +1,24 @@
+_id: "2RydgXh63lLcIkvb"
+_key: "!items!2RydgXh63lLcIkvb"
+name: "Fishing Gear"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 12
+  costRural: 12
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

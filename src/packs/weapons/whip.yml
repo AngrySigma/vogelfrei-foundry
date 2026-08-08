@@ -1,0 +1,41 @@
+_id: "ntqPQWwXUAgf8x4q"
+_key: "!items!ntqPQWwXUAgf8x4q"
+name: "Whip"
+type: "weapon"
+img: "icons/svg/sword.svg"
+system:
+  cost: 120
+  costRural: 300
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: "1d3"
+  length: 0
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

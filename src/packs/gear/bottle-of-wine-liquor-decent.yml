@@ -1,0 +1,24 @@
+_id: "nzUskEe1tRnkKD2I"
+_key: "!items!nzUskEe1tRnkKD2I"
+name: "Bottle of Wine/Liquor, Decent"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 12
+  costRural: 12
+  costMinimum: true
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

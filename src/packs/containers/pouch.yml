@@ -1,0 +1,25 @@
+_id: "n7Yo2H9J4DLpwXxI"
+_key: "!items!n7Yo2H9J4DLpwXxI"
+name: "Pouch"
+type: "container"
+img: "icons/svg/chest.svg"
+system:
+  cost: 5
+  costRural: 1
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  itemIds: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

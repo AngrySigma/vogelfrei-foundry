@@ -1,0 +1,24 @@
+_id: "TllL9O37xP4kNJr0"
+_key: "!items!TllL9O37xP4kNJr0"
+name: "Hourglass"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

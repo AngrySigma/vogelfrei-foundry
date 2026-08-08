@@ -1,0 +1,25 @@
+_id: "4pqkPXabNrjbtxEW"
+_key: "!items!4pqkPXabNrjbtxEW"
+name: "Saddlebag"
+type: "container"
+img: "icons/svg/chest.svg"
+system:
+  cost: 12
+  costRural: 5
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  itemIds: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,24 @@
+_id: "MPZ3k7I4kUvShZ97"
+_key: "!items!MPZ3k7I4kUvShZ97"
+name: "Torch"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 1
+  costRural: 1
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

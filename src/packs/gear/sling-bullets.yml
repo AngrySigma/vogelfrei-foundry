@@ -1,0 +1,28 @@
+_id: "56dvnhKTPOmTpxKz"
+_key: "!items!56dvnhKTPOmTpxKz"
+name: "Sling Bullets"
+type: "item"
+img: "icons/svg/sword.svg"
+system:
+  cost: 2
+  costRural: 2
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 20
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  treasure: false
+  tags:
+    - title: "Ammunition"
+      value: "Ammunition"
+  description: ""
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,27 @@
+_id: "BhuYiRUHYHKEAVne"
+_key: "!items!BhuYiRUHYHKEAVne"
+name: "Chain"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "medium"
+  acMelee: 4
+  acRanged: 4
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

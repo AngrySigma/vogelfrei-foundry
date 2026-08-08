@@ -1,0 +1,24 @@
+_id: "2F1uZC9pJgxxNtd9"
+_key: "!items!2F1uZC9pJgxxNtd9"
+name: "Meal, Horrid"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 2
+  costRural: 1
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

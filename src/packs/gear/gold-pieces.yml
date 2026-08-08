@@ -1,0 +1,28 @@
+_id: "O3cNcSxojHkW4vu7"
+_key: "!items!O3cNcSxojHkW4vu7"
+name: "Gold Pieces"
+type: "item"
+img: "icons/svg/coins.svg"
+system:
+  cost: 600
+  costRural: 600
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 100
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  treasure: true
+  tags:
+    - title: "coins"
+      value: "coins"
+  description: ""
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

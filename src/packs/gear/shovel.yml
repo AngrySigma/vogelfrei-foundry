@@ -1,0 +1,24 @@
+_id: "wZ4lFLEJu2bLU58I"
+_key: "!items!wZ4lFLEJu2bLU58I"
+name: "Shovel"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 36
+  costRural: 36
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,24 @@
+_id: "fdn6uqa0baGvUwS4"
+_key: "!items!fdn6uqa0baGvUwS4"
+name: "Ships, Sailboat"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 72000
+  costRural: 144000
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,7 +1,10 @@
 import typescript from "@rollup/plugin-typescript";
 import copy from "rollup-plugin-copy";
 
-const staticFileFolders = ["lang", "packs", "templates"];
+// `packs` is deliberately absent: src/packs holds reviewable YAML sources, and
+// dist/packs holds the LevelDB directories built from them by
+// tools/build-packs/compile.mjs. Copying the sources across would ship both.
+const staticFileFolders = ["lang", "templates"];
 
 export default {
   input: "src/vogelfrei.js",

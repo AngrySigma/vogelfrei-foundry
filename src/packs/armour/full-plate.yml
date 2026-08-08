@@ -1,0 +1,27 @@
+_id: "DTM4NBxvUAF7QZ9O"
+_key: "!items!DTM4NBxvUAF7QZ9O"
+name: "Full-plate"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 24000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "heavy"
+  acMelee: 6
+  acRanged: 6
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

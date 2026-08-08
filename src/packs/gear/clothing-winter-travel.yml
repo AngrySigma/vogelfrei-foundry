@@ -1,0 +1,24 @@
+_id: "KMctEZvGQEW4gvJ5"
+_key: "!items!KMctEZvGQEW4gvJ5"
+name: "Clothing, Winter Travel"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 1200
+  costRural: 600
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

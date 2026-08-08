@@ -1,0 +1,24 @@
+_id: "PaEd9TlnXo1y4Ipq"
+_key: "!items!PaEd9TlnXo1y4Ipq"
+name: "Tent, Pavillion"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 600
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

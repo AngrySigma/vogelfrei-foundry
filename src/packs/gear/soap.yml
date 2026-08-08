@@ -1,0 +1,24 @@
+_id: "w9I8T79Mm3OJHkv3"
+_key: "!items!w9I8T79Mm3OJHkv3"
+name: "Soap"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 1
+  costRural: 1
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -19,7 +19,82 @@
   "styles": [
     "dist/vogelfrei.css"
   ],
-  "packs": [],
+  "packs": [
+    {
+      "name": "weapons",
+      "label": "Weapons",
+      "path": "dist/packs/weapons",
+      "type": "Item",
+      "system": "vogelfrei",
+      "flags": {},
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "armour",
+      "label": "Armour & Shields",
+      "path": "dist/packs/armour",
+      "type": "Item",
+      "system": "vogelfrei",
+      "flags": {},
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gear",
+      "label": "Adventuring Gear",
+      "path": "dist/packs/gear",
+      "type": "Item",
+      "system": "vogelfrei",
+      "flags": {},
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "containers",
+      "label": "Containers",
+      "path": "dist/packs/containers",
+      "type": "Item",
+      "system": "vogelfrei",
+      "flags": {},
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "mounts",
+      "label": "Animals & Vehicles",
+      "path": "dist/packs/mounts",
+      "type": "Item",
+      "system": "vogelfrei",
+      "flags": {},
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Equipment",
+      "sorting": "m",
+      "color": "#5d4037",
+      "packs": [
+        "weapons",
+        "armour",
+        "gear",
+        "containers",
+        "mounts"
+      ]
+    }
+  ],
   "languages": [
     {
       "lang": "en",

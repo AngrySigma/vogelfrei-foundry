@@ -1,0 +1,24 @@
+_id: "1at94fuxcmKPZnbm"
+_key: "!items!1at94fuxcmKPZnbm"
+name: "Meal, Standard"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 5
+  costRural: 3
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

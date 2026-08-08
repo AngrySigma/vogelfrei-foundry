@@ -1,0 +1,24 @@
+_id: "3pGiRBSwnX5Vb66d"
+_key: "!items!3pGiRBSwnX5Vb66d"
+name: "Ships, Cutter"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 540000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

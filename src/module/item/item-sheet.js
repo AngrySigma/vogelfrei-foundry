@@ -2,6 +2,13 @@
  * @file The system-level sheet for items of any type
  */
 import OSE from "../config";
+import { formatMoney, parseMoney } from "../money";
+
+/**
+ * Price fields, which are stored as whole brass pieces but written and read as
+ * coins: "15 sp", "2 gp 4 sp". See ../money.ts.
+ */
+const MONEY_FIELDS = ["system.cost", "system.costRural"];
 
 /**
  * Extend the basic ItemSheet with some very simple modifications
@@ -55,7 +62,50 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
         { async: true },
       ),
     };
+    // Prices go into their boxes as coins rather than as a raw brass count --
+    // "2000 sp" is a suit of plate; "24000" is a number nobody recognises.
+    const { cost, costRural, costMinimum } = this.item.system ?? {};
+    data.money = {
+      cost: formatMoney({ bp: cost ?? 0, minimum: Boolean(costMinimum) }),
+      costRural: formatMoney({ bp: costRural ?? null, minimum: Boolean(costMinimum) }),
+    };
     return data;
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Read the price boxes back as coins before the document sees them. The
+   * fields hold brass pieces, but what was typed is something like "15sp" or a
+   * dash, which would otherwise cast to NaN.
+   *
+   * @param {Event} event - The form submission event
+   * @param {object} formData - The submitted form data
+   * @returns {Promise} The updated document
+   * @override
+   */
+  async _updateObject(event, formData) {
+    const submitted = { ...formData };
+
+    for (const field of MONEY_FIELDS) {
+      if (!(field in submitted)) continue;
+
+      const written = submitted[field];
+      // A number already in the box is a brass count; leave it be.
+      if (written === "" || written === null || typeof written === "number") continue;
+
+      try {
+        const { bp, minimum } = parseMoney(String(written));
+        submitted[field] = bp;
+        // The marker belongs to the price, and either box may carry it.
+        if (minimum) submitted["system.costMinimum"] = true;
+      } catch {
+        ui.notifications?.warn(game.i18n.format("VF.items.CostUnreadable", { value: written }));
+        delete submitted[field];
+      }
+    }
+
+    return super._updateObject(event, submitted);
   }
 
   /* -------------------------------------------- */

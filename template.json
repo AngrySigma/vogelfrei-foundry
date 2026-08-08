@@ -206,6 +206,8 @@
         },
         "weight": 0,
         "cost": 0,
+        "costRural": null,
+        "costMinimum": false,
         "containerId": "",
         "encumbrance": "normal",
         "stackSize": 0
@@ -247,6 +249,8 @@
       "pattern": "transparent",
       "damage": "1d6",
       "bonus": 0,
+      "length": 0,
+      "lengthTwoHanded": null,
       "tags": [],
       "slow": false,
       "missile": false,

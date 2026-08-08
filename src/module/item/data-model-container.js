@@ -1,7 +1,8 @@
 /**
  * @file The data model for Items of type Container
  */
-import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES, countedItems } from "../actor/encumbrance-points";
+import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
+import costFields from "./cost-fields";
 export default class OseDataModelContainer extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, ArrayField, ObjectField, BooleanField } = foundry.data.fields;
@@ -10,7 +11,7 @@ export default class OseDataModelContainer extends foundry.abstract.TypeDataMode
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),
-      cost: new NumberField({ min: 0, initial: 0 }),
+      ...costFields(),
       containerId: new StringField(),
       quantity: new SchemaField({
         value: new NumberField({ min: 0, initial: 0 }),
@@ -18,7 +19,7 @@ export default class OseDataModelContainer extends foundry.abstract.TypeDataMode
       }),
       weight: new NumberField({ min: 0, initial: 0 }),
       itemslots: new NumberField({ min: 0, initial: 1 }),
-encumbrance: new StringField({
+      encumbrance: new StringField({
         initial: DEFAULT_ITEM_ENCUMBRANCE,
         choices: [...ITEM_ENCUMBRANCE_TYPES],
       }),

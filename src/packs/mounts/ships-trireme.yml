@@ -1,0 +1,24 @@
+_id: "5eA9XHcLxpAgPo3N"
+_key: "!items!5eA9XHcLxpAgPo3N"
+name: "Ships, Trireme"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 120000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -33,6 +33,16 @@ import helpersTreasureTests, {
   key as helpersTreasureKey,
   options as helpersTreasureOptions,
 } from "../module/__tests__/helpers-treasure.test";
+import moneyTests, { key as moneyKey, options as moneyOptions } from "../module/__tests__/money.test";
+import purseTests, { key as purseKey, options as purseOptions } from "../module/__tests__/purse.test";
+import actorAlignmentTests, {
+  key as actorAlignmentKey,
+  options as actorAlignmentOptions,
+} from "../module/actor/__tests__/alignment.test";
+import actorDamageTests, {
+  key as actorDamageKey,
+  options as actorDamageOptions,
+} from "../module/actor/__tests__/damage.test";
 // ACTOR TESTING IMPORTS
 import actorDataModelCharacterTests, {
   key as actorDataModelCharacterKey,
@@ -42,18 +52,10 @@ import actorDataModelMonsterTests, {
   key as actorDataModelMonsterKey,
   options as actorDataModelMonsterOptions,
 } from "../module/actor/__tests__/data-model-monster.test";
-import actorAlignmentTests, {
-  key as actorAlignmentKey,
-  options as actorAlignmentOptions,
-} from "../module/actor/__tests__/alignment.test";
 import actorEncumbranceTests, {
   key as actorEncumbranceKey,
   options as actorEncumbranceOptions,
 } from "../module/actor/__tests__/encumbrance-points.test";
-import actorDamageTests, {
-  key as actorDamageKey,
-  options as actorDamageOptions,
-} from "../module/actor/__tests__/damage.test";
 import actorEntityTests, {
   key as actorEntityKey,
   options as actorEntityOptions,
@@ -253,4 +255,6 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(helpersMacrosKey, helpersMacrosTests, helpersMacrosOptions);
   quench.registerBatch(helpersPartyKey, helpersPartyTests, helpersPartyOptions);
   quench.registerBatch(helpersTreasureKey, helpersTreasureTests, helpersTreasureOptions);
+  quench.registerBatch(moneyKey, moneyTests, moneyOptions);
+  quench.registerBatch(purseKey, purseTests, purseOptions);
 });

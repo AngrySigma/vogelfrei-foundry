@@ -1,0 +1,28 @@
+_id: "tWBP1e8tLlW8KvuJ"
+_key: "!items!tWBP1e8tLlW8KvuJ"
+name: "Arrows"
+type: "item"
+img: "icons/svg/sword.svg"
+system:
+  cost: 5
+  costRural: 5
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 20
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  treasure: false
+  tags:
+    - title: "Ammunition"
+      value: "Ammunition"
+  description: ""
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,27 @@
+_id: "tVNwZxrgLcb4WZbJ"
+_key: "!items!tVNwZxrgLcb4WZbJ"
+name: "Pavise"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "shield"
+  acMelee: 0
+  acRanged: 5
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

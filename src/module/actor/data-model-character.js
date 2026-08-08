@@ -178,9 +178,11 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
     );
   }
 
+  /** What the carried treasure is worth, in whole brass pieces. */
   get carriedTreasure() {
-    const total = this.treasures.reduce((acc, { system: { quantity, cost } }) => acc + quantity.value * cost, 0);
-    return Math.round(total * 100) / 100;
+    // Brass is the smallest coin, so the total is always whole. OSE rounded to
+    // two decimals here because its prices were decimal gold; ours are not.
+    return this.treasures.reduce((acc, { system: { quantity, cost } }) => acc + quantity.value * cost, 0);
   }
 
   get items() {

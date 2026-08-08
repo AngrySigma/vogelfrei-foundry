@@ -1,0 +1,24 @@
+_id: "DQq1oICZAbILq8Ae"
+_key: "!items!DQq1oICZAbILq8Ae"
+name: "Caltrop"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 5
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

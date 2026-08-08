@@ -1,7 +1,8 @@
 /**
  * @file The data model for Items of type Weapon
  */
-import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES, countedItems } from "../actor/encumbrance-points";
+import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
+import costFields from "./cost-fields";
 export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
@@ -17,6 +18,18 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
         long: new NumberField({ integer: true, min: 0, initial: 0 }),
       }),
       bonus: new NumberField({}),
+      /**
+       * Weapon length, 0-5, as the melee table gives it. A cestus is 0, a pike
+       * is 5. Combat Actions.md makes the difference in reach a modifier on the
+       * attack roll -- the shorter weapon takes -2 -- so carrying it here is
+       * what lets that be wired up.
+       */
+      length: new NumberField({ integer: true, min: 0, initial: 0 }),
+      /**
+       * Length when gripped in both hands, for the weapons the book gives two
+       * of ("Spear (1/2H)", length 4/5). Null where the grip makes no odds.
+       */
+      lengthTwoHanded: new NumberField({ integer: true, min: 0, initial: null, nullable: true }),
       pattern: new StringField(),
       missile: new BooleanField(),
       melee: new BooleanField({ initial: true }),
@@ -25,7 +38,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
         value: new NumberField({ integer: true, min: 0, initial: 0 }),
         max: new NumberField({ integer: true, min: 0, initial: 0 }),
       }),
-      cost: new NumberField({ min: 0, initial: 0 }),
+      ...costFields(),
       containerId: new StringField(),
       quantity: new SchemaField({
         value: new NumberField({ min: 0 }),
@@ -33,7 +46,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
       }),
       weight: new NumberField({ min: 0 }),
       itemslots: new NumberField({ min: 0, initial: 1 }),
-encumbrance: new StringField({
+      encumbrance: new StringField({
         initial: DEFAULT_ITEM_ENCUMBRANCE,
         choices: [...ITEM_ENCUMBRANCE_TYPES],
       }),

@@ -7,16 +7,31 @@
           <input name="name" type="text" value="{{name}}" placeholder="Name" />
         </h1>
         <div class="details">
+          {{!-- Prices are stored in brass but written as coins: "15sp",
+                "2gp 4sp". A dash means the goods are not sold there. --}}
           <div class="form-group">
-            <label title="{{localize 'VF.items.Cost'}}"
-              ><i class="fas fa-circle"></i
+            <label title="{{localize 'VF.items.CostCity'}}"
+              ><i class="fas fa-city"></i
             ></label>
             <div class="form-fields">
               <input
                 type="text"
                 name="system.cost"
-                value="{{system.cost}}"
-                data-dtype="Number"
+                value="{{money.cost}}"
+                placeholder="{{localize 'VF.items.CostPlaceholder'}}"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label title="{{localize 'VF.items.CostRuralHint'}}"
+              ><i class="fas fa-wheat-awn"></i
+            ></label>
+            <div class="form-fields">
+              <input
+                type="text"
+                name="system.costRural"
+                value="{{money.costRural}}"
+                placeholder="&mdash;"
               />
             </div>
           </div>

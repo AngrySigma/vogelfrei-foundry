@@ -1,0 +1,24 @@
+_id: "9SEwm0i5qfjbhG3m"
+_key: "!items!9SEwm0i5qfjbhG3m"
+name: "Ships, Quadrireme"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 600000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

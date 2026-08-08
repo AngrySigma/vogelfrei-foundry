@@ -1,0 +1,43 @@
+_id: "8vBwqK0IdNd3fERt"
+_key: "!items!8vBwqK0IdNd3fERt"
+name: "Blunderbuss (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 240
+  costRural: 600
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Firearm"
+      value: "Firearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 10
+    medium: 20
+    long: 50
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

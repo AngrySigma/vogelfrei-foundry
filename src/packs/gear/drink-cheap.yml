@@ -1,0 +1,24 @@
+_id: "3SD0mqQ5pFoYcgKB"
+_key: "!items!3SD0mqQ5pFoYcgKB"
+name: "Drink, Cheap"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 1
+  costRural: 1
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

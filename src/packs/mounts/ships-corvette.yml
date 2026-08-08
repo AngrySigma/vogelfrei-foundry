@@ -1,0 +1,24 @@
+_id: "LHoghwAnzMvWc1Qw"
+_key: "!items!LHoghwAnzMvWc1Qw"
+name: "Ships, Corvette"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 1620000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,24 @@
+_id: "ZpYruSdw5y5Ww5rb"
+_key: "!items!ZpYruSdw5y5Ww5rb"
+name: "Horse, War"
+type: "item"
+img: "icons/svg/mounted-knight.svg"
+system:
+  cost: 6000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

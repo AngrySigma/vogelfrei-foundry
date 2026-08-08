@@ -1,0 +1,24 @@
+_id: "tYghfF3N9H2htG72"
+_key: "!items!tYghfF3N9H2htG72"
+name: "Meal, Rich"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 180
+  costRural: 120
+  costMinimum: true
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

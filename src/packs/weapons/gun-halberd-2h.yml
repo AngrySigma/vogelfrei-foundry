@@ -1,0 +1,45 @@
+_id: "CSvO58Tn0nnqieWY"
+_key: "!items!CSvO58Tn0nnqieWY"
+name: "Gun Halberd (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 1440
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Firearm"
+      value: "Firearm"
+    - title: "Melee: Polearm"
+      value: "Melee: Polearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 30
+    medium: 60
+    long: 300
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

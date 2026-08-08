@@ -1,0 +1,27 @@
+_id: "OraCGkqrC0eKwmCs"
+_key: "!items!OraCGkqrC0eKwmCs"
+name: "Buckler"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 180
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "shield"
+  acMelee: 2
+  acRanged: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

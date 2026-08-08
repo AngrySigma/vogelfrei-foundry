@@ -3,6 +3,8 @@
  */
 // eslint-disable-next-line no-unused-vars
 import OSE from "../config";
+import { formatMoney } from "../money";
+import { denominationOf, pay } from "../purse";
 
 export default class OseCharacterGpCost extends FormApplication {
   static physicalItemTypes = new Set(["item", "container", "weapon", "armor"]);
@@ -73,31 +75,33 @@ export default class OseCharacterGpCost extends FormApplication {
       preventClose,
       preventRender,
     });
-    // Generate gold
+    // Pay for the cart. Prices are in brass, and a purse may be spread across
+    // gold, silver and brass Items, so the whole purse is totalled in brass,
+    // the price taken out of it, and the change counted back into coins.
     const totalCost = await this.#getTotalCost(await this.getData());
-    const gp = await this.object.items.find((item) => {
-      const itemData = item.system;
-      return (
-        (item.name === game.i18n.localize("VF.items.gp.short") || item.name === "GP") && // legacy behavior used GP, even for other languages
-        itemData.treasure
-      );
-    });
-    if (!gp) {
+    const items = [...this.object.items];
+
+    if (!items.some((item) => denominationOf(item))) {
       ui.notifications.error(game.i18n.localize("VF.error.noGP"));
       return;
     }
-    const newGP = gp.system.quantity.value - totalCost;
-    if (newGP >= 0) {
-      await this.object.updateEmbeddedDocuments("Item", [{ _id: gp.id, "system.quantity.value": newGP }]);
 
-      // Mark all items in the cart as "paid for" by setting a flag
-      await this.#markItemsAsPaid();
-
-      // Close the dialog after successful transaction
-      await this.close();
-    } else {
-      ui.notifications.error(game.i18n.localize("VF.error.notEnoughGP"));
+    const { paid, shortfall, updates } = pay(items, totalCost);
+    if (!paid) {
+      ui.notifications.error(game.i18n.format("VF.error.notEnoughGP", { short: formatMoney(shortfall) }));
+      return;
     }
+
+    await this.object.updateEmbeddedDocuments(
+      "Item",
+      updates.map(({ id, quantity }) => ({ _id: id, "system.quantity.value": quantity })),
+    );
+
+    // Mark all items in the cart as "paid for" by setting a flag
+    await this.#markItemsAsPaid();
+
+    // Close the dialog after successful transaction
+    await this.close();
   }
 
   /**

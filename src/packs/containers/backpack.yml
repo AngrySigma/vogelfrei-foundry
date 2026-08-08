@@ -1,0 +1,25 @@
+_id: "sez18AEGe0SKoaUW"
+_key: "!items!sez18AEGe0SKoaUW"
+name: "Backpack"
+type: "container"
+img: "icons/svg/chest.svg"
+system:
+  cost: 36
+  costRural: 12
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  itemIds: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

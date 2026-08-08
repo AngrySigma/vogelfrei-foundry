@@ -1,0 +1,24 @@
+_id: "yJwaJ0W9l2iNqcFP"
+_key: "!items!yJwaJ0W9l2iNqcFP"
+name: "Ships, River Galley"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 48000
+  costRural: 96000
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

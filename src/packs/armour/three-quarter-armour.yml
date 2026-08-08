@@ -1,0 +1,27 @@
+_id: "b3orWQfGFQfwLAQy"
+_key: "!items!b3orWQfGFQfwLAQy"
+name: "Three-quarter armour"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 12000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "heavy"
+  acMelee: 5
+  acRanged: 5
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,24 @@
+_id: "i5gVU4cailJLnfxT"
+_key: "!items!i5gVU4cailJLnfxT"
+name: "Boats, Raft"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 60
+  costRural: 60
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

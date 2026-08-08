@@ -1,0 +1,24 @@
+_id: "I7xmMfubdnqYaStK"
+_key: "!items!I7xmMfubdnqYaStK"
+name: "Horse, Riding"
+type: "item"
+img: "icons/svg/mounted-knight.svg"
+system:
+  cost: 1200
+  costRural: 1200
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

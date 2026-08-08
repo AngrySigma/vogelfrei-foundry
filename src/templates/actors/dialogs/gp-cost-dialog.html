@@ -11,7 +11,7 @@
           <h4 class="item-name" title="{{item.name}}">{{item.name~}}</h4>
             <div class="field-short">
               {{#if item.system.quantity.max}}{{item.system.quantity.value}} x {{/if}}
-              {{item.system.cost}}
+              {{money item.system.cost minimum=item.system.costMinimum}}
             </div>
           </div>
         </li>
@@ -28,7 +28,7 @@
             <h4 class="item-name" title="{{item.name}}">{{item.name~}}</h4>
               <div class="field-short">
                 {{#if item.system.quantity.max}}{{item.system.quantity.value}} x {{/if}}
-                {{item.system.cost}}
+                {{money item.system.cost minimum=item.system.costMinimum}}
               </div>
             </div>
           </li>
@@ -45,7 +45,7 @@
             <h4 class="item-name" title="{{bag.name}}">{{bag.name~}}</h4>
               <div class="field-short">
                 {{#if item.system.quantity.max}}{{item.system.quantity.value}} x {{/if}}
-                {{bag.system.cost}}
+                {{money bag.system.cost minimum=bag.system.costMinimum}}
               </div>
             </div>
           </li>
@@ -60,7 +60,7 @@
             <h4 class="item-name" title="{{item.name}}">{{item.name~}}</h4>
               <div class="field-short">
                 {{#if item.system.quantity.max}}{{item.system.quantity.value}} x {{/if}}
-                {{item.system.cost}}
+                {{money item.system.cost minimum=item.system.costMinimum}}
               </div>
             </div>
           </li>
@@ -79,7 +79,7 @@
             <h4 class="item-name" title="{{item.name}}">{{item.name~}}</h4>
               <div class="field-short">
                 {{#if item.system.quantity.max}}{{item.system.quantity.value}} x {{/if}}
-                {{item.system.cost}}
+                {{money item.system.cost minimum=item.system.costMinimum}}
               </div>
             </div>
           </li>
@@ -88,7 +88,7 @@
     </div>
     <footer class="sheet-footer">
       <button class="auto-deduct"
-        ><i class="fas fa-handshake"></i>{{localize "VF.dialog.purchaseFor" totalCost=totalCost}}</button>
+        ><i class="fas fa-handshake"></i>{{localize "VF.dialog.purchaseFor" totalCost=(money totalCost)}}</button>
     </footer>
   </div>
 </form>

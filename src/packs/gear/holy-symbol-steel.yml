@@ -1,0 +1,24 @@
+_id: "DrUduIpoTIS33yNX"
+_key: "!items!DrUduIpoTIS33yNX"
+name: "Holy Symbol, Steel"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 120
+  costRural: 120
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

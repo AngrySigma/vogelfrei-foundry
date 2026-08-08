@@ -1,0 +1,24 @@
+_id: "X5dosrt1dGSaQA3m"
+_key: "!items!X5dosrt1dGSaQA3m"
+name: "Tent, Personal"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 60
+  costRural: 120
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

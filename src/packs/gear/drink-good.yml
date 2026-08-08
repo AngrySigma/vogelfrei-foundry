@@ -1,0 +1,24 @@
+_id: "5TyTWXP2p5Yi8ENg"
+_key: "!items!5TyTWXP2p5Yi8ENg"
+name: "Drink, Good"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 6
+  costRural: 4
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

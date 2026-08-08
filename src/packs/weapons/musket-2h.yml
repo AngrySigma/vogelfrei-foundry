@@ -1,0 +1,45 @@
+_id: "cH8NloRI5yJPQHBb"
+_key: "!items!cH8NloRI5yJPQHBb"
+name: "Musket (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 720
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Firearm"
+      value: "Firearm"
+    - title: "Melee: Small/Spear"
+      value: "Melee: Small/Spear"
+  damage: "1d10"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 50
+    medium: 100
+    long: 600
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

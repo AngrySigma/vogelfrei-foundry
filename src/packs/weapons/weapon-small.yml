@@ -1,0 +1,39 @@
+_id: "wyohuULyfHhlDQjx"
+_key: "!items!wyohuULyfHhlDQjx"
+name: "Weapon, Small"
+type: "weapon"
+img: "icons/svg/sword.svg"
+system:
+  cost: 120
+  costRural: 120
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  damage: "1d6"
+  length: 2
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

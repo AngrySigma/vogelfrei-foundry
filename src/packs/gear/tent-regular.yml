@@ -1,0 +1,24 @@
+_id: "rl6PX5nNwMIyfKLc"
+_key: "!items!rl6PX5nNwMIyfKLc"
+name: "Tent, Regular"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 120
+  costRural: 240
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

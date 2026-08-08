@@ -11,13 +11,28 @@
     <div class="flexrow">
       <div class="stats">
         <div class="form-group">
-          <label>{{localize 'VF.items.Cost'}}</label>
+          {{!-- Prices are stored in brass but written as coins: "15sp",
+                "2gp 4sp". A dash means the goods are not sold there. --}}
+          <label>{{localize 'VF.items.CostCity'}}</label>
           <div class="form-fields">
             <input
               type="text"
               name="system.cost"
-              value="{{system.cost}}"
-              data-dtype="Number"
+              value="{{money.cost}}"
+              placeholder="{{localize 'VF.items.CostPlaceholder'}}"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-tooltip aria-label="{{localize 'VF.items.CostRuralHint'}}">
+            {{localize 'VF.items.CostRural'}}
+          </label>
+          <div class="form-fields">
+            <input
+              type="text"
+              name="system.costRural"
+              value="{{money.costRural}}"
+              placeholder="&mdash;"
             />
           </div>
         </div>

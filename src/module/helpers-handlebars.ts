@@ -2,6 +2,7 @@
  * @file A place to store Handlebars helpers for our templates
  */
 import OSE, { type InventoryItemTag } from "./config";
+import { formatMoney } from "./money";
 
 const registerHelpers = async () => {
   // Handlebars template helpers
@@ -58,6 +59,11 @@ const registerHelpers = async () => {
   Handlebars.registerHelper("ceil", (val) => Math.ceil(val));
 
   Handlebars.registerHelper("partial", (path) => `${OSE.systemPath()}/templates/${path}`);
+
+  // Prices are stored as whole brass pieces; nobody reads 24000 as forty gold.
+  Handlebars.registerHelper("money", (bp, options) =>
+    formatMoney({ bp: bp ?? null, minimum: Boolean(options?.hash?.minimum) }),
+  );
 };
 
 export default registerHelpers;

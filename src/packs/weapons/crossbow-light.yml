@@ -1,0 +1,41 @@
+_id: "elZ26Wp1dSFbfzih"
+_key: "!items!elZ26Wp1dSFbfzih"
+name: "Crossbow, Light"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 300
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: "1d6"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 50
+    medium: 150
+    long: 400
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

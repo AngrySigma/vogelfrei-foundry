@@ -1,0 +1,45 @@
+_id: "J4Sp2gsRrSBSnJai"
+_key: "!items!J4Sp2gsRrSBSnJai"
+name: "Long Rifle (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 9600
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Firearm"
+      value: "Firearm"
+    - title: "Melee: Small/Spear"
+      value: "Melee: Small/Spear"
+  damage: "1d12"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 100
+    medium: 200
+    long: 1200
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

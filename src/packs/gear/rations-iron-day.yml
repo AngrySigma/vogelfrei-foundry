@@ -1,0 +1,24 @@
+_id: "gTJK0EwlnDQPsefo"
+_key: "!items!gTJK0EwlnDQPsefo"
+name: "Rations, Iron/Day"
+type: "item"
+img: "icons/svg/pill.svg"
+system:
+  cost: 24
+  costRural: 12
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

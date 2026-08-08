@@ -1,7 +1,8 @@
 /**
  * @file The data model for Items of type Armor
  */
-import { DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES, countedItems } from "../actor/encumbrance-points";
+import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
+import costFields from "./cost-fields";
 export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
     unarmored: "VF.armor.unarmored",
@@ -26,7 +27,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),
-      cost: new NumberField({ min: 0, initial: 0 }),
+      ...costFields(),
       containerId: new StringField(),
       quantity: new SchemaField({
         value: new NumberField({ min: 0, initial: 0 }),
@@ -34,7 +35,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       }),
       weight: new NumberField({ min: 0, initial: 0 }),
       itemslots: new NumberField({ min: 0, initial: 1 }),
-encumbrance: new StringField({
+      encumbrance: new StringField({
         initial: DEFAULT_ITEM_ENCUMBRANCE,
         choices: [...ITEM_ENCUMBRANCE_TYPES],
       }),

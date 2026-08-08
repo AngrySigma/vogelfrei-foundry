@@ -1,0 +1,24 @@
+_id: "XR8H5CMVtHKu8vUV"
+_key: "!items!XR8H5CMVtHKu8vUV"
+name: "Gem"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 60
+  costRural: 60
+  costMinimum: true
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

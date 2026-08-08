@@ -1,0 +1,41 @@
+_id: "Xmj3faqzqB5beuTM"
+_key: "!items!Xmj3faqzqB5beuTM"
+name: "Blowgun"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 60
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: ""
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 20
+    medium: 50
+    long: 80
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

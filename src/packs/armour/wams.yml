@@ -1,0 +1,27 @@
+_id: "me5hnjIfGmCFGkPd"
+_key: "!items!me5hnjIfGmCFGkPd"
+name: "Wams"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 180
+  costRural: 240
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "light"
+  acMelee: 2
+  acRanged: 2
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

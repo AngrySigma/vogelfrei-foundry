@@ -1,0 +1,41 @@
+_id: "AwApJLqhML5v2GvG"
+_key: "!items!AwApJLqhML5v2GvG"
+name: "Sling"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 12
+  costRural: 5
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: "1d4"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 50
+    medium: 300
+    long: 450
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}
