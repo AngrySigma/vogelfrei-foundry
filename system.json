@@ -2,7 +2,7 @@
   "id": "vogelfrei",
   "title": "Vogelfrei",
   "description": "An OSR system of Wounds and Stamina, Weapon Skill and ascending Armour Class. Derived from the Old-School Essentials system for Foundry VTT by Necrotic Gnome and contributors.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
@@ -110,7 +110,7 @@
   "secondaryTokenAttribute": "stamina",
   "url": "https://github.com/AngrySigma/vogelfrei-foundry",
   "manifest": "https://github.com/AngrySigma/vogelfrei-foundry/releases/latest/download/system.json",
-  "download": "https://github.com/AngrySigma/vogelfrei-foundry/releases/download/0.2.0/system.zip",
+  "download": "https://github.com/AngrySigma/vogelfrei-foundry/releases/download/0.3.0/system.zip",
   "bugs": "https://github.com/AngrySigma/vogelfrei-foundry/issues",
   "flags": {},
   "hotReload": {
