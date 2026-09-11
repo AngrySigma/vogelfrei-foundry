@@ -70,7 +70,17 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Starts a world at the first dawn with nothing underway", () => {
-      expect(defaultChronicle()).deep.equal({ day: 1, watch: 0, delves: [] });
+      expect(defaultChronicle()).deep.equal({
+        day: 1,
+        watch: 0,
+        delves: [],
+        travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear" },
+      });
+    });
+
+    it("Counts watches from the first dawn", () => {
+      expect(watchesElapsed({ day: 1, watch: 0 })).equal(0);
+      expect(watchesElapsed({ day: 3, watch: 2 })).equal(14);
     });
   });
 
@@ -112,12 +122,54 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(lightRemaining(torch, 8)).equal(0);
     });
 
-    it("Takes an explicit duration for anything the book does not price", () => {
-      expect(lightSource("Everburning torch", "torch", 0, "a", 999).turns).equal(999);
+    it("Takes an explicit duration, for the flask that was already half used", () => {
+      expect(lightSource("Half a flask", "lantern", 0, "a", 11).turns).equal(11);
+    });
+
+    it("Never runs an eternal source down", () => {
+      expect(LIGHT_KINDS.eternal).equal(null);
+      const lamp = lightSource("Enchanted lamp", "eternal", 3, "a");
+      expect(lamp.turns).equal(null);
+      expect(lightRemaining(lamp, 9999)).equal(Number.POSITIVE_INFINITY);
+      expect(adjustLight(lamp, -5)).deep.equal(lamp);
+    });
+
+    it("Takes fuel in and out, but never below nothing", () => {
+      const torch = lightSource("Torch", "torch", 0, "a");
+      expect(adjustLight(torch, 2).turns).equal(8);
+      expect(adjustLight(torch, -2).turns).equal(4);
+      expect(adjustLight(torch, -99).turns).equal(0);
     });
   });
 
-  describe("Wandering monsters", () => {
+  describe("Random encounters", () => {
+    it("Takes each terrain's chance from the book", () => {
+      expect(TERRAIN.clear).equal(1);
+      expect(TERRAIN.forest).equal(2);
+      expect(TERRAIN.hills).equal(2);
+      expect(TERRAIN.desert).equal(2);
+      expect(TERRAIN.mountains).equal(3);
+      expect(TERRAIN.jungle).equal(3);
+      expect(TERRAIN.swamp).equal(3);
+    });
+
+    it("Counts every check an interval crosses, not just the one it lands on", () => {
+      expect(checksBetween(0, 6, 2)).equal(3);
+      expect(checksBetween(1, 7, 2)).equal(3);
+      expect(checksBetween(0, 12, 6)).equal(2);
+    });
+
+    it("Crosses nothing standing still, or going backwards", () => {
+      expect(checksBetween(5, 5, 2)).equal(0);
+      expect(checksBetween(7, 3, 2)).equal(0);
+    });
+
+    it("Reads a cadence of zero as one rather than dividing by it", () => {
+      expect(checksBetween(0, 6, 0)).equal(6);
+    });
+  });
+
+  describe("When a check falls due", () => {
     it("Owes nothing in the doorway", () => {
       expect(encounterDue(delve())).equal(false);
     });

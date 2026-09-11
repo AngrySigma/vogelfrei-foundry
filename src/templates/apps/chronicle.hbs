@@ -24,6 +24,36 @@
     {{/if}}
   </section>
 
+  {{#if travel}}
+  <section class="encounters">
+    <h3>{{localize "VF.chronicle.RandomEncounters"}}</h3>
+    <div class="rule">
+      <label class="terrain">
+        <span>{{localize "VF.chronicle.Terrain"}}</span>
+        <select name="terrain">
+          {{#each travel.terrains}}
+          <option value="{{key}}" {{#if selected}}selected{{/if}}>{{localize label}} ({{chanceIn6}} in 6)</option>
+          {{/each}}
+        </select>
+      </label>
+    </div>
+    <div class="rule">
+      <label>
+        <span>{{localize "VF.chronicle.CheckEvery"}}</span>
+        <input type="number" name="everyWatches" min="1" step="1" value="{{travel.everyWatches}}" />
+        <span>{{localize "VF.chronicle.WatchesUnit"}}</span>
+      </label>
+      <label>
+        <span>{{localize "VF.chronicle.EncounterOn"}}</span>
+        <input type="number" name="travelChance" min="0" max="6" step="1" value="{{travel.chanceIn6}}" />
+        <span>{{localize "VF.chronicle.OrLessIn6"}}</span>
+      </label>
+    </div>
+    <button type="button" data-action="rollTravelEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
+    <p class="hint">{{localize "VF.chronicle.TravelHint"}}</p>
+  </section>
+  {{/if}}
+
   <section class="delves">
     <h3>{{localize "VF.chronicle.Delves"}}</h3>
     <ul class="unlist delve-list">

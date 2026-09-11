@@ -13,11 +13,13 @@
  */
 import { formatMoney, parseMoney } from "../money";
 import {
+  adjustLight,
   advanceTurns,
   advanceWatches,
+  checksBetween,
   encounterDue,
   killXP,
-  LIGHT_DURATIONS,
+  LIGHT_KINDS,
   lightRemaining,
   lightSource,
   lootXP,
@@ -28,6 +30,7 @@ import {
   TURNS_PER_HOUR,
   xpForHitDice,
 } from "./chronicle";
+import { rollEncounterChecks } from "./encounter";
 import { getDelve, refreshOnChange, updateChronicle, updateDelve } from "./store";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -46,39 +49,38 @@ function numberFrom(root, name, fallback = 0) {
 }
 
 /**
- * Roll the wandering monster check and whisper the result to the Referee.
+ * How the delve describes itself on a whispered check.
  *
  * @param {import("./chronicle").Delve} delve - The delve being checked.
+ * @returns {object} Arguments for rollEncounterCheck.
  */
-async function whisperEncounterCheck(delve) {
-  const chance = Math.max(0, Math.min(6, Math.trunc(delve.encounter.chanceIn6)));
-  const roll = await new Roll("1d6").evaluate();
-  const met = roll.total <= chance;
-
-  await ChatMessage.create({
-    speaker: { alias: delve.name },
-    flavor: game.i18n.format("VF.chronicle.EncounterFlavor", { turn: delve.turn, chance }),
-    content: `<p class="vf-encounter ${met ? "met" : "clear"}">${game.i18n.localize(
-      met ? "VF.chronicle.EncounterMet" : "VF.chronicle.EncounterClear",
-    )}</p>`,
-    rolls: [roll],
-    whisper: ChatMessage.getWhisperRecipients("GM"),
-  });
+function checkFor(delve) {
+  return {
+    speaker: delve.name,
+    where: game.i18n.format("VF.chronicle.AtTurn", { turn: delve.turn }),
+    chanceIn6: delve.encounter.chanceIn6,
+  };
 }
 
 /**
- * Spend Turns, and make the wandering monster check if one falls due.
+ * Spend Turns, and make every random encounter check that falls due.
  *
  * @param {string} delveId - The delve.
  * @param {number} turns - How many Turns to spend.
  */
 async function spendTurns(delveId, turns) {
+  const before = getDelve(delveId);
+  if (!before) return;
+
   await updateDelve(delveId, (delve) => advanceTurns(delve, turns));
 
-  // Re-read: one click may cross several checks, and the roll wants the
-  // delve's settled state rather than the copy we handed to the mutator.
   const after = getDelve(delveId);
-  if (after && encounterDue(after)) await whisperEncounterCheck(after);
+  if (!after) return;
+
+  // An hour is six Turns and may cross several checks. Count them rather than
+  // asking only whether we landed on one.
+  const due = checksBetween(before.turn, after.turn, after.encounter.everyTurns);
+  await rollEncounterChecks(due, checkFor(after));
 }
 
 /** @this {DelveApp} */
@@ -99,7 +101,7 @@ async function onRest() {
 /** @this {DelveApp} */
 async function onRollEncounter() {
   const delve = getDelve(this.delveId);
-  if (delve) await whisperEncounterCheck(delve);
+  if (delve) await rollEncounterChecks(1, checkFor(delve));
 }
 
 /**
@@ -120,13 +122,48 @@ async function onSaveEncounterRule() {
  */
 async function onLight() {
   const kind = this.element.querySelector('[name="lightKind"]')?.value || "torch";
-  const name = this.element.querySelector('[name="lightName"]')?.value?.trim();
+  const nameField = this.element.querySelector('[name="lightName"]');
+  const name = nameField?.value?.trim();
+
+  // An eternal source burns for null; anything else takes whatever is in the
+  // box, which starts at the book's duration and is there to be overwritten
+  // for the flask that was already half used.
+  const raw = this.element.querySelector('[name="lightTurns"]')?.value;
+  const typed = Number(raw);
+  const turns = kind === "eternal" ? null : Math.max(0, Number.isFinite(typed) ? Math.trunc(typed) : 0);
+
   await updateDelve(this.delveId, (delve) => ({
     ...delve,
     lights: [
       ...delve.lights,
-      lightSource(name || game.i18n.localize(`VF.chronicle.light.${kind}`), kind, delve.turn, foundry.utils.randomID()),
+      lightSource(
+        name || game.i18n.localize(`VF.chronicle.light.${kind}`),
+        kind,
+        delve.turn,
+        foundry.utils.randomID(),
+        turns,
+      ),
     ],
+  }));
+
+  if (nameField) nameField.value = "";
+}
+
+/**
+ * Top a burning source up, or take fuel out of it.
+ *
+ * @this {DelveApp}
+ * @param {PointerEvent} _event - The click.
+ * @param {HTMLElement} target - The button clicked, carrying the amount.
+ */
+async function onFeedLight(_event, target) {
+  const { lightId } = target.closest("[data-light-id]")?.dataset ?? {};
+  const turns = Number(target.dataset.turns);
+  if (!lightId || !Number.isFinite(turns)) return;
+
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    lights: delve.lights.map((light) => (light.id === lightId ? adjustLight(light, turns) : light)),
   }));
 }
 
@@ -255,6 +292,7 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
       rest: onRest,
       rollEncounter: onRollEncounter,
       light: onLight,
+      feedLight: onFeedLight,
       douse: onDouse,
       addKill: onAddKill,
       removeKill: onRemoveKill,
@@ -308,6 +346,18 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
     for (const input of this.element.querySelectorAll('[name="everyTurns"], [name="chanceIn6"]')) {
       input.addEventListener("change", onSaveEncounterRule.bind(this));
     }
+
+    // Picking a kind fills in its book duration, which is then editable: the
+    // flask someone already burned half of is the reason the box exists.
+    const kinds = this.element.querySelector('[name="lightKind"]');
+    const turns = this.element.querySelector('[name="lightTurns"]');
+    kinds?.addEventListener("change", () => {
+      const chosen = kinds.selectedOptions[0]?.dataset ?? {};
+      const eternal = chosen.eternal === "true";
+      if (!turns) return;
+      turns.disabled = eternal;
+      turns.value = eternal ? "" : (chosen.turns ?? "");
+    });
   }
 
   /** @inheritDoc */
@@ -334,19 +384,23 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
       },
       lights: delve.lights.map((light) => {
         const remaining = lightRemaining(light, delve.turn);
+        const eternal = light.turns === null;
         return {
           ...light,
-          remaining: Math.max(0, remaining),
-          out: remaining <= 0,
-          guttering: remaining > 0 && remaining <= 2,
-          percent: Math.max(0, Math.min(100, Math.round((remaining / light.turns) * 100))),
+          eternal,
+          remaining: eternal ? null : Math.max(0, remaining),
+          out: !eternal && remaining <= 0,
+          guttering: !eternal && remaining > 0 && remaining <= 2,
+          percent: eternal ? 100 : Math.max(0, Math.min(100, Math.round((remaining / (light.turns || 1)) * 100))),
         };
       }),
-      lightKinds: Object.keys(LIGHT_DURATIONS).map((kind) => ({
+      lightKinds: Object.entries(LIGHT_KINDS).map(([kind, turns]) => ({
         kind,
         label: `VF.chronicle.light.${kind}`,
-        turns: LIGHT_DURATIONS[kind],
+        turns,
+        eternal: turns === null,
       })),
+      defaultLightTurns: LIGHT_KINDS.torch,
       kills: delve.kills.map((kill) => ({
         ...kill,
         xp: xpForHitDice(kill.hitDice, kill.special) * kill.count,

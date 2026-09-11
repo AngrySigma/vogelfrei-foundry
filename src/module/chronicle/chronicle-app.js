@@ -6,11 +6,55 @@
  * not. Closing a delve's window closes nothing -- the record is here until the
  * Referee drops it.
  */
-import { advanceDays, advanceWatches, clockOf, newDelve, restState, watchOf } from "./chronicle";
+import {
+  advanceDays,
+  advanceWatches,
+  checksBetween,
+  clockOf,
+  newDelve,
+  restState,
+  TERRAIN,
+  watchesElapsed,
+  watchOf,
+} from "./chronicle";
 import DelveApp from "./delve-app";
+import { rollEncounterChecks } from "./encounter";
 import { getChronicle, refreshOnChange, updateChronicle } from "./store";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
+/**
+ * How the country describes itself on a whispered check.
+ *
+ * @param {import("./chronicle").Chronicle} chronicle - The Chronicle.
+ * @returns {object} Arguments for rollEncounterCheck.
+ */
+function checkFor(chronicle) {
+  const watch = watchOf(chronicle.watch);
+  return {
+    speaker: game.i18n.localize(`VF.chronicle.terrain.${chronicle.travel.terrain}`),
+    where: game.i18n.format("VF.chronicle.AtWatch", {
+      day: chronicle.day,
+      watch: game.i18n.localize(`VF.chronicle.watch.${watch.key}`),
+    }),
+    chanceIn6: chronicle.travel.chanceIn6,
+  };
+}
+
+/**
+ * Move the calendar, and make every travel check the move crossed.
+ *
+ * @param {(calendar: import("./chronicle").Calendar) => import("./chronicle").Calendar} move
+ *   How far to go.
+ */
+async function travel(move) {
+  const before = getChronicle();
+  await updateChronicle((chronicle) => ({ ...chronicle, ...move(chronicle) }));
+
+  const after = getChronicle();
+  const due = checksBetween(watchesElapsed(before), watchesElapsed(after), after.travel.everyWatches);
+  await rollEncounterChecks(due, checkFor(after));
+}
 
 /**
  * Move the calendar on by one watch.
@@ -18,11 +62,13 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
  * @this {ChronicleApp}
  */
 async function onWatchForward() {
-  await updateChronicle((chronicle) => ({ ...chronicle, ...advanceWatches(chronicle, 1) }));
+  await travel((chronicle) => advanceWatches(chronicle, 1));
 }
 
 /**
  * Take back a watch, for the click that should not have happened.
+ *
+ * Going backwards checks nothing: the party is un-walking the ground.
  *
  * @this {ChronicleApp}
  */
@@ -36,7 +82,36 @@ async function onWatchBack() {
  * @this {ChronicleApp}
  */
 async function onDayForward() {
-  await updateChronicle((chronicle) => ({ ...chronicle, ...advanceDays(chronicle, 1) }));
+  await travel((chronicle) => advanceDays(chronicle, 1));
+}
+
+/**
+ * Roll a travel check now, whatever the cadence says.
+ *
+ * @this {ChronicleApp}
+ */
+async function onRollTravelEncounter() {
+  await rollEncounterChecks(1, checkFor(getChronicle()));
+}
+
+/**
+ * Save the travel encounter rule from its boxes.
+ *
+ * Choosing a terrain moves the chance to the book's number for it; the box
+ * stays editable, because the Referee knows which woods these are.
+ *
+ * @this {ChronicleApp}
+ * @param {Event} event - The change that prompted the save.
+ */
+async function onSaveTravelRule(event) {
+  const root = this.element;
+  const terrain = root.querySelector('[name="terrain"]')?.value || "clear";
+  const everyWatches = Math.max(1, Math.trunc(Number(root.querySelector('[name="everyWatches"]')?.value) || 1));
+  const typed = Math.trunc(Number(root.querySelector('[name="travelChance"]')?.value) || 0);
+  const changedTerrain = event?.target?.name === "terrain";
+  const chanceIn6 = Math.max(0, Math.min(6, changedTerrain ? (TERRAIN[terrain] ?? typed) : typed));
+
+  await updateChronicle((chronicle) => ({ ...chronicle, travel: { terrain, everyWatches, chanceIn6 } }));
 }
 
 /**
@@ -108,9 +183,9 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
     window: {
       title: "VF.chronicle.Title",
       icon: "fa-solid fa-hourglass-half",
-      resizable: false,
+      resizable: true,
     },
-    position: { width: 320, height: "auto" },
+    position: { width: 340, height: "auto" },
     actions: {
       watchForward: onWatchForward,
       watchBack: onWatchBack,
@@ -118,6 +193,7 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       createDelve: onCreateDelve,
       openDelve: onOpenDelve,
       dropDelve: onDropDelve,
+      rollTravelEncounter: onRollTravelEncounter,
     },
   };
 
@@ -133,6 +209,16 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       return existing;
     }
     return new ChronicleApp().render(true);
+  }
+
+  /** @inheritDoc */
+  _onRender(context, options) {
+    super._onRender(context, options);
+    for (const input of this.element.querySelectorAll(
+      '[name="terrain"], [name="everyWatches"], [name="travelChance"]',
+    )) {
+      input.addEventListener("change", onSaveTravelRule.bind(this));
+    }
   }
 
   /** @inheritDoc */
@@ -156,6 +242,18 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
         turn: delve.turn,
         penalised: restState(delve).penalised,
       })),
+      // The Referee's half: where they are, how often it is checked, and on what.
+      travel: game.user.isGM
+        ? {
+            ...chronicle.travel,
+            terrains: Object.entries(TERRAIN).map(([key, chanceIn6]) => ({
+              key,
+              chanceIn6,
+              label: `VF.chronicle.terrain.${key}`,
+              selected: key === chronicle.travel.terrain,
+            })),
+          }
+        : null,
     };
   }
 }

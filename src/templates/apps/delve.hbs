@@ -35,9 +35,15 @@
         <span class="name">{{name}}</span>
         <span class="bar"><span class="fill" style="width: {{percent}}%"></span></span>
         <span class="remaining">
-          {{#if out}}{{localize "VF.chronicle.BurntOut"}}{{else}}{{remaining}}{{/if}}
+          {{#if eternal}}&infin;{{else if out}}{{localize "VF.chronicle.BurntOut"}}{{else}}{{remaining}}{{/if}}
         </span>
         {{#if ../isReferee}}
+        {{#unless eternal}}
+        <button type="button" class="feed" data-action="feedLight" data-turns="-1"
+                data-tooltip="{{localize 'VF.chronicle.TakeATurn'}}">&minus;</button>
+        <button type="button" class="feed" data-action="feedLight" data-turns="1"
+                data-tooltip="{{localize 'VF.chronicle.AddATurn'}}">+</button>
+        {{/unless}}
         <button type="button" data-action="douse" data-tooltip="{{localize 'VF.chronicle.Douse'}}">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -52,9 +58,13 @@
     <div class="add">
       <select name="lightKind">
         {{#each lightKinds}}
-        <option value="{{kind}}">{{localize label}} ({{turns}})</option>
+        <option value="{{kind}}" data-turns="{{turns}}" data-eternal="{{eternal}}">
+          {{localize label}}{{#unless eternal}} ({{turns}}){{/unless}}
+        </option>
         {{/each}}
       </select>
+      <input type="number" name="lightTurns" min="0" step="1" value="{{defaultLightTurns}}"
+             data-tooltip="{{localize 'VF.chronicle.TurnsOfFuel'}}" />
       <input type="text" name="lightName" placeholder="{{localize 'VF.chronicle.CarriedBy'}}" />
       <button type="button" data-action="light" data-tooltip="{{localize 'VF.chronicle.LightIt'}}">
         <i class="fa-solid fa-fire"></i>
@@ -65,17 +75,21 @@
 
   {{#if encounter}}
   <section class="encounter {{#if encounter.due}}due{{/if}}">
-    <h3>{{localize "VF.chronicle.Wandering"}}</h3>
+    <h3>{{localize "VF.chronicle.RandomEncounters"}}</h3>
     <div class="rule">
-      <label>{{localize "VF.chronicle.EveryTurns"}}
+      <label>
+        <span>{{localize "VF.chronicle.CheckEvery"}}</span>
         <input type="number" name="everyTurns" min="1" step="1" value="{{encounter.everyTurns}}" />
+        <span>{{localize "VF.chronicle.TurnsUnit"}}</span>
       </label>
-      <label>{{localize "VF.chronicle.ChanceIn6"}}
+      <label>
+        <span>{{localize "VF.chronicle.EncounterOn"}}</span>
         <input type="number" name="chanceIn6" min="0" max="6" step="1" value="{{encounter.chanceIn6}}" />
+        <span>{{localize "VF.chronicle.OrLessIn6"}}</span>
       </label>
-      <button type="button" data-action="rollEncounter">{{localize "VF.chronicle.RollCheck"}}</button>
     </div>
-    <p class="hint">{{localize "VF.chronicle.WanderingHint"}}</p>
+    <button type="button" data-action="rollEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
+    <p class="hint">{{localize "VF.chronicle.EncounterHint"}}</p>
   </section>
   {{/if}}
 

@@ -62,18 +62,21 @@ export const WATCHES: readonly WatchDescription[] = [
   { key: "deepNight", daylight: false },
 ] as const;
 
+/** How long a torch burns, and the stand-in for anything unpriced. */
+export const TORCH_TURNS = 6;
+
 /**
  * What a light source is and how long it lasts, in Turns.
  *
  * Dungeon Exploration.md: candle 12 Turns, torch 6, lantern 24 per flask.
+ * `eternal` is not from the book -- it is the enchanted lamp, the luminous
+ * fungus, the hole in the ceiling -- and burns for null, meaning never.
  */
-/** How long a torch burns, and the stand-in for anything unpriced. */
-export const TORCH_TURNS = 6;
-
-export const LIGHT_DURATIONS: Readonly<Record<string, number>> = {
+export const LIGHT_KINDS: Readonly<Record<string, number | null>> = {
   torch: TORCH_TURNS,
   candle: 12,
   lantern: 24,
+  eternal: null,
 };
 
 /**
@@ -91,7 +94,7 @@ export const MAX_HIT_DICE_XP = 1500;
 export type Calendar = { day: number; watch: number };
 
 /** A lit light source, burning against a delve's turn count. */
-export type Light = { id: string; name: string; kind: string; litOnTurn: number; turns: number };
+export type Light = { id: string; name: string; kind: string; litOnTurn: number; turns: number | null };
 
 /** An enemy defeated, counted for XP by Hit Dice rather than by a raw number. */
 export type Kill = { id: string; name: string; hitDice: number; special: boolean; count: number };
@@ -99,8 +102,32 @@ export type Kill = { id: string; name: string; hitDice: number; special: boolean
 /** Treasure recovered, valued in brass. */
 export type Loot = { id: string; name: string; bp: number };
 
-/** How often the Referee checks for wandering monsters, and on what. */
+/** How often the Referee checks for a random encounter, and on what. */
 export type EncounterRule = { everyTurns: number; chanceIn6: number };
+
+/**
+ * How often the Referee checks while travelling, and where.
+ *
+ * The book makes one check a day (Wilderness Travel.md), which is six
+ * watches; dangerous country is meant to warrant more.
+ */
+export type TravelEncounterRule = { everyWatches: number; chanceIn6: number; terrain: string };
+
+/**
+ * Terrain, and the chance of an encounter in it. Wilderness Travel.md.
+ *
+ * The same table carries a chance of getting lost, which nothing here uses
+ * yet.
+ */
+export const TERRAIN: Readonly<Record<string, number>> = {
+  clear: 1,
+  forest: 2,
+  hills: 2,
+  desert: 2,
+  mountains: 3,
+  jungle: 3,
+  swamp: 3,
+};
 
 /** One expedition underground, with its own clock. */
 export type Delve = {
@@ -118,11 +145,43 @@ export type Delve = {
 };
 
 /** Everything the Chronicle remembers. */
-export type Chronicle = Calendar & { delves: Delve[] };
+export type Chronicle = Calendar & { delves: Delve[]; travel: TravelEncounterRule };
 
 /** A fresh world: the first dawn of the first day, nothing delved yet. */
 export function defaultChronicle(): Chronicle {
-  return { day: 1, watch: 0, delves: [] };
+  return {
+    day: 1,
+    watch: 0,
+    delves: [],
+    travel: { everyWatches: WATCHES_PER_DAY, chanceIn6: TERRAIN.clear ?? 1, terrain: "clear" },
+  };
+}
+
+/**
+ * How many watches have passed since the first dawn.
+ *
+ * @param calendar - Where the party is.
+ * @returns Whole watches elapsed.
+ */
+export function watchesElapsed(calendar: Calendar): number {
+  return (calendar.day - 1) * WATCHES_PER_DAY + calendar.watch;
+}
+
+/**
+ * How many checks fall due between one point on a clock and a later one.
+ *
+ * Counting rather than testing the endpoint, because one click can cross
+ * several checks: an hour underground is six Turns, and a skipped day is six
+ * watches. Testing only where we landed would quietly swallow the rest.
+ *
+ * @param from - The count before moving.
+ * @param to - The count after moving.
+ * @param every - The cadence; anything below one is read as one.
+ * @returns How many checks the interval contains.
+ */
+export function checksBetween(from: number, to: number, every: number): number {
+  const cadence = Math.max(1, Math.trunc(every));
+  return Math.max(0, Math.floor(to / cadence) - Math.floor(from / cadence));
 }
 
 /**
@@ -242,9 +301,10 @@ export function restState(delve: Delve): { owed: boolean; penalised: boolean } {
  *
  * @param light - The lit source.
  * @param turn - The delve's current Turn.
- * @returns Turns remaining; zero or less means dark.
+ * @returns Turns remaining; zero or less means dark, Infinity means eternal.
  */
 export function lightRemaining(light: Light, turn: number): number {
+  if (light.turns === null) return Number.POSITIVE_INFINITY;
   return light.turns - (turn - light.litOnTurn);
 }
 
@@ -258,18 +318,34 @@ export function lightRemaining(light: Light, turn: number): number {
  * @param turns - How long it burns; defaults to the book's duration for the kind.
  * @returns The lit source.
  */
-export function lightSource(name: string, kind: string, turn: number, id: string, turns?: number): Light {
+export function lightSource(name: string, kind: string, turn: number, id: string, turns?: number | null): Light {
+  const fromKind = kind in LIGHT_KINDS ? LIGHT_KINDS[kind] : TORCH_TURNS;
   return {
     id,
     name: name.trim() || kind,
     kind,
     litOnTurn: turn,
-    turns: turns ?? LIGHT_DURATIONS[kind] ?? TORCH_TURNS,
+    turns: turns === undefined ? (fromKind ?? null) : turns,
   };
 }
 
 /**
- * Whether a wandering monster check falls due this Turn.
+ * Add or take away Turns of fuel from something already burning.
+ *
+ * A half-full flask is poured in, a torch is found to be shorter than it
+ * looked. Eternal sources ignore it; there is nothing to top up.
+ *
+ * @param light - The lit source.
+ * @param turns - Turns to add, or negative to take away.
+ * @returns The source with its burn adjusted. Never below nothing.
+ */
+export function adjustLight(light: Light, turns: number): Light {
+  if (light.turns === null) return light;
+  return { ...light, turns: Math.max(0, light.turns + Math.trunc(turns)) };
+}
+
+/**
+ * Whether a random encounter check falls due this Turn.
  *
  * Turn zero is the party standing in the doorway, so nothing is due there.
  *
