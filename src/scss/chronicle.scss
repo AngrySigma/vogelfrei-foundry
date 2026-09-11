@@ -216,17 +216,28 @@
       white-space: nowrap;
     }
 
+    // The fill is positioned rather than sized in normal flow. A percentage
+    // width on a child of a flex item whose basis is `auto` has no definite
+    // containing block to resolve against, so the bar never moved; against a
+    // positioned ancestor it resolves after layout, every time.
     .bar {
+      position: relative;
+      display: block;
       flex: 1 1 auto;
+      min-width: 40px;
       height: 8px;
       border-radius: 4px;
       background: rgb(0 0 0 / 12%);
       overflow: hidden;
 
       .fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
         display: block;
-        height: 100%;
         background: rgb(230 160 40);
+        transition: width 120ms linear;
       }
     }
 

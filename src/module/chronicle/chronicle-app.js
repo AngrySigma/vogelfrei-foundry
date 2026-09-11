@@ -38,7 +38,27 @@ function checkFor(chronicle) {
       watch: game.i18n.localize(`VF.chronicle.watch.${watch.key}`),
     }),
     chanceIn6: chronicle.travel.chanceIn6,
+    distance: chronicle.travel.distance,
   };
+}
+
+/**
+ * Say what the party has eaten, once a day's travel is behind them.
+ *
+ * Physical Deterioration.md wants a meal and water every twenty-four hours,
+ * and the saves for going without are the Referee's to call. This only says
+ * the day is over and how much to strike off, which is the part everybody
+ * forgets -- so it is spoken aloud rather than whispered.
+ *
+ * @param {number} days - How many days passed.
+ */
+async function announceUpkeep(days) {
+  if (days < 1) return;
+  await ChatMessage.create({
+    flavor: game.i18n.localize("VF.chronicle.UpkeepFlavor"),
+    content: `<p>${game.i18n.format("VF.chronicle.Upkeep", { days })}</p>
+      <p class="vf-upkeep-hint">${game.i18n.localize("VF.chronicle.UpkeepHint")}</p>`,
+  });
 }
 
 /**
@@ -54,6 +74,7 @@ async function travel(move) {
   const after = getChronicle();
   const due = checksBetween(watchesElapsed(before), watchesElapsed(after), after.travel.everyWatches);
   await rollEncounterChecks(due, checkFor(after));
+  await announceUpkeep(after.day - before.day);
 }
 
 /**
@@ -106,12 +127,27 @@ async function onRollTravelEncounter() {
 async function onSaveTravelRule(event) {
   const root = this.element;
   const terrain = root.querySelector('[name="terrain"]')?.value || "clear";
+  const country = TERRAIN[terrain];
   const everyWatches = Math.max(1, Math.trunc(Number(root.querySelector('[name="everyWatches"]')?.value) || 1));
-  const typed = Math.trunc(Number(root.querySelector('[name="travelChance"]')?.value) || 0);
-  const changedTerrain = event?.target?.name === "terrain";
-  const chanceIn6 = Math.max(0, Math.min(6, changedTerrain ? (TERRAIN[terrain] ?? typed) : typed));
+  const typedChance = Math.trunc(Number(root.querySelector('[name="travelChance"]')?.value) || 0);
+  const typedDistance = root.querySelector('[name="travelDistance"]')?.value?.trim() || "";
 
-  await updateChronicle((chronicle) => ({ ...chronicle, travel: { terrain, everyWatches, chanceIn6 } }));
+  // Picking a terrain pulls in its chance and its distance; typing in either
+  // box afterwards keeps what was typed.
+  const pickedTerrain = event?.target?.name === "terrain";
+  const chanceIn6 = Math.max(0, Math.min(6, pickedTerrain ? (country?.encounterIn6 ?? typedChance) : typedChance));
+  const wanted = pickedTerrain ? (country?.distance ?? typedDistance) : typedDistance;
+
+  if (!Roll.validate(wanted)) {
+    ui.notifications?.warn(game.i18n.format("VF.chronicle.BadFormula", { formula: wanted }));
+    this.render();
+    return;
+  }
+
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    travel: { terrain, everyWatches, chanceIn6, distance: wanted },
+  }));
 }
 
 /**
@@ -121,11 +157,9 @@ async function onSaveTravelRule(event) {
  */
 async function onCreateDelve() {
   const input = this.element.querySelector('input[name="delveName"]');
-  const name = input?.value?.trim();
-  if (!name) {
-    ui.notifications?.warn(game.i18n.localize("VF.chronicle.NameTheDelve"));
-    return;
-  }
+  // An empty box is fine: newDelve names it after the day, so a delve can be
+  // started in one click and named later if it turns out to deserve one.
+  const name = input?.value?.trim() ?? "";
 
   const id = foundry.utils.randomID();
   await updateChronicle((chronicle) => ({
@@ -246,9 +280,10 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       travel: game.user.isGM
         ? {
             ...chronicle.travel,
-            terrains: Object.entries(TERRAIN).map(([key, chanceIn6]) => ({
+            terrains: Object.entries(TERRAIN).map(([key, { encounterIn6, distance }]) => ({
               key,
-              chanceIn6,
+              encounterIn6,
+              distance,
               label: `VF.chronicle.terrain.${key}`,
               selected: key === chronicle.travel.terrain,
             })),

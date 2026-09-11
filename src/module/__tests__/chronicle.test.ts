@@ -5,13 +5,17 @@
 import type { QuenchMethods } from "../../e2e";
 import type { Delve } from "../chronicle/chronicle";
 import {
+  adjustLight,
   advanceDays,
   advanceTurns,
   advanceWatches,
+  checksBetween,
   clockOf,
+  DUNGEON_DISTANCE,
   defaultChronicle,
   encounterDue,
   killXP,
+  LIGHT_KINDS,
   lightRemaining,
   lightSource,
   lootXP,
@@ -19,7 +23,9 @@ import {
   rest,
   restState,
   suggestedWatches,
+  TERRAIN,
   TURNS_PER_WATCH,
+  watchesElapsed,
   watchOf,
   xpForHitDice,
 } from "../chronicle/chronicle";
@@ -74,7 +80,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
         day: 1,
         watch: 0,
         delves: [],
-        travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear" },
+        travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear", distance: "6d6 * 40" },
       });
     });
 
@@ -85,6 +91,11 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("The turn track", () => {
+    it("Names itself after the day when nobody names it", () => {
+      expect(newDelve("", { day: 4, watch: 1 }, "x").name).equal("Delve, day 4");
+      expect(newDelve("  Barrow  ", { day: 4, watch: 1 }, "x").name).equal("Barrow");
+    });
+
     it("Records when the party went in", () => {
       expect(delve().startedOn).deep.equal({ day: 3, watch: 2 });
       expect(delve().turn).equal(0);
@@ -109,10 +120,13 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("Light", () => {
-    it("Burns for as long as the book says", () => {
+    it("Burns for as long, and reaches as far, as the book says", () => {
       expect(lightSource("Torch", "torch", 0, "a").turns).equal(6);
       expect(lightSource("Candle", "candle", 0, "b").turns).equal(12);
       expect(lightSource("Lantern", "lantern", 0, "c").turns).equal(24);
+      expect(lightSource("Torch", "torch", 0, "a").radius).equal(30);
+      expect(lightSource("Candle", "candle", 0, "b").radius).equal(10);
+      expect(lightSource("Lantern", "lantern", 0, "c").radius).equal(30);
     });
 
     it("Counts down from the Turn it was lit, not from zero", () => {
@@ -127,7 +141,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Never runs an eternal source down", () => {
-      expect(LIGHT_KINDS.eternal).equal(null);
+      expect(LIGHT_KINDS.eternal?.turns).equal(null);
       const lamp = lightSource("Enchanted lamp", "eternal", 3, "a");
       expect(lamp.turns).equal(null);
       expect(lightRemaining(lamp, 9999)).equal(Number.POSITIVE_INFINITY);
@@ -144,13 +158,23 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
   describe("Random encounters", () => {
     it("Takes each terrain's chance from the book", () => {
-      expect(TERRAIN.clear).equal(1);
-      expect(TERRAIN.forest).equal(2);
-      expect(TERRAIN.hills).equal(2);
-      expect(TERRAIN.desert).equal(2);
-      expect(TERRAIN.mountains).equal(3);
-      expect(TERRAIN.jungle).equal(3);
-      expect(TERRAIN.swamp).equal(3);
+      expect(TERRAIN.clear?.encounterIn6).equal(1);
+      expect(TERRAIN.forest?.encounterIn6).equal(2);
+      expect(TERRAIN.hills?.encounterIn6).equal(2);
+      expect(TERRAIN.desert?.encounterIn6).equal(2);
+      expect(TERRAIN.mountains?.encounterIn6).equal(3);
+      expect(TERRAIN.jungle?.encounterIn6).equal(3);
+      expect(TERRAIN.swamp?.encounterIn6).equal(3);
+    });
+
+    it("Gives every terrain a distance formula, in feet", () => {
+      for (const [name, country] of Object.entries(TERRAIN)) {
+        expect(country.distance, name).match(/^\d+d\d+ \* \d+$/);
+      }
+      // Open plains should start much further off than dense jungle.
+      expect(TERRAIN.clear?.distance).equal("6d6 * 40");
+      expect(TERRAIN.jungle?.distance).equal("2d6 * 10");
+      expect(DUNGEON_DISTANCE).equal("3d6 * 10");
     });
 
     it("Counts every check an interval crosses, not just the one it lands on", () => {
@@ -182,7 +206,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Survives a cadence of zero rather than dividing by it", () => {
-      const busy = { ...advanceTurns(delve(), 3), encounter: { everyTurns: 0, chanceIn6: 2 } };
+      const busy = { ...advanceTurns(delve(), 3), encounter: { everyTurns: 0, chanceIn6: 2, distance: DUNGEON_DISTANCE } };
       expect(encounterDue(busy)).equal(true);
     });
   });

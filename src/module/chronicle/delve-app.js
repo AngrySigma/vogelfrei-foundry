@@ -17,6 +17,7 @@ import {
   advanceTurns,
   advanceWatches,
   checksBetween,
+  DUNGEON_DISTANCE,
   encounterDue,
   killXP,
   LIGHT_KINDS,
@@ -59,6 +60,7 @@ function checkFor(delve) {
     speaker: delve.name,
     where: game.i18n.format("VF.chronicle.AtTurn", { turn: delve.turn }),
     chanceIn6: delve.encounter.chanceIn6,
+    distance: delve.encounter.distance || DUNGEON_DISTANCE,
   };
 }
 
@@ -112,7 +114,15 @@ async function onRollEncounter() {
 async function onSaveEncounterRule() {
   const everyTurns = Math.max(1, Math.trunc(numberFrom(this.element, "everyTurns", 2)));
   const chanceIn6 = Math.max(0, Math.min(6, Math.trunc(numberFrom(this.element, "chanceIn6", 1))));
-  await updateDelve(this.delveId, (delve) => ({ ...delve, encounter: { everyTurns, chanceIn6 } }));
+  const distance = this.element.querySelector('[name="distance"]')?.value?.trim() || DUNGEON_DISTANCE;
+
+  if (!Roll.validate(distance)) {
+    ui.notifications?.warn(game.i18n.format("VF.chronicle.BadFormula", { formula: distance }));
+    this.render();
+    return;
+  }
+
+  await updateDelve(this.delveId, (delve) => ({ ...delve, encounter: { everyTurns, chanceIn6, distance } }));
 }
 
 /**
@@ -343,7 +353,7 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
     super._onRender(context, options);
     // The wandering monster rule saves on change rather than on a click:
     // a number spinner has no button to hang an action off.
-    for (const input of this.element.querySelectorAll('[name="everyTurns"], [name="chanceIn6"]')) {
+    for (const input of this.element.querySelectorAll('[name="everyTurns"], [name="chanceIn6"], [name="distance"]')) {
       input.addEventListener("change", onSaveEncounterRule.bind(this));
     }
 
@@ -394,20 +404,27 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
           percent: eternal ? 100 : Math.max(0, Math.min(100, Math.round((remaining / (light.turns || 1)) * 100))),
         };
       }),
-      lightKinds: Object.entries(LIGHT_KINDS).map(([kind, turns]) => ({
+      lightKinds: Object.entries(LIGHT_KINDS).map(([kind, { turns, radius }]) => ({
         kind,
         label: `VF.chronicle.light.${kind}`,
         turns,
+        radius,
         eternal: turns === null,
       })),
-      defaultLightTurns: LIGHT_KINDS.torch,
+      defaultLightTurns: LIGHT_KINDS.torch?.turns ?? 6,
       kills: delve.kills.map((kill) => ({
         ...kill,
         xp: xpForHitDice(kill.hitDice, kill.special) * kill.count,
       })),
       loot: delve.loot.map((entry) => ({ ...entry, price: formatMoney(entry.bp) })),
       // The Referee's half: the wandering monster rule and the running score.
-      encounter: isReferee ? { ...delve.encounter, due: encounterDue(delve) } : null,
+      encounter: isReferee
+        ? {
+            ...delve.encounter,
+            distance: delve.encounter.distance || DUNGEON_DISTANCE,
+            due: encounterDue(delve),
+          }
+        : null,
       xp: isReferee ? { kills: killXP(delve), loot: lootXP(delve) } : null,
       suggested: suggestedWatches(delve),
     };

@@ -59,7 +59,7 @@
       <select name="lightKind">
         {{#each lightKinds}}
         <option value="{{kind}}" data-turns="{{turns}}" data-eternal="{{eternal}}">
-          {{localize label}}{{#unless eternal}} ({{turns}}){{/unless}}
+          {{localize label}} &mdash; {{radius}}'{{#unless eternal}}, {{turns}}{{/unless}}
         </option>
         {{/each}}
       </select>
@@ -77,16 +77,17 @@
   <section class="encounter {{#if encounter.due}}due{{/if}}">
     <h3>{{localize "VF.chronicle.RandomEncounters"}}</h3>
     <div class="rule">
-      <label>
-        <span>{{localize "VF.chronicle.CheckEvery"}}</span>
-        <input type="number" name="everyTurns" min="1" step="1" value="{{encounter.everyTurns}}" />
-        <span>{{localize "VF.chronicle.TurnsUnit"}}</span>
-      </label>
-      <label>
-        <span>{{localize "VF.chronicle.EncounterOn"}}</span>
-        <input type="number" name="chanceIn6" min="0" max="6" step="1" value="{{encounter.chanceIn6}}" />
-        <span>{{localize "VF.chronicle.OrLessIn6"}}</span>
-      </label>
+      <span>{{localize "VF.chronicle.Every"}}</span>
+      <input type="number" name="everyTurns" min="1" step="1" value="{{encounter.everyTurns}}" />
+      <span>{{localize "VF.chronicle.TurnsUnit"}};</span>
+      <input type="number" name="chanceIn6" min="0" max="6" step="1" value="{{encounter.chanceIn6}}" />
+      <span>{{localize "VF.chronicle.In6"}}</span>
+    </div>
+    <div class="rule">
+      <span>{{localize "VF.chronicle.MetAt"}}</span>
+      <input type="text" name="distance" value="{{encounter.distance}}"
+             data-tooltip="{{localize 'VF.chronicle.DistanceHint'}}" />
+      <span>{{localize "VF.chronicle.Feet"}}</span>
     </div>
     <button type="button" data-action="rollEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
     <p class="hint">{{localize "VF.chronicle.EncounterHint"}}</p>

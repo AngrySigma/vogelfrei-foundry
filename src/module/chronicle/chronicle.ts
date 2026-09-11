@@ -65,19 +65,30 @@ export const WATCHES: readonly WatchDescription[] = [
 /** How long a torch burns, and the stand-in for anything unpriced. */
 export const TORCH_TURNS = 6;
 
+/** How far a light reaches, and how long it lasts. */
+export type LightKind = { turns: number | null; radius: number };
+
 /**
- * What a light source is and how long it lasts, in Turns.
+ * What a light source is, how far it shows, and how long it lasts.
  *
- * Dungeon Exploration.md: candle 12 Turns, torch 6, lantern 24 per flask.
- * `eternal` is not from the book -- it is the enchanted lamp, the luminous
- * fungus, the hole in the ceiling -- and burns for null, meaning never.
+ * Dungeon Exploration.md: candle 10' for 12 Turns, torch 30' for 6, lantern
+ * 30' for 24 per flask. `eternal` is not from the book -- it is the enchanted
+ * lamp, the luminous fungus, the hole in the ceiling -- and burns for null,
+ * meaning never; its reach is assumed to be a torch's.
  */
-export const LIGHT_KINDS: Readonly<Record<string, number | null>> = {
-  torch: TORCH_TURNS,
-  candle: 12,
-  lantern: 24,
-  eternal: null,
+export const LIGHT_KINDS: Readonly<Record<string, LightKind>> = {
+  torch: { turns: TORCH_TURNS, radius: 30 },
+  candle: { turns: 12, radius: 10 },
+  lantern: { turns: 24, radius: 30 },
+  eternal: { turns: null, radius: 30 },
 };
+
+/**
+ * How far apart an encounter begins underground. Encounter Distance.md.
+ *
+ * The formula is in feet, so the roll is the answer.
+ */
+export const DUNGEON_DISTANCE = "3d6 * 10";
 
 /**
  * XP for defeating an enemy, by Hit Dice. Advancement.md.
@@ -94,7 +105,14 @@ export const MAX_HIT_DICE_XP = 1500;
 export type Calendar = { day: number; watch: number };
 
 /** A lit light source, burning against a delve's turn count. */
-export type Light = { id: string; name: string; kind: string; litOnTurn: number; turns: number | null };
+export type Light = {
+  id: string;
+  name: string;
+  kind: string;
+  litOnTurn: number;
+  turns: number | null;
+  radius: number;
+};
 
 /** An enemy defeated, counted for XP by Hit Dice rather than by a raw number. */
 export type Kill = { id: string; name: string; hitDice: number; special: boolean; count: number };
@@ -103,7 +121,7 @@ export type Kill = { id: string; name: string; hitDice: number; special: boolean
 export type Loot = { id: string; name: string; bp: number };
 
 /** How often the Referee checks for a random encounter, and on what. */
-export type EncounterRule = { everyTurns: number; chanceIn6: number };
+export type EncounterRule = { everyTurns: number; chanceIn6: number; distance: string };
 
 /**
  * How often the Referee checks while travelling, and where.
@@ -111,22 +129,36 @@ export type EncounterRule = { everyTurns: number; chanceIn6: number };
  * The book makes one check a day (Wilderness Travel.md), which is six
  * watches; dangerous country is meant to warrant more.
  */
-export type TravelEncounterRule = { everyWatches: number; chanceIn6: number; terrain: string };
+export type TravelEncounterRule = { everyWatches: number; chanceIn6: number; terrain: string; distance: string };
+
+/** A kind of country: how often something is met in it, and how far off. */
+export type TerrainKind = { encounterIn6: number; distance: string };
 
 /**
- * Terrain, and the chance of an encounter in it. Wilderness Travel.md.
+ * Terrain: the chance of an encounter in it, and how far away it starts.
  *
- * The same table carries a chance of getting lost, which nothing here uses
- * yet.
+ * The chances are the book's (Wilderness Travel.md). The distances are not --
+ * the book gives a flat 3d6x10' with "up to threefold in open terrain", which
+ * is far too tight for open plains and far too uniform everywhere else. These
+ * are adapted from the d20 3.5 encounter distance table, picking the middling
+ * variant where it offers several, and every one of them is meant to be
+ * overwritten in the window: the Referee knows which woods these are.
+ *
+ * Mountains are the awkward case in any such table. 4d10x10' is a compromise
+ * between meeting someone around a boulder and seeing them across a valley;
+ * if it matters, rule it rather than roll it.
+ *
+ * The same book table carries a chance of getting lost, which nothing here
+ * uses yet.
  */
-export const TERRAIN: Readonly<Record<string, number>> = {
-  clear: 1,
-  forest: 2,
-  hills: 2,
-  desert: 2,
-  mountains: 3,
-  jungle: 3,
-  swamp: 3,
+export const TERRAIN: Readonly<Record<string, TerrainKind>> = {
+  clear: { encounterIn6: 1, distance: "6d6 * 40" },
+  forest: { encounterIn6: 2, distance: "2d8 * 10" },
+  hills: { encounterIn6: 2, distance: "2d10 * 10" },
+  desert: { encounterIn6: 2, distance: "6d6 * 20" },
+  mountains: { encounterIn6: 3, distance: "4d10 * 10" },
+  jungle: { encounterIn6: 3, distance: "2d6 * 10" },
+  swamp: { encounterIn6: 3, distance: "2d8 * 10" },
 };
 
 /** One expedition underground, with its own clock. */
@@ -153,7 +185,12 @@ export function defaultChronicle(): Chronicle {
     day: 1,
     watch: 0,
     delves: [],
-    travel: { everyWatches: WATCHES_PER_DAY, chanceIn6: TERRAIN.clear ?? 1, terrain: "clear" },
+    travel: {
+      everyWatches: WATCHES_PER_DAY,
+      chanceIn6: TERRAIN.clear?.encounterIn6 ?? 1,
+      terrain: "clear",
+      distance: TERRAIN.clear?.distance ?? DUNGEON_DISTANCE,
+    },
   };
 }
 
@@ -247,12 +284,12 @@ export function advanceDays(calendar: Calendar, days: number): Calendar {
 export function newDelve(name: string, calendar: Calendar, id: string): Delve {
   return {
     id,
-    name: name.trim() || "Delve",
+    name: name.trim() || `Delve, day ${calendar.day}`,
     turn: 0,
     turnsSinceRest: 0,
     turnAtLastSync: 0,
     startedOn: { day: calendar.day, watch: calendar.watch },
-    encounter: { everyTurns: 2, chanceIn6: 1 },
+    encounter: { everyTurns: 2, chanceIn6: 1, distance: DUNGEON_DISTANCE },
     lights: [],
     kills: [],
     loot: [],
@@ -312,20 +349,21 @@ export function lightRemaining(light: Light, turn: number): number {
  * Light a source at the current Turn.
  *
  * @param name - What to call it on the list, usually the item's name.
- * @param kind - A key of LIGHT_DURATIONS, or anything else for a custom burn.
+ * @param kind - A key of LIGHT_KINDS, or anything else to burn like a torch.
  * @param turn - The Turn it is lit on.
  * @param id - A unique id, supplied by the caller.
  * @param turns - How long it burns; defaults to the book's duration for the kind.
  * @returns The lit source.
  */
 export function lightSource(name: string, kind: string, turn: number, id: string, turns?: number | null): Light {
-  const fromKind = kind in LIGHT_KINDS ? LIGHT_KINDS[kind] : TORCH_TURNS;
+  const fromKind = LIGHT_KINDS[kind] ?? LIGHT_KINDS.torch;
   return {
     id,
     name: name.trim() || kind,
     kind,
     litOnTurn: turn,
-    turns: turns === undefined ? (fromKind ?? null) : turns,
+    turns: turns === undefined ? (fromKind?.turns ?? null) : turns,
+    radius: fromKind?.radius ?? 30,
   };
 }
 

@@ -32,22 +32,23 @@
         <span>{{localize "VF.chronicle.Terrain"}}</span>
         <select name="terrain">
           {{#each travel.terrains}}
-          <option value="{{key}}" {{#if selected}}selected{{/if}}>{{localize label}} ({{chanceIn6}} in 6)</option>
+          <option value="{{key}}" {{#if selected}}selected{{/if}}>{{localize label}} &mdash; {{encounterIn6}} in 6, {{distance}}</option>
           {{/each}}
         </select>
       </label>
     </div>
     <div class="rule">
-      <label>
-        <span>{{localize "VF.chronicle.CheckEvery"}}</span>
-        <input type="number" name="everyWatches" min="1" step="1" value="{{travel.everyWatches}}" />
-        <span>{{localize "VF.chronicle.WatchesUnit"}}</span>
-      </label>
-      <label>
-        <span>{{localize "VF.chronicle.EncounterOn"}}</span>
-        <input type="number" name="travelChance" min="0" max="6" step="1" value="{{travel.chanceIn6}}" />
-        <span>{{localize "VF.chronicle.OrLessIn6"}}</span>
-      </label>
+      <span>{{localize "VF.chronicle.Every"}}</span>
+      <input type="number" name="everyWatches" min="1" step="1" value="{{travel.everyWatches}}" />
+      <span>{{localize "VF.chronicle.WatchesUnit"}};</span>
+      <input type="number" name="travelChance" min="0" max="6" step="1" value="{{travel.chanceIn6}}" />
+      <span>{{localize "VF.chronicle.In6"}}</span>
+    </div>
+    <div class="rule">
+      <span>{{localize "VF.chronicle.MetAt"}}</span>
+      <input type="text" name="travelDistance" value="{{travel.distance}}"
+             data-tooltip="{{localize 'VF.chronicle.DistanceHint'}}" />
+      <span>{{localize "VF.chronicle.Feet"}}</span>
     </div>
     <button type="button" data-action="rollTravelEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
     <p class="hint">{{localize "VF.chronicle.TravelHint"}}</p>
