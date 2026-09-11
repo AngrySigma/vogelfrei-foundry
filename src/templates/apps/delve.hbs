@@ -1,0 +1,156 @@
+{{#if missing}}
+<section class="vf-delve-body"><p class="empty">{{localize "VF.chronicle.DelveDropped"}}</p></section>
+{{else}}
+<section class="vf-delve-body">
+
+  <header class="clock">
+    <div class="turn">
+      <span class="value">{{delve.turn}}</span>
+      <span class="label">{{localize "VF.chronicle.Turns"}}</span>
+    </div>
+    <div class="rest {{#if rest.penalised}}penalised{{else if rest.owed}}owed{{/if}}">
+      <span class="value">{{rest.since}}/{{rest.allowed}}</span>
+      <span class="label">
+        {{#if rest.penalised}}{{localize "VF.chronicle.RestOverdue"}}
+        {{else if rest.owed}}{{localize "VF.chronicle.RestOwed"}}
+        {{else}}{{localize "VF.chronicle.SinceRest"}}{{/if}}
+      </span>
+    </div>
+  </header>
+
+  {{#if isReferee}}
+  <div class="controls">
+    <button type="button" class="primary" data-action="turnForward">{{localize "VF.chronicle.TurnForward"}}</button>
+    <button type="button" data-action="hourForward">{{localize "VF.chronicle.HourForward"}}</button>
+    <button type="button" data-action="rest">{{localize "VF.chronicle.Rest"}}</button>
+  </div>
+  {{/if}}
+
+  <section class="lights">
+    <h3>{{localize "VF.chronicle.Light"}}</h3>
+    <ul class="unlist">
+      {{#each lights}}
+      <li class="light {{#if out}}out{{else if guttering}}guttering{{/if}}" data-light-id="{{id}}">
+        <i class="fa-solid {{#if out}}fa-ban{{else}}fa-fire{{/if}}"></i>
+        <span class="name">{{name}}</span>
+        <span class="bar"><span class="fill" style="width: {{percent}}%"></span></span>
+        <span class="remaining">
+          {{#if out}}{{localize "VF.chronicle.BurntOut"}}{{else}}{{remaining}}{{/if}}
+        </span>
+        {{#if ../isReferee}}
+        <button type="button" data-action="douse" data-tooltip="{{localize 'VF.chronicle.Douse'}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.chronicle.Unlit"}}</li>
+      {{/each}}
+    </ul>
+
+    {{#if isReferee}}
+    <div class="add">
+      <select name="lightKind">
+        {{#each lightKinds}}
+        <option value="{{kind}}">{{localize label}} ({{turns}})</option>
+        {{/each}}
+      </select>
+      <input type="text" name="lightName" placeholder="{{localize 'VF.chronicle.CarriedBy'}}" />
+      <button type="button" data-action="light" data-tooltip="{{localize 'VF.chronicle.LightIt'}}">
+        <i class="fa-solid fa-fire"></i>
+      </button>
+    </div>
+    {{/if}}
+  </section>
+
+  {{#if encounter}}
+  <section class="encounter {{#if encounter.due}}due{{/if}}">
+    <h3>{{localize "VF.chronicle.Wandering"}}</h3>
+    <div class="rule">
+      <label>{{localize "VF.chronicle.EveryTurns"}}
+        <input type="number" name="everyTurns" min="1" step="1" value="{{encounter.everyTurns}}" />
+      </label>
+      <label>{{localize "VF.chronicle.ChanceIn6"}}
+        <input type="number" name="chanceIn6" min="0" max="6" step="1" value="{{encounter.chanceIn6}}" />
+      </label>
+      <button type="button" data-action="rollEncounter">{{localize "VF.chronicle.RollCheck"}}</button>
+    </div>
+    <p class="hint">{{localize "VF.chronicle.WanderingHint"}}</p>
+  </section>
+  {{/if}}
+
+  <section class="tally kills">
+    <h3>
+      {{localize "VF.chronicle.Defeated"}}
+      {{#if xp}}<span class="xp">{{xp.kills}} {{localize "VF.chronicle.XP"}}</span>{{/if}}
+    </h3>
+    <ul class="unlist">
+      {{#each kills}}
+      <li data-kill-id="{{id}}">
+        <span class="name">{{name}}</span>
+        <span class="detail">{{count}} &times; {{hitDice}} {{localize "VF.chronicle.HD"}}{{#if special}}*{{/if}}</span>
+        {{#if ../isReferee}}
+        <span class="xp">{{xp}}</span>
+        <button type="button" data-action="removeKill"><i class="fa-solid fa-xmark"></i></button>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.chronicle.NothingDefeated"}}</li>
+      {{/each}}
+    </ul>
+
+    {{#if isReferee}}
+    <div class="add">
+      <input type="text" name="killName" placeholder="{{localize 'VF.chronicle.Enemy'}}" />
+      <input type="number" name="killHitDice" min="0" step="1" value="1"
+             data-tooltip="{{localize 'VF.chronicle.HitDice'}}" />
+      <input type="number" name="killCount" min="1" step="1" value="1"
+             data-tooltip="{{localize 'VF.chronicle.HowMany'}}" />
+      <label class="special" data-tooltip="{{localize 'VF.chronicle.SpecialHint'}}">
+        <input type="checkbox" name="killSpecial" /> *
+      </label>
+      <button type="button" data-action="addKill"><i class="fa-solid fa-plus"></i></button>
+    </div>
+    {{/if}}
+  </section>
+
+  <section class="tally loot">
+    <h3>
+      {{localize "VF.chronicle.Recovered"}}
+      {{#if xp}}<span class="xp pending">{{xp.loot}} {{localize "VF.chronicle.XPPending"}}</span>{{/if}}
+    </h3>
+    <ul class="unlist">
+      {{#each loot}}
+      <li data-loot-id="{{id}}">
+        <span class="name">{{name}}</span>
+        <span class="detail">{{price}}</span>
+        {{#if ../isReferee}}
+        <button type="button" data-action="removeLoot"><i class="fa-solid fa-xmark"></i></button>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.chronicle.NothingRecovered"}}</li>
+      {{/each}}
+    </ul>
+
+    {{#if isReferee}}
+    <div class="add">
+      <input type="text" name="lootName" placeholder="{{localize 'VF.chronicle.Treasure'}}" />
+      <input type="text" name="lootValue" placeholder="{{localize 'VF.items.CostPlaceholder'}}" />
+      <button type="button" data-action="addLoot"><i class="fa-solid fa-plus"></i></button>
+    </div>
+    <p class="hint">{{localize "VF.chronicle.LootHint"}}</p>
+    {{/if}}
+  </section>
+
+  {{#if isReferee}}
+  <footer class="sync">
+    <label>{{localize "VF.chronicle.AdvanceSurface"}}
+      <input type="number" name="watches" min="0" step="1" value="{{suggested}}" />
+    </label>
+    <button type="button" data-action="syncWatches">{{localize "VF.chronicle.AdvanceWatches"}}</button>
+  </footer>
+  {{/if}}
+
+</section>
+{{/if}}

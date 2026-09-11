@@ -2,13 +2,17 @@
  * @file The entry point for the OSE system
  *       We should handle most of our setup here.
  */
+
 import OseActorSheetCharacter from "./module/actor/character-sheet";
 import OseDataModelCharacter from "./module/actor/data-model-character";
 import OseDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import OseDataModelMonster from "./module/actor/data-model-monster";
+import registerActorDirectoryButton from "./module/actor/directory-button";
 import OseActor from "./module/actor/entity";
 import OseActorSheetMonster from "./module/actor/monster-sheet";
 import TokenRulerOSE from "./module/actor/token-ruler";
+import ChronicleApp from "./module/chronicle/chronicle-app";
+import { registerChronicleSetting } from "./module/chronicle/store";
 import { OSECombat } from "./module/combat/combat";
 import OSECombatTracker from "./module/combat/combat-tracker";
 import { OSECombatant } from "./module/combat/combatant";
@@ -25,9 +29,8 @@ import OseDataModelContainer from "./module/item/data-model-container";
 import OseDataModelItem from "./module/item/data-model-item";
 import OseDataModelSpell from "./module/item/data-model-spell";
 import OseDataModelWeapon from "./module/item/data-model-weapon";
-import registerActorDirectoryButton from "./module/actor/directory-button";
-import registerArmourEquipHooks from "./module/item/equip-armour";
 import OseItem from "./module/item/entity";
+import registerArmourEquipHooks from "./module/item/equip-armour";
 import OseItemSheet from "./module/item/item-sheet";
 import OsePartySheet from "./module/party/party-sheet";
 import templates from "./module/preloadTemplates";
@@ -58,6 +61,7 @@ Hooks.once("init", async () => {
 
   // Register custom system settings
   registerSettings();
+  registerChronicleSetting();
 
   CONFIG.Combat.documentClass = OSECombat;
   CONFIG.Combatant.documentClass = OSECombatant;
@@ -306,4 +310,26 @@ Hooks.on("renderCompendium", renderList.RenderCompendium);
 Hooks.on("activateItemDirectory", renderList.RenderItemDirectory);
 
 Hooks.on("VF.Party.showSheet", OsePartySheet.showPartySheet);
+
+/**
+ * Put the Chronicle on the token toolbar, for everyone.
+ *
+ * Players get the window too -- it is the party's clock, and a torch burning
+ * down in front of them is the point of keeping one. What their copy leaves
+ * out is decided inside the window, not here.
+ *
+ * @param {Record<string, object>} controls - The scene control configurations.
+ */
+Hooks.on("getSceneControlButtons", (controls) => {
+  if (!controls.tokens) return;
+  controls.tokens.tools.chronicle = {
+    name: "chronicle",
+    title: "VF.chronicle.Open",
+    icon: "fa-solid fa-hourglass-half",
+    order: Object.keys(controls.tokens.tools).length,
+    button: true,
+    visible: true,
+    onChange: () => ChronicleApp.show(),
+  };
+});
 Hooks.once("initializeDynamicTokenRingConfig", initializeTokenRing);

@@ -28,6 +28,9 @@ const preloadHandlebarsTemplates = async () => {
     // Combat Tab
     `${OSE.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`,
     `${OSE.systemPath()}/templates/apps/combat-set-groups.hbs`,
+    // Chronicle
+    `${OSE.systemPath()}/templates/apps/chronicle.hbs`,
+    `${OSE.systemPath()}/templates/apps/delve.hbs`,
   ];
   return foundry.applications.handlebars.loadTemplates(templatePaths);
 };

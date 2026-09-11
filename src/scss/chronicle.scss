@@ -1,0 +1,359 @@
+@import "variables";
+
+.vf-chronicle,
+.vf-delve {
+  .empty {
+    opacity: 0.6;
+    font-style: italic;
+    padding: 2px 0;
+  }
+
+  h3 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 8px 0 2px;
+    border-bottom: 1px solid $colorTan;
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .add {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+
+    input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    input[type="number"] {
+      flex: 0 0 44px;
+      text-align: center;
+    }
+
+    button {
+      flex: 0 0 28px;
+    }
+  }
+
+  .hint {
+    margin: 3px 0 0;
+    font-size: var(--font-size-11);
+    opacity: 0.7;
+  }
+}
+
+.vf-chronicle {
+  .calendar {
+    text-align: center;
+    padding: 6px;
+    border: 1px solid $colorTan;
+    border-radius: 4px;
+
+    &.daylight {
+      background: rgb(255 236 190 / 35%);
+    }
+
+    &.dark {
+      background: rgb(60 70 110 / 18%);
+    }
+
+    .day {
+      font-size: var(--font-size-12);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.75;
+    }
+
+    .watch {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      font-size: var(--font-size-20);
+      font-weight: bold;
+
+      .clock {
+        font-size: var(--font-size-14);
+        font-weight: normal;
+        opacity: 0.7;
+      }
+    }
+
+    .ordinal {
+      font-size: var(--font-size-11);
+      opacity: 0.6;
+    }
+
+    .controls {
+      display: flex;
+      gap: 3px;
+      margin-top: 6px;
+
+      button {
+        flex: 1 1 auto;
+        line-height: 1.4;
+      }
+
+      button:first-child {
+        flex: 0 0 30px;
+      }
+    }
+  }
+
+  .delve-list .delve {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 0;
+    border-bottom: 1px dashed rgb(0 0 0 / 10%);
+
+    .name {
+      flex: 1 1 auto;
+      text-align: left;
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+
+      &:hover {
+        text-shadow: 0 0 6px var(--color-shadow-primary);
+      }
+    }
+
+    .turn {
+      flex: 0 0 auto;
+      padding: 0 5px;
+      border-radius: 3px;
+      background: rgb(0 0 0 / 8%);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .drop {
+      flex: 0 0 22px;
+    }
+
+    &.penalised .turn {
+      background: rgb(180 40 40 / 25%);
+    }
+  }
+
+  .new-delve {
+    display: flex;
+    gap: 3px;
+    margin-top: 6px;
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    button {
+      flex: 0 0 28px;
+    }
+  }
+}
+
+.vf-delve {
+  .clock {
+    display: flex;
+    gap: 6px;
+    text-align: center;
+
+    > div {
+      flex: 1 1 50%;
+      padding: 4px;
+      border: 1px solid $colorTan;
+      border-radius: 4px;
+    }
+
+    .value {
+      display: block;
+      font-size: var(--font-size-24);
+      font-weight: bold;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .label {
+      font-size: var(--font-size-11);
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .rest.owed {
+      background: rgb(220 160 40 / 22%);
+    }
+
+    .rest.penalised {
+      background: rgb(180 40 40 / 22%);
+    }
+  }
+
+  .controls {
+    display: flex;
+    gap: 3px;
+    margin-top: 6px;
+
+    button {
+      flex: 1 1 auto;
+    }
+  }
+
+  .light {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 0;
+
+    .name {
+      flex: 0 0 30%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bar {
+      flex: 1 1 auto;
+      height: 8px;
+      border-radius: 4px;
+      background: rgb(0 0 0 / 12%);
+      overflow: hidden;
+
+      .fill {
+        display: block;
+        height: 100%;
+        background: rgb(230 160 40);
+      }
+    }
+
+    .remaining {
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+      min-width: 2em;
+      text-align: right;
+    }
+
+    &.guttering .fill {
+      background: rgb(200 80 30);
+    }
+
+    &.out {
+      opacity: 0.5;
+
+      .fill {
+        background: rgb(90 90 90);
+      }
+    }
+
+    button {
+      flex: 0 0 22px;
+    }
+  }
+
+  .encounter {
+    .rule {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: var(--font-size-11);
+      }
+
+      input {
+        width: 44px;
+        text-align: center;
+      }
+
+      button {
+        flex: 1 1 auto;
+      }
+    }
+
+    &.due h3 {
+      color: rgb(170 40 40);
+    }
+  }
+
+  .tally li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 0;
+
+    .name {
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .detail {
+      flex: 0 0 auto;
+      opacity: 0.7;
+      font-size: var(--font-size-11);
+    }
+
+    .xp {
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    button {
+      flex: 0 0 22px;
+    }
+  }
+
+  .tally h3 .xp {
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+
+    &.pending {
+      opacity: 0.7;
+      font-style: italic;
+    }
+  }
+
+  .add .special {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .sync {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid $colorTan;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-11);
+    }
+
+    input {
+      width: 44px;
+      text-align: center;
+    }
+
+    button {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.vf-encounter.met {
+  font-weight: bold;
+  color: rgb(150 30 30);
+}

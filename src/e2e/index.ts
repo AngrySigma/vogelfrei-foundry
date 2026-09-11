@@ -4,6 +4,7 @@
  * @file Orchestration for our Quench tests
  */
 
+import chronicleTests, { key as chronicleKey, options as chronicleOptions } from "../module/__tests__/chronicle.test";
 // HELPER TESTING IMPORTS
 import helpersBehaviourTests, {
   key as helpersBehaviourKey,
@@ -255,6 +256,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(helpersMacrosKey, helpersMacrosTests, helpersMacrosOptions);
   quench.registerBatch(helpersPartyKey, helpersPartyTests, helpersPartyOptions);
   quench.registerBatch(helpersTreasureKey, helpersTreasureTests, helpersTreasureOptions);
+  quench.registerBatch(chronicleKey, chronicleTests, chronicleOptions);
   quench.registerBatch(moneyKey, moneyTests, moneyOptions);
   quench.registerBatch(purseKey, purseTests, purseOptions);
 });

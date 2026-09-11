@@ -1,0 +1,363 @@
+/**
+ * @file One delve's window: the Turn clock and everything it burns.
+ *
+ * The turn track is the dungeon's own clock and touches nothing above ground.
+ * When the party comes back up, `syncWatches` moves the calendar by however
+ * many watches the Referee decides the trip cost -- the number in the box is a
+ * suggestion from the Turn count and is meant to be overwritten.
+ *
+ * The player's copy of this window is a readout. What it leaves out is the
+ * wandering monster rule and the XP running total: knowing the check is two in
+ * six tells a party exactly how frightened to be, and the book has the Referee
+ * roll it in secret (docs/Adventuring/Dungeon Exploration.md).
+ */
+import { formatMoney, parseMoney } from "../money";
+import {
+  advanceTurns,
+  advanceWatches,
+  encounterDue,
+  killXP,
+  LIGHT_DURATIONS,
+  lightRemaining,
+  lightSource,
+  lootXP,
+  rest,
+  restState,
+  suggestedWatches,
+  TURNS_BEFORE_REST,
+  TURNS_PER_HOUR,
+  xpForHitDice,
+} from "./chronicle";
+import { getDelve, refreshOnChange, updateChronicle, updateDelve } from "./store";
+
+const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
+/**
+ * Read a number out of one of the window's inputs.
+ *
+ * @param {HTMLElement} root - The window element.
+ * @param {string} name - The input's name.
+ * @param {number} fallback - What to use when the box is empty or nonsense.
+ * @returns {number} The value.
+ */
+function numberFrom(root, name, fallback = 0) {
+  const raw = Number(root.querySelector(`[name="${name}"]`)?.value);
+  return Number.isFinite(raw) ? raw : fallback;
+}
+
+/**
+ * Roll the wandering monster check and whisper the result to the Referee.
+ *
+ * @param {import("./chronicle").Delve} delve - The delve being checked.
+ */
+async function whisperEncounterCheck(delve) {
+  const chance = Math.max(0, Math.min(6, Math.trunc(delve.encounter.chanceIn6)));
+  const roll = await new Roll("1d6").evaluate();
+  const met = roll.total <= chance;
+
+  await ChatMessage.create({
+    speaker: { alias: delve.name },
+    flavor: game.i18n.format("VF.chronicle.EncounterFlavor", { turn: delve.turn, chance }),
+    content: `<p class="vf-encounter ${met ? "met" : "clear"}">${game.i18n.localize(
+      met ? "VF.chronicle.EncounterMet" : "VF.chronicle.EncounterClear",
+    )}</p>`,
+    rolls: [roll],
+    whisper: ChatMessage.getWhisperRecipients("GM"),
+  });
+}
+
+/**
+ * Spend Turns, and make the wandering monster check if one falls due.
+ *
+ * @param {string} delveId - The delve.
+ * @param {number} turns - How many Turns to spend.
+ */
+async function spendTurns(delveId, turns) {
+  await updateDelve(delveId, (delve) => advanceTurns(delve, turns));
+
+  // Re-read: one click may cross several checks, and the roll wants the
+  // delve's settled state rather than the copy we handed to the mutator.
+  const after = getDelve(delveId);
+  if (after && encounterDue(after)) await whisperEncounterCheck(after);
+}
+
+/** @this {DelveApp} */
+async function onTurnForward() {
+  await spendTurns(this.delveId, 1);
+}
+
+/** @this {DelveApp} */
+async function onHourForward() {
+  await spendTurns(this.delveId, TURNS_PER_HOUR);
+}
+
+/** @this {DelveApp} */
+async function onRest() {
+  await updateDelve(this.delveId, rest);
+}
+
+/** @this {DelveApp} */
+async function onRollEncounter() {
+  const delve = getDelve(this.delveId);
+  if (delve) await whisperEncounterCheck(delve);
+}
+
+/**
+ * Save the wandering monster cadence and chance from their boxes.
+ *
+ * @this {DelveApp}
+ */
+async function onSaveEncounterRule() {
+  const everyTurns = Math.max(1, Math.trunc(numberFrom(this.element, "everyTurns", 2)));
+  const chanceIn6 = Math.max(0, Math.min(6, Math.trunc(numberFrom(this.element, "chanceIn6", 1))));
+  await updateDelve(this.delveId, (delve) => ({ ...delve, encounter: { everyTurns, chanceIn6 } }));
+}
+
+/**
+ * Light something, burning from this Turn.
+ *
+ * @this {DelveApp}
+ */
+async function onLight() {
+  const kind = this.element.querySelector('[name="lightKind"]')?.value || "torch";
+  const name = this.element.querySelector('[name="lightName"]')?.value?.trim();
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    lights: [
+      ...delve.lights,
+      lightSource(name || game.i18n.localize(`VF.chronicle.light.${kind}`), kind, delve.turn, foundry.utils.randomID()),
+    ],
+  }));
+}
+
+/**
+ * Put a light out, or clear a burnt-out one off the list.
+ *
+ * @this {DelveApp}
+ * @param {PointerEvent} _event - The click.
+ * @param {HTMLElement} target - The button clicked.
+ */
+async function onDouse(_event, target) {
+  const { lightId } = target.closest("[data-light-id]")?.dataset ?? {};
+  if (!lightId) return;
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    lights: delve.lights.filter((light) => light.id !== lightId),
+  }));
+}
+
+/**
+ * Record a defeated enemy. XP comes from its Hit Dice, not from a typed number.
+ *
+ * @this {DelveApp}
+ */
+async function onAddKill() {
+  const field = this.element.querySelector('[name="killName"]');
+  const name = field?.value?.trim();
+  if (!name) {
+    ui.notifications?.warn(game.i18n.localize("VF.chronicle.NameTheEnemy"));
+    return;
+  }
+  const hitDice = Math.max(0, numberFrom(this.element, "killHitDice", 1));
+  const count = Math.max(1, Math.trunc(numberFrom(this.element, "killCount", 1)));
+  const special = Boolean(this.element.querySelector('[name="killSpecial"]')?.checked);
+
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    kills: [...delve.kills, { id: foundry.utils.randomID(), name, hitDice, special, count }],
+  }));
+
+  if (field) field.value = "";
+}
+
+/** @this {DelveApp} */
+async function onRemoveKill(_event, target) {
+  const { killId } = target.closest("[data-kill-id]")?.dataset ?? {};
+  if (!killId) return;
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    kills: delve.kills.filter((kill) => kill.id !== killId),
+  }));
+}
+
+/**
+ * Record recovered treasure, priced the way the book prices anything.
+ *
+ * @this {DelveApp}
+ */
+async function onAddLoot() {
+  const nameField = this.element.querySelector('[name="lootName"]');
+  const valueField = this.element.querySelector('[name="lootValue"]');
+  const name = nameField?.value?.trim();
+  const raw = valueField?.value ?? "";
+  if (!name) {
+    ui.notifications?.warn(game.i18n.localize("VF.chronicle.NameTheTreasure"));
+    return;
+  }
+
+  const { bp } = parseMoney(raw);
+  if (bp === null) {
+    ui.notifications?.warn(game.i18n.format("VF.items.CostUnreadable", { value: raw }));
+    return;
+  }
+
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    loot: [...delve.loot, { id: foundry.utils.randomID(), name, bp }],
+  }));
+
+  if (nameField) nameField.value = "";
+  if (valueField) valueField.value = "";
+}
+
+/** @this {DelveApp} */
+async function onRemoveLoot(_event, target) {
+  const { lootId } = target.closest("[data-loot-id]")?.dataset ?? {};
+  if (!lootId) return;
+  await updateDelve(this.delveId, (delve) => ({
+    ...delve,
+    loot: delve.loot.filter((entry) => entry.id !== lootId),
+  }));
+}
+
+/**
+ * Move the surface on by the watches this delve cost.
+ *
+ * @this {DelveApp}
+ */
+async function onSyncWatches() {
+  const watches = Math.trunc(numberFrom(this.element, "watches", 0));
+  if (!watches) return;
+
+  const delve = getDelve(this.delveId);
+  if (!delve) return;
+
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    ...advanceWatches(chronicle, watches),
+    delves: chronicle.delves.map((entry) => (entry.id === delve.id ? { ...entry, turnAtLastSync: entry.turn } : entry)),
+  }));
+}
+
+export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    id: "vf-delve-{id}",
+    classes: ["vogelfrei", "vf-delve"],
+    window: {
+      title: "VF.chronicle.DelveTitle",
+      icon: "fa-solid fa-dungeon",
+      resizable: true,
+    },
+    position: { width: 380, height: "auto" },
+    actions: {
+      turnForward: onTurnForward,
+      hourForward: onHourForward,
+      rest: onRest,
+      rollEncounter: onRollEncounter,
+      light: onLight,
+      douse: onDouse,
+      addKill: onAddKill,
+      removeKill: onRemoveKill,
+      addLoot: onAddLoot,
+      removeLoot: onRemoveLoot,
+      syncWatches: onSyncWatches,
+    },
+  };
+
+  static PARTS = {
+    main: { template: "/systems/vogelfrei/dist/templates/apps/delve.hbs" },
+  };
+
+  /** Which delve this window is a view of. */
+  get delveId() {
+    return this.options.delveId;
+  }
+
+  /**
+   * Open a delve's window, or bring the open one forward.
+   *
+   * Windows are views; the record is the delve in the Chronicle. Two windows
+   * onto the same delve would only disagree with each other.
+   *
+   * @param {string} delveId - The delve to show.
+   * @returns {DelveApp} The window showing it.
+   */
+  static open(delveId) {
+    for (const app of DelveApp.instances()) {
+      if (app.delveId === delveId) {
+        app.bringToFront();
+        return app;
+      }
+    }
+    return new DelveApp({ delveId }).render(true);
+  }
+
+  /** @inheritDoc */
+  _initializeApplicationOptions(options) {
+    const initialized = super._initializeApplicationOptions(options);
+    // One window per delve, so the window id is the delve id.
+    initialized.uniqueId = options.delveId ?? initialized.uniqueId;
+    return initialized;
+  }
+
+  /** @inheritDoc */
+  _onRender(context, options) {
+    super._onRender(context, options);
+    // The wandering monster rule saves on change rather than on a click:
+    // a number spinner has no button to hang an action off.
+    for (const input of this.element.querySelectorAll('[name="everyTurns"], [name="chanceIn6"]')) {
+      input.addEventListener("change", onSaveEncounterRule.bind(this));
+    }
+  }
+
+  /** @inheritDoc */
+  get title() {
+    return getDelve(this.delveId)?.name ?? game.i18n.localize("VF.chronicle.DelveTitle");
+  }
+
+  /** @inheritDoc */
+  async _prepareContext() {
+    const delve = getDelve(this.delveId);
+    if (!delve) return { missing: true };
+
+    const isReferee = game.user.isGM;
+    const state = restState(delve);
+
+    return {
+      missing: false,
+      isReferee,
+      delve,
+      rest: {
+        ...state,
+        since: delve.turnsSinceRest,
+        allowed: TURNS_BEFORE_REST,
+      },
+      lights: delve.lights.map((light) => {
+        const remaining = lightRemaining(light, delve.turn);
+        return {
+          ...light,
+          remaining: Math.max(0, remaining),
+          out: remaining <= 0,
+          guttering: remaining > 0 && remaining <= 2,
+          percent: Math.max(0, Math.min(100, Math.round((remaining / light.turns) * 100))),
+        };
+      }),
+      lightKinds: Object.keys(LIGHT_DURATIONS).map((kind) => ({
+        kind,
+        label: `VF.chronicle.light.${kind}`,
+        turns: LIGHT_DURATIONS[kind],
+      })),
+      kills: delve.kills.map((kill) => ({
+        ...kill,
+        xp: xpForHitDice(kill.hitDice, kill.special) * kill.count,
+      })),
+      loot: delve.loot.map((entry) => ({ ...entry, price: formatMoney(entry.bp) })),
+      // The Referee's half: the wandering monster rule and the running score.
+      encounter: isReferee ? { ...delve.encounter, due: encounterDue(delve) } : null,
+      xp: isReferee ? { kills: killXP(delve), loot: lootXP(delve) } : null,
+      suggested: suggestedWatches(delve),
+    };
+  }
+}
+
+refreshOnChange(DelveApp);

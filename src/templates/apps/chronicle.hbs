@@ -1,0 +1,58 @@
+<section class="vf-chronicle-body">
+
+  <section class="calendar {{#if calendar.daylight}}daylight{{else}}dark{{/if}}">
+    <div class="day">{{localize "VF.chronicle.Day"}} {{calendar.day}}</div>
+    <div class="watch">
+      <i class="fa-solid {{calendar.icon}}"></i>
+      <span class="name">{{localize calendar.label}}</span>
+      <span class="clock">{{calendar.clock}}</span>
+    </div>
+    <div class="ordinal">{{localize "VF.chronicle.WatchOf" }} {{calendar.ordinal}}/6</div>
+
+    {{#if isReferee}}
+    <div class="controls">
+      <button type="button" data-action="watchBack" data-tooltip="{{localize 'VF.chronicle.WatchBack'}}">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+      <button type="button" class="primary" data-action="watchForward">
+        {{localize "VF.chronicle.WatchForward"}}
+      </button>
+      <button type="button" data-action="dayForward">
+        {{localize "VF.chronicle.DayForward"}}
+      </button>
+    </div>
+    {{/if}}
+  </section>
+
+  <section class="delves">
+    <h3>{{localize "VF.chronicle.Delves"}}</h3>
+    <ul class="unlist delve-list">
+      {{#each delves}}
+      <li class="delve {{#if penalised}}penalised{{/if}}" data-delve-id="{{id}}">
+        <button type="button" class="name" data-action="openDelve">{{name}}</button>
+        <span class="turn" data-tooltip="{{localize 'VF.chronicle.TurnsSpent'}}">{{turn}}</span>
+        {{#if penalised}}
+        <i class="fa-solid fa-triangle-exclamation" data-tooltip="{{localize 'VF.chronicle.RestOverdue'}}"></i>
+        {{/if}}
+        {{#if ../isReferee}}
+        <button type="button" class="drop" data-action="dropDelve" data-tooltip="{{localize 'VF.chronicle.DropDelve'}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.chronicle.NoDelves"}}</li>
+      {{/each}}
+    </ul>
+
+    {{#if isReferee}}
+    <div class="new-delve">
+      <input type="text" name="delveName" placeholder="{{localize 'VF.chronicle.NewDelvePlaceholder'}}" />
+      <button type="button" data-action="createDelve" data-tooltip="{{localize 'VF.chronicle.NewDelve'}}">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+    {{/if}}
+  </section>
+
+</section>
