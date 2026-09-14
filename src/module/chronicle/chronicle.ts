@@ -3,14 +3,13 @@
  *
  * Two counters, deliberately independent.
  *
- * The **watch** track is the calendar. A watch is four hours, six to a day.
- * The watch is not a Vogelfrei rule -- the book counts Turns, Rounds and whole
- * days (docs/Adventuring/Time and Movement.md) -- it is borrowed from Hot
- * Springs Island as a bookkeeping unit for time and distance, and it exists
- * here only so that "a morning's walk" has somewhere to be written down.
+ * The **watch** track is the calendar, and lives in day.ts. The watch is not a
+ * Vogelfrei rule -- the book counts Turns, Rounds and whole days
+ * (docs/Adventuring/Time and Movement.md) -- it is borrowed from Hot Springs
+ * Island as a bookkeeping unit for time and distance.
  *
  * The **turn** track belongs to a delve. A Turn is ten minutes, and it is the
- * clock of the dungeon: it burns the torches and brings the wandering monsters
+ * clock of the dungeon: it burns the torches and brings the random encounters
  * (docs/Adventuring/Dungeon Exploration.md). It never advances the calendar on
  * its own. Coming back up, the Referee moves the calendar by however many
  * watches they judge the delve to have cost, with `suggestedWatches` offering
@@ -19,20 +18,12 @@
  * Foundry-free, so the arithmetic can be checked on its own.
  */
 
-/** Watches to the day: four hours each. */
-export const WATCHES_PER_DAY = 6;
+import { type Calendar, DEFAULT_WATCHES_PER_DAY, watchesForTurns } from "./day";
 
-/** Hours to the watch. */
-export const HOURS_PER_WATCH = 4;
+export type { Calendar } from "./day";
 
 /** Turns to the hour. A Turn is ten minutes. */
 export const TURNS_PER_HOUR = 6;
-
-/** Turns to the watch, for translating a delve back into calendar time. */
-export const TURNS_PER_WATCH = HOURS_PER_WATCH * TURNS_PER_HOUR;
-
-/** The hour at which the first watch of the day begins. */
-export const DAY_BEGINS_AT = 6;
 
 /**
  * Turns of exploration before a rest is owed.
@@ -45,22 +36,6 @@ export const TURNS_BEFORE_REST = 5;
 
 /** Brass pieces to one experience point: treasure is worth 1 XP per silver. */
 export const BP_PER_XP = 12;
-
-/** One watch's description. */
-export type WatchDescription = { key: string; daylight: boolean };
-
-/** The first watch, and the fallback for any index arithmetic gone wrong. */
-const FIRST_WATCH: WatchDescription = { key: "dawn", daylight: true };
-
-/** The six watches, dawn first. */
-export const WATCHES: readonly WatchDescription[] = [
-  FIRST_WATCH,
-  { key: "midday", daylight: true },
-  { key: "afternoon", daylight: true },
-  { key: "dusk", daylight: false },
-  { key: "night", daylight: false },
-  { key: "deepNight", daylight: false },
-] as const;
 
 /** How long a torch burns, and the stand-in for anything unpriced. */
 export const TORCH_TURNS = 6;
@@ -100,9 +75,6 @@ export const XP_BY_HIT_DICE: readonly number[] = [5, 10, 25, 50, 75, 100, 250, 5
 
 /** What anything of eleven Hit Dice or more is worth. */
 export const MAX_HIT_DICE_XP = 1500;
-
-/** Where the party is in the day. */
-export type Calendar = { day: number; watch: number };
 
 /** A lit light source, burning against a delve's turn count. */
 export type Light = {
@@ -177,31 +149,22 @@ export type Delve = {
 };
 
 /** Everything the Chronicle remembers. */
-export type Chronicle = Calendar & { delves: Delve[]; travel: TravelEncounterRule };
+export type Chronicle = Calendar & { watchesPerDay: number; delves: Delve[]; travel: TravelEncounterRule };
 
 /** A fresh world: the first dawn of the first day, nothing delved yet. */
 export function defaultChronicle(): Chronicle {
   return {
     day: 1,
     watch: 0,
+    watchesPerDay: DEFAULT_WATCHES_PER_DAY,
     delves: [],
     travel: {
-      everyWatches: WATCHES_PER_DAY,
+      everyWatches: DEFAULT_WATCHES_PER_DAY,
       chanceIn6: TERRAIN.clear?.encounterIn6 ?? 1,
       terrain: "clear",
       distance: TERRAIN.clear?.distance ?? DUNGEON_DISTANCE,
     },
   };
-}
-
-/**
- * How many watches have passed since the first dawn.
- *
- * @param calendar - Where the party is.
- * @returns Whole watches elapsed.
- */
-export function watchesElapsed(calendar: Calendar): number {
-  return (calendar.day - 1) * WATCHES_PER_DAY + calendar.watch;
 }
 
 /**
@@ -219,55 +182,6 @@ export function watchesElapsed(calendar: Calendar): number {
 export function checksBetween(from: number, to: number, every: number): number {
   const cadence = Math.max(1, Math.trunc(every));
   return Math.max(0, Math.floor(to / cadence) - Math.floor(from / cadence));
-}
-
-/**
- * Which watch an index names, wrapping so that arithmetic never falls off.
- *
- * @param watch - The watch index, from any integer.
- * @returns The watch's key and whether the sun is up.
- */
-export function watchOf(watch: number): { index: number } & WatchDescription {
-  const index = ((Math.trunc(watch) % WATCHES_PER_DAY) + WATCHES_PER_DAY) % WATCHES_PER_DAY;
-  return { index, ...(WATCHES[index] ?? FIRST_WATCH) };
-}
-
-/**
- * The hour a watch begins, as a 24-hour clock reading.
- *
- * @param watch - The watch index.
- * @returns The time of day, as "HH:00".
- */
-export function clockOf(watch: number): string {
-  const hour = (DAY_BEGINS_AT + watchOf(watch).index * HOURS_PER_WATCH) % 24;
-  return `${String(hour).padStart(2, "0")}:00`;
-}
-
-/**
- * Move the calendar by whole watches, rolling the day over as it goes.
- *
- * Accepts negatives, because a Referee who clicks one watch too many should be
- * able to take it back rather than live in the evening.
- *
- * @param calendar - Where the party is now.
- * @param watches - How many watches to move, possibly negative.
- * @returns Where the party is afterwards. Never earlier than the first dawn.
- */
-export function advanceWatches(calendar: Calendar, watches: number): Calendar {
-  const total = (calendar.day - 1) * WATCHES_PER_DAY + calendar.watch + Math.trunc(watches);
-  const floored = Math.max(0, total);
-  return { day: Math.floor(floored / WATCHES_PER_DAY) + 1, watch: floored % WATCHES_PER_DAY };
-}
-
-/**
- * Move the calendar by whole days, keeping the time of day.
- *
- * @param calendar - Where the party is now.
- * @param days - How many days to move, possibly negative.
- * @returns Where the party is afterwards.
- */
-export function advanceDays(calendar: Calendar, days: number): Calendar {
-  return advanceWatches(calendar, Math.trunc(days) * WATCHES_PER_DAY);
 }
 
 /**
@@ -399,13 +313,37 @@ export function encounterDue(delve: Delve): boolean {
  * How many watches the surface should be moved on this delve's account.
  *
  * Only the Turns since the calendar was last moved count, so a Referee who
- * syncs halfway through a long delve is not billed for them twice.
+ * syncs halfway through a long delve is not billed for them twice. A watch is
+ * a share of the day, so how many Turns it holds depends on how the day is cut.
  *
  * @param delve - The delve as it stands.
+ * @param watchesPerDay - Watches in the day.
  * @returns A whole number of watches, rounded to the nearest.
  */
-export function suggestedWatches(delve: Delve): number {
-  return Math.round((delve.turn - delve.turnAtLastSync) / TURNS_PER_WATCH);
+export function suggestedWatches(delve: Delve, watchesPerDay: number): number {
+  return watchesForTurns(delve.turn - delve.turnAtLastSync, watchesPerDay);
+}
+
+/**
+ * Put the Turn count somewhere else, for the click that should not have happened.
+ *
+ * Rest debt moves with it -- taking back two Turns takes back two Turns of
+ * exploring -- but never below nothing. Nothing is rolled: undoing is not
+ * living through it again.
+ *
+ * @param delve - The delve as it stands.
+ * @param turn - The Turn it should be.
+ * @returns The delve on that Turn.
+ */
+export function setTurn(delve: Delve, turn: number): Delve {
+  const target = Math.max(0, Math.trunc(Number(turn) || 0));
+  const moved = target - delve.turn;
+  return {
+    ...delve,
+    turn: target,
+    turnsSinceRest: Math.max(0, delve.turnsSinceRest + moved),
+    turnAtLastSync: Math.min(delve.turnAtLastSync, target),
+  };
 }
 
 /**

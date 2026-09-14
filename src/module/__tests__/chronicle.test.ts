@@ -6,11 +6,8 @@ import type { QuenchMethods } from "../../e2e";
 import type { Delve } from "../chronicle/chronicle";
 import {
   adjustLight,
-  advanceDays,
   advanceTurns,
-  advanceWatches,
   checksBetween,
-  clockOf,
   DUNGEON_DISTANCE,
   defaultChronicle,
   encounterDue,
@@ -22,13 +19,24 @@ import {
   newDelve,
   rest,
   restState,
+  setTurn,
   suggestedWatches,
   TERRAIN,
-  TURNS_PER_WATCH,
-  watchesElapsed,
-  watchOf,
   xpForHitDice,
 } from "../chronicle/chronicle";
+import {
+  advanceDays,
+  advanceWatches,
+  clockRange,
+  namingFor,
+  phaseOf,
+  rescaleCalendar,
+  setCalendar,
+  watchesElapsed,
+  watchesForTurns,
+  watchName,
+  wrap,
+} from "../chronicle/day";
 
 export const key = "vogelfrei.chronicle";
 export const options = { displayName: "Vogelfrei: Chronicle" };
@@ -38,55 +46,96 @@ const delve = (): Delve => newDelve("The Sunken Barrow", { day: 3, watch: 2 }, "
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("The watch track", () => {
-    it("Names the six watches, dawn first", () => {
-      expect(watchOf(0).key).equal("dawn");
-      expect(watchOf(5).key).equal("deepNight");
+    const names = (count: number) => Array.from({ length: count }, (_, watch) => watchName(watch, count));
+
+    it("Names a two-watch day day and night", () => {
+      expect(names(2)).deep.equal(["day", "night"]);
+    });
+
+    it("Names a four- and a six-watch day from their own namings", () => {
+      expect(names(4)).deep.equal(["morning", "afternoon", "evening", "night"]);
+      expect(names(6)).deep.equal(["morning", "midday", "afternoon", "evening", "night", "deadOfNight"]);
+    });
+
+    it("Names a day with no naming of its own from the next finer one, by each watch's middle", () => {
+      expect(namingFor(5).length).equal(6);
+      expect(names(3)).deep.equal(["morning", "evening", "night"]);
+      expect(names(8)).deep.equal([
+        "dawn",
+        "lateMorning",
+        "noon",
+        "goldenHour",
+        "dusk",
+        "night",
+        "midnight",
+        "firstLight",
+      ]);
+    });
+
+    it("Lets watches share a name past the finest naming", () => {
+      expect(namingFor(24).length).equal(12);
+      expect(names(24).filter((name) => name === "dawn").length).equal(2);
+    });
+
+    it("Colours a watch by the light at its middle", () => {
+      expect(Array.from({ length: 6 }, (_, watch) => phaseOf(watch, 6))).deep.equal([
+        "day",
+        "day",
+        "day",
+        "twilight",
+        "night",
+        "night",
+      ]);
+      expect(phaseOf(0, 12)).equal("twilight");
+    });
+
+    it("Gives each watch a clock range, even where the day does not divide evenly", () => {
+      expect(clockRange(0, 6)).equal("06:00–10:00");
+      expect(clockRange(5, 6)).equal("02:00–06:00");
+      expect(clockRange(1, 5)).equal("10:48–15:36");
     });
 
     it("Wraps in both directions rather than falling off", () => {
-      expect(watchOf(6).key).equal("dawn");
-      expect(watchOf(-1).key).equal("deepNight");
+      expect(wrap(-1, 4)).equal(3);
+      expect(wrap(6, 6)).equal(0);
     });
 
-    it("Knows whether the sun is up", () => {
-      expect(watchOf(2).daylight).equal(true);
-      expect(watchOf(3).daylight).equal(false);
-    });
-
-    it("Puts a clock on each watch, four hours apart from dawn", () => {
-      expect(clockOf(0)).equal("06:00");
-      expect(clockOf(3)).equal("18:00");
-      expect(clockOf(5)).equal("02:00");
-    });
-
-    it("Rolls the day over on the sixth watch", () => {
-      expect(advanceWatches({ day: 1, watch: 5 }, 1)).deep.equal({ day: 2, watch: 0 });
-    });
-
-    it("Takes a watch back, and the day with it", () => {
-      expect(advanceWatches({ day: 2, watch: 0 }, -1)).deep.equal({ day: 1, watch: 5 });
+    it("Rolls the day over after the last watch, however many there are", () => {
+      expect(advanceWatches({ day: 1, watch: 3 }, 1, 4)).deep.equal({ day: 2, watch: 0 });
+      expect(advanceWatches({ day: 1, watch: 5 }, 1, 6)).deep.equal({ day: 2, watch: 0 });
     });
 
     it("Will not go back before the first dawn", () => {
-      expect(advanceWatches({ day: 1, watch: 0 }, -5)).deep.equal({ day: 1, watch: 0 });
+      expect(advanceWatches({ day: 1, watch: 0 }, -5, 6)).deep.equal({ day: 1, watch: 0 });
     });
 
-    it("Skips a whole day without changing the hour", () => {
-      expect(advanceDays({ day: 4, watch: 3 }, 1)).deep.equal({ day: 5, watch: 3 });
+    it("Skips a whole day without changing the watch", () => {
+      expect(advanceDays({ day: 3, watch: 1 }, 2, 12)).deep.equal({ day: 5, watch: 1 });
+    });
+
+    it("Sets a day directly, refusing day zero", () => {
+      expect(setCalendar(9, 2, 6)).deep.equal({ day: 9, watch: 2 });
+      expect(setCalendar(0, 2, 6)).deep.equal({ day: 1, watch: 2 });
+    });
+
+    it("Keeps the time of day when the day is cut differently", () => {
+      expect(rescaleCalendar({ day: 3, watch: 3 }, 6, 12)).deep.equal({ day: 3, watch: 6 });
+      expect(rescaleCalendar({ day: 3, watch: 3 }, 6, 2)).deep.equal({ day: 3, watch: 1 });
+    });
+
+    it("Counts watches from the first dawn", () => {
+      expect(watchesElapsed({ day: 1, watch: 0 }, 6)).equal(0);
+      expect(watchesElapsed({ day: 2, watch: 1 }, 12)).equal(13);
     });
 
     it("Starts a world at the first dawn with nothing underway", () => {
       expect(defaultChronicle()).deep.equal({
         day: 1,
         watch: 0,
+        watchesPerDay: 6,
         delves: [],
         travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear", distance: "6d6 * 40" },
       });
-    });
-
-    it("Counts watches from the first dawn", () => {
-      expect(watchesElapsed({ day: 1, watch: 0 })).equal(0);
-      expect(watchesElapsed({ day: 3, watch: 2 })).equal(14);
     });
   });
 
@@ -111,6 +160,13 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       const rested = rest(advanceTurns(delve(), 6));
       expect(rested.turn).equal(7);
       expect(restState(rested)).deep.equal({ owed: false, penalised: false });
+    });
+
+    it("Takes Turns back, and the rest debt with them", () => {
+      const back = setTurn(advanceTurns(delve(), 4), 2);
+      expect(back.turn).equal(2);
+      expect(back.turnsSinceRest).equal(2);
+      expect(setTurn(advanceTurns(delve(), 4), -3).turn).equal(0);
     });
 
     it("Does not move the calendar by itself", () => {
@@ -206,21 +262,25 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Survives a cadence of zero rather than dividing by it", () => {
-      const busy = { ...advanceTurns(delve(), 3), encounter: { everyTurns: 0, chanceIn6: 2, distance: DUNGEON_DISTANCE } };
+      const busy = {
+        ...advanceTurns(delve(), 3),
+        encounter: { everyTurns: 0, chanceIn6: 2, distance: DUNGEON_DISTANCE },
+      };
       expect(encounterDue(busy)).equal(true);
     });
   });
 
   describe("Coming back up", () => {
-    it("Suggests a watch for every twenty-four Turns", () => {
-      expect(TURNS_PER_WATCH).equal(24);
-      expect(suggestedWatches(advanceTurns(delve(), 50))).equal(2);
-      expect(suggestedWatches(advanceTurns(delve(), 5))).equal(0);
+    it("Suggests watches from the Turns spent, for however the day is cut", () => {
+      expect(watchesForTurns(50, 6)).equal(2);
+      expect(watchesForTurns(50, 12)).equal(4);
+      expect(suggestedWatches(advanceTurns(delve(), 50), 6)).equal(2);
+      expect(suggestedWatches(advanceTurns(delve(), 5), 6)).equal(0);
     });
 
     it("Bills only the Turns since the calendar last moved", () => {
       const synced = { ...advanceTurns(delve(), 74), turnAtLastSync: 50 };
-      expect(suggestedWatches(synced)).equal(1);
+      expect(suggestedWatches(synced, 6)).equal(1);
     });
   });
 

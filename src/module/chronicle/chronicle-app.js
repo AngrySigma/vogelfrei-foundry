@@ -1,27 +1,43 @@
 /**
  * @file The Chronicle window: what day it is, and what the party is down.
  *
- * Always available, never modal. The calendar at the top is the whole of the
- * watch track; the list below it is every delve the world remembers, open or
- * not. Closing a delve's window closes nothing -- the record is here until the
- * Referee drops it.
+ * Always available, never modal. The top is the watch track, drawn as a bar of
+ * the whole day cut into however many watches this party keeps; the list below
+ * is every delve the world remembers, open or not. Closing a delve's window
+ * closes nothing -- the record is here until the Referee drops it.
  */
+import { checksBetween, newDelve, restState, TERRAIN } from "./chronicle";
 import {
   advanceDays,
   advanceWatches,
-  checksBetween,
-  clockOf,
-  newDelve,
-  restState,
-  TERRAIN,
+  clampWatches,
+  clockRange,
+  phaseOf,
+  rescaleCalendar,
+  setCalendar,
   watchesElapsed,
-  watchOf,
-} from "./chronicle";
+  watchName,
+} from "./day";
 import DelveApp from "./delve-app";
 import { rollEncounterChecks } from "./encounter";
 import { getChronicle, refreshOnChange, updateChronicle } from "./store";
+import announceUpkeep from "./upkeep";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
+/**
+ * A watch as it is spoken of: "Watch 3, Afternoon".
+ *
+ * @param {number} watch - The watch index, from zero.
+ * @param {number} watchesPerDay - Watches in the day.
+ * @returns {string} The localised phrase.
+ */
+function describeWatch(watch, watchesPerDay) {
+  return game.i18n.format("VF.chronicle.WatchNamed", {
+    number: watch + 1,
+    name: game.i18n.localize(`VF.chronicle.time.${watchName(watch, watchesPerDay)}`),
+  });
+}
 
 /**
  * How the country describes itself on a whispered check.
@@ -30,12 +46,11 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
  * @returns {object} Arguments for rollEncounterCheck.
  */
 function checkFor(chronicle) {
-  const watch = watchOf(chronicle.watch);
   return {
     speaker: game.i18n.localize(`VF.chronicle.terrain.${chronicle.travel.terrain}`),
     where: game.i18n.format("VF.chronicle.AtWatch", {
       day: chronicle.day,
-      watch: game.i18n.localize(`VF.chronicle.watch.${watch.key}`),
+      watch: describeWatch(chronicle.watch, chronicle.watchesPerDay),
     }),
     chanceIn6: chronicle.travel.chanceIn6,
     distance: chronicle.travel.distance,
@@ -43,74 +58,101 @@ function checkFor(chronicle) {
 }
 
 /**
- * Say what the party has eaten, once a day's travel is behind them.
+ * Walk the calendar forward, making every travel check the walk crossed and
+ * announcing any day that ended on the way.
  *
- * Physical Deterioration.md wants a meal and water every twenty-four hours,
- * and the saves for going without are the Referee's to call. This only says
- * the day is over and how much to strike off, which is the part everybody
- * forgets -- so it is spoken aloud rather than whispered.
- *
- * @param {number} days - How many days passed.
- */
-async function announceUpkeep(days) {
-  if (days < 1) return;
-  await ChatMessage.create({
-    flavor: game.i18n.localize("VF.chronicle.UpkeepFlavor"),
-    content: `<p>${game.i18n.format("VF.chronicle.Upkeep", { days })}</p>
-      <p class="vf-upkeep-hint">${game.i18n.localize("VF.chronicle.UpkeepHint")}</p>`,
-  });
-}
-
-/**
- * Move the calendar, and make every travel check the move crossed.
- *
- * @param {(calendar: import("./chronicle").Calendar) => import("./chronicle").Calendar} move
- *   How far to go.
+ * @param {(chronicle: import("./chronicle").Chronicle) => import("./day").Calendar} move
+ *   Where the walk ends.
  */
 async function travel(move) {
   const before = getChronicle();
   await updateChronicle((chronicle) => ({ ...chronicle, ...move(chronicle) }));
 
   const after = getChronicle();
-  const due = checksBetween(watchesElapsed(before), watchesElapsed(after), after.travel.everyWatches);
+  const perDay = after.watchesPerDay;
+  const due = checksBetween(watchesElapsed(before, perDay), watchesElapsed(after, perDay), after.travel.everyWatches);
   await rollEncounterChecks(due, checkFor(after));
   await announceUpkeep(after.day - before.day);
 }
 
-/**
- * Move the calendar on by one watch.
- *
- * @this {ChronicleApp}
- */
+/** @this {ChronicleApp} */
 async function onWatchForward() {
-  await travel((chronicle) => advanceWatches(chronicle, 1));
+  await travel((chronicle) => advanceWatches(chronicle, 1, chronicle.watchesPerDay));
 }
 
 /**
- * Take back a watch, for the click that should not have happened.
- *
- * Going backwards checks nothing: the party is un-walking the ground.
+ * Take back a watch. Nothing is rolled: the party is un-walking the ground.
  *
  * @this {ChronicleApp}
  */
 async function onWatchBack() {
-  await updateChronicle((chronicle) => ({ ...chronicle, ...advanceWatches(chronicle, -1) }));
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    ...advanceWatches(chronicle, -1, chronicle.watchesPerDay),
+  }));
 }
 
-/**
- * Skip a whole day, keeping the time of day.
- *
- * @this {ChronicleApp}
- */
+/** @this {ChronicleApp} */
 async function onDayForward() {
-  await travel((chronicle) => advanceDays(chronicle, 1));
+  await travel((chronicle) => advanceDays(chronicle, 1, chronicle.watchesPerDay));
 }
 
 /**
- * Roll a travel check now, whatever the cadence says.
+ * Jump to a watch by clicking it on the bar. A correction, so nothing is rolled.
  *
  * @this {ChronicleApp}
+ * @param {PointerEvent} _event - The click.
+ * @param {HTMLElement} target - The segment clicked.
  */
+async function onSetWatch(_event, target) {
+  const watch = Number(target.dataset.watch);
+  if (!Number.isFinite(watch)) return;
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    ...setCalendar(chronicle.day, watch, chronicle.watchesPerDay),
+  }));
+}
+
+/**
+ * Put the calendar on a day typed into the box. A correction, so nothing is
+ * rolled and no rations are announced.
+ *
+ * @this {ChronicleApp}
+ * @param {Event} event - The change.
+ */
+async function onSetDay(event) {
+  const day = Number(event.target.value);
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    ...setCalendar(day, chronicle.watch, chronicle.watchesPerDay),
+  }));
+}
+
+/**
+ * Cut the day into a different number of watches, keeping the time of day.
+ *
+ * A travel check set to once a day stays once a day; any other cadence is the
+ * Referee's own number and is left as they set it.
+ *
+ * @this {ChronicleApp}
+ * @param {Event} event - The change.
+ */
+async function onSetWatchesPerDay(event) {
+  const next = clampWatches(Number(event.target.value));
+  await updateChronicle((chronicle) => {
+    const previous = chronicle.watchesPerDay;
+    if (next === previous) return null;
+    const onceADay = chronicle.travel.everyWatches === previous;
+    return {
+      ...chronicle,
+      ...rescaleCalendar(chronicle, previous, next),
+      watchesPerDay: next,
+      travel: { ...chronicle.travel, everyWatches: onceADay ? next : chronicle.travel.everyWatches },
+    };
+  });
+}
+
+/** @this {ChronicleApp} */
 async function onRollTravelEncounter() {
   await rollEncounterChecks(1, checkFor(getChronicle()));
 }
@@ -118,8 +160,8 @@ async function onRollTravelEncounter() {
 /**
  * Save the travel encounter rule from its boxes.
  *
- * Choosing a terrain moves the chance to the book's number for it; the box
- * stays editable, because the Referee knows which woods these are.
+ * Picking a terrain pulls in its chance and distance; typing in either box
+ * afterwards keeps what was typed.
  *
  * @this {ChronicleApp}
  * @param {Event} event - The change that prompted the save.
@@ -132,33 +174,29 @@ async function onSaveTravelRule(event) {
   const typedChance = Math.trunc(Number(root.querySelector('[name="travelChance"]')?.value) || 0);
   const typedDistance = root.querySelector('[name="travelDistance"]')?.value?.trim() || "";
 
-  // Picking a terrain pulls in its chance and its distance; typing in either
-  // box afterwards keeps what was typed.
   const pickedTerrain = event?.target?.name === "terrain";
   const chanceIn6 = Math.max(0, Math.min(6, pickedTerrain ? (country?.encounterIn6 ?? typedChance) : typedChance));
-  const wanted = pickedTerrain ? (country?.distance ?? typedDistance) : typedDistance;
+  const distance = pickedTerrain ? (country?.distance ?? typedDistance) : typedDistance;
 
-  if (!Roll.validate(wanted)) {
-    ui.notifications?.warn(game.i18n.format("VF.chronicle.BadFormula", { formula: wanted }));
+  if (!Roll.validate(distance)) {
+    ui.notifications?.warn(game.i18n.format("VF.chronicle.BadFormula", { formula: distance }));
     this.render();
     return;
   }
 
   await updateChronicle((chronicle) => ({
     ...chronicle,
-    travel: { terrain, everyWatches, chanceIn6, distance: wanted },
+    travel: { terrain, everyWatches, chanceIn6, distance },
   }));
 }
 
 /**
- * Start a delve, named from the input beside the button.
+ * Start a delve. An empty name is fine: newDelve names it after the day.
  *
  * @this {ChronicleApp}
  */
 async function onCreateDelve() {
   const input = this.element.querySelector('input[name="delveName"]');
-  // An empty box is fine: newDelve names it after the day, so a delve can be
-  // started in one click and named later if it turns out to deserve one.
   const name = input?.value?.trim() ?? "";
 
   const id = foundry.utils.randomID();
@@ -172,8 +210,6 @@ async function onCreateDelve() {
 }
 
 /**
- * Open a delve's own window.
- *
  * @this {ChronicleApp}
  * @param {PointerEvent} _event - The click.
  * @param {HTMLElement} target - The button clicked.
@@ -219,11 +255,12 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       icon: "fa-solid fa-hourglass-half",
       resizable: true,
     },
-    position: { width: 340, height: "auto" },
+    position: { width: 360, height: "auto" },
     actions: {
       watchForward: onWatchForward,
       watchBack: onWatchBack,
       dayForward: onDayForward,
+      setWatch: onSetWatch,
       createDelve: onCreateDelve,
       openDelve: onOpenDelve,
       dropDelve: onDropDelve,
@@ -248,8 +285,13 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
   /** @inheritDoc */
   _onRender(context, options) {
     super._onRender(context, options);
+    const on = (selector, handler) =>
+      this.element.querySelector(selector)?.addEventListener("change", handler.bind(this));
+
+    on('[name="day"]', onSetDay);
+    on('[name="watchesPerDay"]', onSetWatchesPerDay);
     for (const input of this.element.querySelectorAll(
-      '[name="terrain"], [name="everyWatches"], [name="travelChance"]',
+      '[name="terrain"], [name="everyWatches"], [name="travelChance"], [name="travelDistance"]',
     )) {
       input.addEventListener("change", onSaveTravelRule.bind(this));
     }
@@ -258,18 +300,22 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
   /** @inheritDoc */
   async _prepareContext() {
     const chronicle = getChronicle();
-    const watch = watchOf(chronicle.watch);
+    const perDay = chronicle.watchesPerDay;
+    const isReferee = game.user.isGM;
 
     return {
-      isReferee: game.user.isGM,
+      isReferee,
       calendar: {
         day: chronicle.day,
-        ordinal: watch.index + 1,
-        label: `VF.chronicle.watch.${watch.key}`,
-        daylight: watch.daylight,
-        icon: watch.daylight ? "fa-sun" : "fa-moon",
-        clock: clockOf(chronicle.watch),
+        watchesPerDay: perDay,
+        phase: phaseOf(chronicle.watch, perDay),
+        watch: describeWatch(chronicle.watch, perDay),
       },
+      segments: Array.from({ length: perDay }, (_, index) => ({
+        index,
+        current: index === chronicle.watch,
+        tooltip: `${describeWatch(index, perDay)} · ${clockRange(index, perDay)}`,
+      })),
       delves: chronicle.delves.map((delve) => ({
         id: delve.id,
         name: delve.name,
@@ -277,13 +323,11 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
         penalised: restState(delve).penalised,
       })),
       // The Referee's half: where they are, how often it is checked, and on what.
-      travel: game.user.isGM
+      travel: isReferee
         ? {
             ...chronicle.travel,
-            terrains: Object.entries(TERRAIN).map(([key, { encounterIn6, distance }]) => ({
+            terrains: Object.keys(TERRAIN).map((key) => ({
               key,
-              encounterIn6,
-              distance,
               label: `VF.chronicle.terrain.${key}`,
               selected: key === chronicle.travel.terrain,
             })),

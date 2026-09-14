@@ -15,7 +15,6 @@ import { formatMoney, parseMoney } from "../money";
 import {
   adjustLight,
   advanceTurns,
-  advanceWatches,
   checksBetween,
   DUNGEON_DISTANCE,
   encounterDue,
@@ -26,13 +25,16 @@ import {
   lootXP,
   rest,
   restState,
+  setTurn,
   suggestedWatches,
   TURNS_BEFORE_REST,
   TURNS_PER_HOUR,
   xpForHitDice,
 } from "./chronicle";
+import { advanceWatches } from "./day";
 import { rollEncounterChecks } from "./encounter";
-import { getDelve, refreshOnChange, updateChronicle, updateDelve } from "./store";
+import { getChronicle, getDelve, refreshOnChange, updateChronicle, updateDelve } from "./store";
+import announceUpkeep from "./upkeep";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -95,6 +97,26 @@ async function onHourForward() {
   await spendTurns(this.delveId, TURNS_PER_HOUR);
 }
 
+/**
+ * Take back a Turn. Nothing is rolled: undoing is not living through it again.
+ *
+ * @this {DelveApp}
+ */
+async function onTurnBack() {
+  await updateDelve(this.delveId, (delve) => setTurn(delve, delve.turn - 1));
+}
+
+/**
+ * Put the Turn count on whatever was typed. A correction, so nothing is rolled.
+ *
+ * @this {DelveApp}
+ * @param {Event} event - The change.
+ */
+async function onSetTurn(event) {
+  const turn = Number(event.target.value);
+  await updateDelve(this.delveId, (delve) => setTurn(delve, turn));
+}
+
 /** @this {DelveApp} */
 async function onRest() {
   await updateDelve(this.delveId, rest);
@@ -144,16 +166,7 @@ async function onLight() {
 
   await updateDelve(this.delveId, (delve) => ({
     ...delve,
-    lights: [
-      ...delve.lights,
-      lightSource(
-        name || game.i18n.localize(`VF.chronicle.light.${kind}`),
-        kind,
-        delve.turn,
-        foundry.utils.randomID(),
-        turns,
-      ),
-    ],
+    lights: [...delve.lights, lightSource(name || "", kind, delve.turn, foundry.utils.randomID(), turns)],
   }));
 
   if (nameField) nameField.value = "";
@@ -279,11 +292,16 @@ async function onSyncWatches() {
   const delve = getDelve(this.delveId);
   if (!delve) return;
 
+  const before = getChronicle();
   await updateChronicle((chronicle) => ({
     ...chronicle,
-    ...advanceWatches(chronicle, watches),
+    ...advanceWatches(chronicle, watches, chronicle.watchesPerDay),
     delves: chronicle.delves.map((entry) => (entry.id === delve.id ? { ...entry, turnAtLastSync: entry.turn } : entry)),
   }));
+
+  // No travel checks for time spent underground -- the delve made its own --
+  // but a day that ended down there still ate its rations.
+  await announceUpkeep(getChronicle().day - before.day);
 }
 
 export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -298,6 +316,7 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
     position: { width: 380, height: "auto" },
     actions: {
       turnForward: onTurnForward,
+      turnBack: onTurnBack,
       hourForward: onHourForward,
       rest: onRest,
       rollEncounter: onRollEncounter,
@@ -353,6 +372,7 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
     super._onRender(context, options);
     // The wandering monster rule saves on change rather than on a click:
     // a number spinner has no button to hang an action off.
+    this.element.querySelector('[name="turn"]')?.addEventListener("change", onSetTurn.bind(this));
     for (const input of this.element.querySelectorAll('[name="everyTurns"], [name="chanceIn6"], [name="distance"]')) {
       input.addEventListener("change", onSaveEncounterRule.bind(this));
     }
@@ -395,8 +415,12 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
       lights: delve.lights.map((light) => {
         const remaining = lightRemaining(light, delve.turn);
         const eternal = light.turns === null;
+        const kindLabel = game.i18n.localize(`VF.chronicle.light.${light.kind}`);
         return {
           ...light,
+          kindLabel,
+          // Older lights stored the kind as their name when nobody carried them.
+          carrier: [light.kind, kindLabel].includes(light.name) ? "" : light.name,
           eternal,
           remaining: eternal ? null : Math.max(0, remaining),
           out: !eternal && remaining <= 0,
@@ -426,7 +450,7 @@ export default class DelveApp extends HandlebarsApplicationMixin(ApplicationV2) 
           }
         : null,
       xp: isReferee ? { kills: killXP(delve), loot: lootXP(delve) } : null,
-      suggested: suggestedWatches(delve),
+      suggested: suggestedWatches(delve, getChronicle().watchesPerDay),
     };
   }
 }

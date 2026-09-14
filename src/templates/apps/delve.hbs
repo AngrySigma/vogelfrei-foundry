@@ -5,7 +5,11 @@
 
   <header class="clock">
     <div class="turn">
+      {{#if isReferee}}
+      <input type="number" class="value" name="turn" min="0" step="1" value="{{delve.turn}}" />
+      {{else}}
       <span class="value">{{delve.turn}}</span>
+      {{/if}}
       <span class="label">{{localize "VF.chronicle.Turns"}}</span>
     </div>
     <div class="rest {{#if rest.penalised}}penalised{{else if rest.owed}}owed{{/if}}">
@@ -20,6 +24,9 @@
 
   {{#if isReferee}}
   <div class="controls">
+    <button type="button" class="step" data-action="turnBack" data-tooltip="{{localize 'VF.chronicle.TurnBack'}}">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
     <button type="button" class="primary" data-action="turnForward">{{localize "VF.chronicle.TurnForward"}}</button>
     <button type="button" data-action="hourForward">{{localize "VF.chronicle.HourForward"}}</button>
     <button type="button" data-action="rest">{{localize "VF.chronicle.Rest"}}</button>
@@ -31,8 +38,9 @@
     <ul class="unlist">
       {{#each lights}}
       <li class="light {{#if out}}out{{else if guttering}}guttering{{/if}}" data-light-id="{{id}}">
-        <i class="fa-solid {{#if out}}fa-ban{{else}}fa-fire{{/if}}"></i>
-        <span class="name">{{name}}</span>
+        <span class="name">
+          <span class="kind">{{kindLabel}}</span>{{#if carrier}}<span class="carrier">{{carrier}}</span>{{/if}}
+        </span>
         <span class="bar"><span class="fill" style="width: {{percent}}%"></span></span>
         <span class="remaining">
           {{#if eternal}}&infin;{{else if out}}{{localize "VF.chronicle.BurntOut"}}{{else}}{{remaining}}{{/if}}
@@ -84,13 +92,10 @@
       <span>{{localize "VF.chronicle.In6"}}</span>
     </div>
     <div class="rule">
-      <span>{{localize "VF.chronicle.MetAt"}}</span>
-      <input type="text" name="distance" value="{{encounter.distance}}"
-             data-tooltip="{{localize 'VF.chronicle.DistanceHint'}}" />
-      <span>{{localize "VF.chronicle.Feet"}}</span>
+      <span>{{localize "VF.chronicle.DistanceLabel"}}</span>
+      <input type="text" name="distance" value="{{encounter.distance}}" />
     </div>
     <button type="button" data-action="rollEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
-    <p class="hint">{{localize "VF.chronicle.EncounterHint"}}</p>
   </section>
   {{/if}}
 

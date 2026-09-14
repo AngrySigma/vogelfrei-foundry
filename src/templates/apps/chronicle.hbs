@@ -1,25 +1,44 @@
 <section class="vf-chronicle-body">
 
-  <section class="calendar {{#if calendar.daylight}}daylight{{else}}dark{{/if}}">
-    <div class="day">{{localize "VF.chronicle.Day"}} {{calendar.day}}</div>
-    <div class="watch">
-      <i class="fa-solid {{calendar.icon}}"></i>
-      <span class="name">{{localize calendar.label}}</span>
-      <span class="clock">{{calendar.clock}}</span>
+  <section class="calendar phase-{{calendar.phase}}">
+    <header class="when">
+      {{#if isReferee}}
+      <label class="day">
+        <span>{{localize "VF.chronicle.Day"}}</span>
+        <input type="number" name="day" min="1" step="1" value="{{calendar.day}}" />
+      </label>
+      {{else}}
+      <span class="day">{{localize "VF.chronicle.Day"}} {{calendar.day}}</span>
+      {{/if}}
+      <span class="watch">{{calendar.watch}}</span>
+    </header>
+
+    <div class="daybar">
+      {{#if isReferee}}
+      <button type="button" class="step" data-action="watchBack" data-tooltip="{{localize 'VF.chronicle.WatchBack'}}">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      {{/if}}
+      <div class="track">
+        {{#each segments}}
+        <div class="segment {{#if current}}current{{/if}}" data-watch="{{index}}" data-tooltip="{{tooltip}}"
+             {{#if ../isReferee}}data-action="setWatch"{{/if}}></div>
+        {{/each}}
+      </div>
+      {{#if isReferee}}
+      <button type="button" class="step" data-action="watchForward" data-tooltip="{{localize 'VF.chronicle.WatchForward'}}">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+      {{/if}}
     </div>
-    <div class="ordinal">{{localize "VF.chronicle.WatchOf" }} {{calendar.ordinal}}/6</div>
 
     {{#if isReferee}}
     <div class="controls">
-      <button type="button" data-action="watchBack" data-tooltip="{{localize 'VF.chronicle.WatchBack'}}">
-        <i class="fa-solid fa-rotate-left"></i>
-      </button>
-      <button type="button" class="primary" data-action="watchForward">
-        {{localize "VF.chronicle.WatchForward"}}
-      </button>
-      <button type="button" data-action="dayForward">
-        {{localize "VF.chronicle.DayForward"}}
-      </button>
+      <label class="per-day">
+        <span>{{localize "VF.chronicle.WatchesPerDay"}}</span>
+        <input type="number" name="watchesPerDay" min="1" max="24" step="1" value="{{calendar.watchesPerDay}}" />
+      </label>
+      <button type="button" data-action="dayForward">{{localize "VF.chronicle.DayForward"}}</button>
     </div>
     {{/if}}
   </section>
@@ -32,7 +51,7 @@
         <span>{{localize "VF.chronicle.Terrain"}}</span>
         <select name="terrain">
           {{#each travel.terrains}}
-          <option value="{{key}}" {{#if selected}}selected{{/if}}>{{localize label}} &mdash; {{encounterIn6}} in 6, {{distance}}</option>
+          <option value="{{key}}" {{#if selected}}selected{{/if}}>{{localize label}}</option>
           {{/each}}
         </select>
       </label>
@@ -45,13 +64,10 @@
       <span>{{localize "VF.chronicle.In6"}}</span>
     </div>
     <div class="rule">
-      <span>{{localize "VF.chronicle.MetAt"}}</span>
-      <input type="text" name="travelDistance" value="{{travel.distance}}"
-             data-tooltip="{{localize 'VF.chronicle.DistanceHint'}}" />
-      <span>{{localize "VF.chronicle.Feet"}}</span>
+      <span>{{localize "VF.chronicle.DistanceLabel"}}</span>
+      <input type="text" name="travelDistance" value="{{travel.distance}}" />
     </div>
     <button type="button" data-action="rollTravelEncounter">{{localize "VF.chronicle.CheckNow"}}</button>
-    <p class="hint">{{localize "VF.chronicle.TravelHint"}}</p>
   </section>
   {{/if}}
 

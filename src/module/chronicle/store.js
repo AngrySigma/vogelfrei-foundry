@@ -17,6 +17,7 @@
  * if it leaked.
  */
 import { defaultChronicle } from "./chronicle";
+import { clampWatches, setCalendar } from "./day";
 
 /** The setting key, under the system's namespace. */
 export const SETTING = "chronicle";
@@ -62,14 +63,18 @@ export function registerChronicleSetting() {
 export function getChronicle() {
   const stored = game.settings.get(game.system.id, SETTING) || {};
   const defaults = defaultChronicle();
-  return {
+  const watchesPerDay = clampWatches(stored.watchesPerDay ?? defaults.watchesPerDay);
+  const merged = {
     ...defaults,
     ...stored,
+    watchesPerDay,
     delves: Array.isArray(stored.delves) ? stored.delves : [],
     // Nested, so a shallow spread would drop a field added after the world
     // was first saved rather than filling it in.
     travel: { ...defaults.travel, ...(stored.travel || {}) },
   };
+  // A watch that no longer exists in a shorter day is brought back inside it.
+  return { ...merged, ...setCalendar(merged.day, merged.watch, watchesPerDay) };
 }
 
 /**
