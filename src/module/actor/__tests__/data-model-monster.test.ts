@@ -123,11 +123,11 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       {
         field: "saves",
         subFields: [
-          { subField: "breath", subSubField: ["value"] },
-          { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
-          { subField: "magic", subSubField: ["value"] },
+          { subField: "poison", subSubField: ["value"] },
+          { subField: "breath", subSubField: ["value"] },
           { subField: "device", subSubField: ["value"] },
+          { subField: "magic", subSubField: ["value"] },
         ],
       },
     ];

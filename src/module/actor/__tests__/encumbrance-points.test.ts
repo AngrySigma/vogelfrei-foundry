@@ -117,12 +117,55 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
   });
 
+  describe("Coins", () => {
+    // Time and Movement.md: 100 coins count as one regular item.
+    it("Counts every hundred coins as one item", () => {
+      expect(encumbranceBreakdown([], 100).itemCount).equal(1);
+      expect(encumbranceBreakdown([], 250).itemCount).equal(2);
+      expect(encumbranceBreakdown([], 250).coinItems).equal(2);
+    });
+
+    it("Counts fewer than a hundred coins as nothing", () => {
+      expect(encumbranceBreakdown([], 0).itemCount).equal(0);
+      expect(encumbranceBreakdown([], 10).itemCount).equal(0);
+      expect(encumbranceBreakdown([], 99).itemCount).equal(0);
+    });
+
+    it("Adds the purse to the ordinary items it is carried with", () => {
+      // Five items are free; a full hundred coins makes the sixth.
+      expect(encumbranceBreakdown(many(5, item), 0).points).equal(0);
+      expect(encumbranceBreakdown(many(5, item), 40).points).equal(0);
+      expect(encumbranceBreakdown(many(5, item), 100).points).equal(1);
+    });
+  });
+
   describe("Armour", () => {
     it("Charges nothing for light, one for medium, two for heavy", () => {
       expect(encumbranceBreakdown([armour("light")]).points).equal(0);
       expect(encumbranceBreakdown([armour("medium")]).points).equal(1);
       expect(encumbranceBreakdown([armour("heavy")]).points).equal(2);
       expect(encumbranceBreakdown([armour("unarmored")]).points).equal(0);
+    });
+
+    it("Charges a harness's own Enc figure over its type", () => {
+      // Armor.md: a full harness with a proved breast is +3.
+      const harness = {
+        type: "armor",
+        system: { type: "heavy", equipped: true, encumbrancePoints: 3, quantity: { value: 1 } },
+      } as never;
+      expect(encumbranceBreakdown([harness]).armourPoints).equal(3);
+    });
+
+    it("Charges a shield its own Enc figure instead of counting it", () => {
+      // Armor.md: a target of proof is +2, whether or not it is on the arm.
+      const proved = (equipped: boolean) =>
+        ({
+          type: "armor",
+          system: { type: "shield", equipped, encumbrance: "normal", encumbrancePoints: 2, quantity: { value: 1 } },
+        }) as never;
+      expect(encumbranceBreakdown([proved(true)]).points).equal(2);
+      expect(encumbranceBreakdown([proved(false)]).points).equal(2);
+      expect(encumbranceBreakdown([proved(true)]).itemCount).equal(0);
     });
 
     it("Keeps worn armour out of the carried tally", () => {
@@ -154,7 +197,9 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     const bare = (type: string, system: Record<string, unknown>) => ({ type, system }) as never;
 
     it("Still charges for a shield", () => {
-      expect(encumbranceBreakdown([bare("armor", { type: "shield", equipped: true, encumbrance: "oversized" })]).points).equal(1);
+      expect(
+        encumbranceBreakdown([bare("armor", { type: "shield", equipped: true, encumbrance: "oversized" })]).points,
+      ).equal(1);
     });
 
     it("Counts a weapon as one item", () => {

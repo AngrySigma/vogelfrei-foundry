@@ -1,17 +1,19 @@
 /**
  * @file What a character has to spend, and what is left after spending it.
  *
- * Coins are Items whose quantity is a number of that coin: forty Gold Pieces
- * are one Item with a quantity of forty. A purse is therefore spread across up
- * to three Items, and its worth is their sum in brass.
+ * Coins are three numbers on the character -- gold, silver and brass -- not
+ * Items. A handful of coin is not a thing you pick up and describe; it is a
+ * count, and Time and Movement.md weighs it as one: 100 coins are one item.
  *
- * OSE assumed a single "GP" Item and a decimal price, so it could subtract a
- * cost from a quantity directly. Vogelfrei's coinage is not decimal, so paying
- * means totalling the purse in brass, taking the price out, and counting the
- * change back into coins.
+ * Vogelfrei's coinage is not decimal, so paying means totalling the purse in
+ * brass, taking the price out, and counting the change back into coins.
+ *
+ * Coin Items -- how OSE, and this system before 0.5, kept money -- are still
+ * recognised, so an old character's gold can be folded into the purse.
  *
  * Foundry-free, so the arithmetic can be checked on its own.
  */
+import { COINS_PER_ITEM } from "./actor/encumbrance-points";
 import { BP_PER_GP, BP_PER_SP, splitCoins } from "./money";
 
 /** A coin, as the book names it. */
@@ -62,18 +64,75 @@ export function denominationOf(item: CoinItem): Denomination | null {
   return null;
 }
 
+/** A purse: how many of each coin. */
+export type Coins = Record<Denomination, number>;
+
+export const EMPTY_PURSE: Readonly<Coins> = { gp: 0, sp: 0, bp: 0 };
+
+const whole = (value: unknown): number => Math.max(0, Math.floor(Number(value) || 0));
+
 /**
- * What a character is carrying, in brass.
+ * A purse read defensively: missing, negative or fractional counts become
+ * whole non-negative numbers.
  *
- * @param items - Everything the character holds.
+ * @param coins - The purse as stored.
+ * @returns A purse with every denomination present.
+ */
+export function normalisePurse(coins: Partial<Coins> | null | undefined): Coins {
+  return { gp: whole(coins?.gp), sp: whole(coins?.sp), bp: whole(coins?.bp) };
+}
+
+/**
+ * What a purse is worth, in brass.
+ *
+ * @param coins - The purse.
  * @returns The purse total in brass pieces.
  */
-export function purseValue(items: CoinItem[] = []): number {
-  return items.reduce((total, item) => {
+export function purseValue(coins: Partial<Coins> | null | undefined): number {
+  const purse = normalisePurse(coins);
+  return purse.gp * COIN_VALUE.gp + purse.sp * COIN_VALUE.sp + purse.bp;
+}
+
+/**
+ * How many coins, of whatever kind. A gold piece weighs what a brass one does.
+ *
+ * @param coins - The purse.
+ * @returns The number of coins.
+ */
+export function coinCount(coins: Partial<Coins> | null | undefined): number {
+  const purse = normalisePurse(coins);
+  return purse.gp + purse.sp + purse.bp;
+}
+
+/**
+ * How many regular items a purse counts as: one for every full hundred coins.
+ * A part-hundred counts for nothing -- ten coins are not a load.
+ *
+ * @param coins - The purse.
+ * @returns Regular items for encumbrance.
+ */
+export function coinItems(coins: Partial<Coins> | null | undefined): number {
+  return Math.floor(coinCount(coins) / COINS_PER_ITEM);
+}
+
+/**
+ * Coin Items folded into a purse: what they add up to, and which Items they
+ * were, so the caller can delete them once their worth is in the purse.
+ *
+ * @param items - Everything the character holds.
+ * @param purse - The purse to add to.
+ * @returns The purse with every coin Item counted in, and the Items' ids.
+ */
+export function foldCoinItems(items: CoinItem[] = [], purse: Partial<Coins> = EMPTY_PURSE) {
+  const coins = normalisePurse(purse);
+  const ids: string[] = [];
+  for (const item of items) {
     const coin = denominationOf(item);
-    if (!coin) return total;
-    return total + Math.max(0, Math.floor(item.system?.quantity?.value ?? 0)) * COIN_VALUE[coin];
-  }, 0);
+    if (!coin) continue;
+    coins[coin] += whole(item.system?.quantity?.value);
+    if (item.id) ids.push(item.id);
+  }
+  return { coins, ids };
 }
 
 export type Payment = {
@@ -85,62 +144,29 @@ export type Payment = {
   after: number;
   /** How much was short, in brass. Zero when the purse covered it. */
   shortfall: number;
-  /** What each coin Item's quantity should become. Empty when nothing was paid. */
-  updates: { id: string; quantity: number }[];
+  /** The purse after paying. Unchanged when the purse fell short. */
+  coins: Coins;
 };
 
 /**
  * Pay a price out of a purse, and count the change back into coins.
  *
  * The change is made in the largest coins it will go into, so a character does
- * not walk out of a shop carrying nine hundred brass. Coins the character does
- * not have an Item for cannot be given as change -- their worth stays in the
- * smallest coin the character does carry.
+ * not walk out of a shop carrying nine hundred brass.
  *
- * @param items - Everything the character holds.
+ * @param purse - The coins the character carries.
  * @param price - What is being paid, in brass.
- * @returns Whether it could be paid, and what the coin Items should become.
+ * @returns Whether it could be paid, and what the purse becomes.
  */
-export function pay(items: CoinItem[] = [], price = 0): Payment {
+export function pay(purse: Partial<Coins> | null | undefined, price = 0): Payment {
   const owed = Math.max(0, Math.round(Number(price) || 0));
-  const before = purseValue(items);
+  const coins = normalisePurse(purse);
+  const before = purseValue(coins);
 
   if (owed > before) {
-    return { paid: false, before, after: before, shortfall: owed - before, updates: [] };
+    return { paid: false, before, after: before, shortfall: owed - before, coins };
   }
 
   const after = before - owed;
-
-  // One Item per denomination takes the change. Where a character somehow has
-  // two Gold Pieces stacks, the first holds the coins and the rest go to zero.
-  const purses = new Map<Denomination, string[]>();
-  for (const item of items) {
-    const coin = denominationOf(item);
-    if (!coin || !item.id) continue;
-    purses.set(coin, [...(purses.get(coin) ?? []), item.id]);
-  }
-
-  const change = splitCoins(after);
-  // Worth that has no coin Item to sit in falls to the next coin down.
-  let carried = 0;
-  const held: Record<Denomination, number> = { gp: 0, sp: 0, bp: 0 };
-
-  for (const coin of ["gp", "sp", "bp"] as Denomination[]) {
-    const amount = change[coin] * COIN_VALUE[coin] + carried;
-    if (purses.has(coin)) {
-      held[coin] = Math.floor(amount / COIN_VALUE[coin]);
-      carried = amount - held[coin] * COIN_VALUE[coin];
-    } else {
-      carried = amount;
-    }
-  }
-
-  const updates: { id: string; quantity: number }[] = [];
-  for (const [coin, ids] of purses) {
-    for (const [index, id] of ids.entries()) {
-      updates.push({ id, quantity: index === 0 ? held[coin] : 0 });
-    }
-  }
-
-  return { paid: true, before, after, shortfall: 0, updates };
+  return { paid: true, before, after, shortfall: 0, coins: splitCoins(after) };
 }

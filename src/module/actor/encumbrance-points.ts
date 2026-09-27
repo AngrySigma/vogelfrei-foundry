@@ -38,6 +38,10 @@ export const ENCUMBRANCE_LIMIT = 5;
  * Points contributed by worn body armour, by armour type. Light armour is free;
  * anything heavier is felt. A shield is not worn, it is carried, so it takes no
  * points here and is counted as an oversized item instead.
+ *
+ * This is the fallback. Armor.md gives each harness its own Enc figure -- a
+ * proved full harness costs 3 -- and an armour Item carrying one in
+ * `encumbrancePoints` uses that instead.
  */
 export const ARMOUR_POINTS: Readonly<Record<string, number>> = {
   unarmored: 0,
@@ -71,8 +75,13 @@ export type EncumbranceItem = {
     equipped?: boolean;
     /** Armour category, for Items of type `armor`. */
     type?: string;
+    /** Armor.md's Enc column, for Items of type `armor`. Null means "by type". */
+    encumbrancePoints?: number | null;
   };
 };
+
+/** Coins per regular item. Time and Movement.md: "100 coins count as one regular item." */
+export const COINS_PER_ITEM = 100;
 
 /** Item types that are physical enough to be carried at all. */
 const CARRIED_TYPES = new Set(["item", "weapon", "armor", "container"]);
@@ -122,8 +131,10 @@ function isWornArmour(item: EncumbranceItem): boolean {
 export type EncumbranceBreakdown = {
   /** Total encumbrance points. */
   points: number;
-  /** Ordinary items carried, after stacking. */
+  /** Ordinary items carried, after stacking, the purse included. */
   itemCount: number;
+  /** Of those, how many the purse accounts for. */
+  coinItems: number;
   /** Points from the ordinary item count. */
   itemPoints: number;
   /** Points from oversized items, one each. */
@@ -136,10 +147,13 @@ export type EncumbranceBreakdown = {
  * The whole calculation, item by item.
  *
  * @param items - Everything the character holds, including worn armour.
+ * @param coins - How many coins the character carries, of any kind. Every
+ *   full hundred is one regular item; a part-hundred counts for nothing.
  * @returns The point total and where each part of it came from.
  */
-export function encumbranceBreakdown(items: EncumbranceItem[] = []): EncumbranceBreakdown {
-  let itemCount = 0;
+export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0): EncumbranceBreakdown {
+  const coinItems = Math.floor(Math.max(0, Math.floor(Number(coins) || 0)) / COINS_PER_ITEM);
+  let itemCount = coinItems;
   let oversizedPoints = 0;
   let armourPoints = 0;
 
@@ -147,7 +161,15 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = []): Encumbrance
     if (!CARRIED_TYPES.has(item.type)) continue;
 
     if (isWornArmour(item)) {
-      armourPoints += ARMOUR_POINTS[item.system.type ?? ""] ?? 0;
+      armourPoints += item.system.encumbrancePoints ?? ARMOUR_POINTS[item.system.type ?? ""] ?? 0;
+      continue;
+    }
+
+    // A shield the book gives an Enc figure -- a target is +1, a target of
+    // proof +2 -- costs exactly that, worn or slung, instead of counting as
+    // an item.
+    if (item.type === "armor" && item.system.type === "shield" && item.system.encumbrancePoints) {
+      oversizedPoints += item.system.encumbrancePoints;
       continue;
     }
 
@@ -168,6 +190,7 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = []): Encumbrance
   return {
     points: itemPoints + oversizedPoints + armourPoints,
     itemCount,
+    coinItems,
     itemPoints,
     oversizedPoints,
     armourPoints,

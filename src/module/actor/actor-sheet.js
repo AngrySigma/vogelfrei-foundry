@@ -590,8 +590,12 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     // The character sheet rolls Hit Dice from a dice link beside the die
     // string; the monster sheet still rolls from its box title.
-    html.find(".hit-dice .attribute-name, .hit-dice .hit-dice-roll").click((event) => {
+    html.find(".hit-dice .attribute-name, .hit-dice .hit-dice-roll:not(.stamina-die-roll)").click((event) => {
       this.actor.rollHitDice({ event });
+    });
+
+    html.find(".hit-dice .stamina-die-roll").click((event) => {
+      this.actor.rollStaminaDie({ event });
     });
 
     // Items (Abilities, Inventory and Spells)

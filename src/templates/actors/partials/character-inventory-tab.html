@@ -1,4 +1,7 @@
-<section class="inventory resizable" data-base-size="{{#if (eq @root.config.encumbrance "itembased")}}300{{else}}320{{/if}}">
+{{!-- Not .resizable: that pins the list to a pixel height tuned for whatever
+      happened to sit below it. The tab is a flex column instead, so the list
+      takes the room the purse and the encumbrance bar leave. character.scss --}}
+<section class="inventory inventory-list">
   <div id="weapons" class="item-category-title flexrow">
     <div class="category-caret"><i class="fas fa-caret-down"></i></div>
     <div class="category-name">{{localize "VF.items.Weapons"}}</div>
@@ -435,6 +438,29 @@
     </li>
     {{/each}}
   </ol>
+</section>
+{{!-- The purse: three coin counts, not Items. Every hundred coins, of any
+      kind, is one regular item -- Time and Movement.md. --}}
+<section class="purse flexrow">
+  <h4 class="purse-title">{{localize "VF.purse.label"}}</h4>
+  <label class="purse-coin" data-coin="gp">
+    <input name="system.coins.gp" type="number" min="0" step="1" value="{{@root.system.coins.gp}}"
+      placeholder="0" data-dtype="Number" {{#unless @root.owner}}disabled{{/unless}} />
+    <span>{{localize "VF.purse.gp"}}</span>
+  </label>
+  <label class="purse-coin" data-coin="sp">
+    <input name="system.coins.sp" type="number" min="0" step="1" value="{{@root.system.coins.sp}}"
+      placeholder="0" data-dtype="Number" {{#unless @root.owner}}disabled{{/unless}} />
+    <span>{{localize "VF.purse.sp"}}</span>
+  </label>
+  <label class="purse-coin" data-coin="bp">
+    <input name="system.coins.bp" type="number" min="0" step="1" value="{{@root.system.coins.bp}}"
+      placeholder="0" data-dtype="Number" {{#unless @root.owner}}disabled{{/unless}} />
+    <span>{{localize "VF.purse.bp"}}</span>
+  </label>
+  <div class="purse-weight" data-tooltip aria-label="{{localize 'VF.purse.weightHint'}}">
+    {{#if purse.count}}{{localize "VF.purse.weight" count=purse.count items=purse.items}}{{/if}}
+  </div>
 </section>
 {{#unless (eq @root.system.encumbrance.variant 'disabled')}}
 <section class="encumbrance-wrapper">

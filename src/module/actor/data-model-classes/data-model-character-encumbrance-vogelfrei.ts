@@ -21,6 +21,7 @@ import {
   encumbranceBreakdown,
   encumbranceStateLabel,
 } from "../encumbrance-points";
+import { type Coins, coinCount } from "../../purse";
 import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
 export default class OseDataModelCharacterEncumbranceVogelfrei
@@ -45,10 +46,12 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
   /**
    * @param _max - Ignored. The limit is a rule, not a per-character number.
    * @param items - Everything the character holds, worn armour included.
+   * @param options - What else the character carries.
+   * @param options.coins - The purse; every hundred coins is one item.
    */
-  constructor(_max = ENCUMBRANCE_LIMIT, items: EncumbranceItem[] = []) {
+  constructor(_max = ENCUMBRANCE_LIMIT, items: EncumbranceItem[] = [], { coins }: { coins?: Partial<Coins> } = {}) {
     super(OseDataModelCharacterEncumbranceVogelfrei.type, ENCUMBRANCE_LIMIT);
-    this.#breakdown = encumbranceBreakdown(items);
+    this.#breakdown = encumbranceBreakdown(items, coinCount(coins));
   }
 
   static defineSchema() {
@@ -72,6 +75,7 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
       atSecondBreakpoint: new BooleanField({ initial: false }),
       atThirdBreakpoint: new BooleanField({ initial: false }),
       itemCount: new NumberField({ integer: true, initial: 0 }),
+      coinItems: new NumberField({ integer: true, initial: 0 }),
       itemPoints: new NumberField({ integer: true, initial: 0 }),
       oversizedPoints: new NumberField({ integer: true, initial: 0 }),
       armourPoints: new NumberField({ integer: true, initial: 0 }),
@@ -86,6 +90,11 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
   /** Where the points came from, for the sheet's tooltip. */
   get itemCount(): number {
     return this.#breakdown.itemCount;
+  }
+
+  /** Of the item count, how much is the purse. */
+  get coinItems(): number {
+    return this.#breakdown.coinItems;
   }
 
   get itemPoints(): number {

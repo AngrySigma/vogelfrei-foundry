@@ -95,9 +95,9 @@
           </div>
           <div class="flexrow field-row">
             <div class="field-longer flexrow">
-              {{#each e.system.saves as |s i|}}
-              <span title="{{lookup @root.config.saves_long i}}"
-                >{{lookup @root.config.saves_short i}} {{s.value}}</span
+              {{#each @root.config.saves_short as |label key|}}
+              <span title="{{lookup @root.config.saves_long key}}"
+                >{{label}} {{lookup (lookup ../e.system.saves key) "value"}}</span
               >
               {{/each}} {{#if (eq e.type 'character')}}<span
                 ><i

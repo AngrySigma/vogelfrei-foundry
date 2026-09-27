@@ -13,7 +13,7 @@
         <label>{{localize "VF.ac.target"}}</label>
         <select name="acVariant">
             {{#each acVariants}}
-            <option value="{{this.key}}">{{localize this.label}}</option>
+            <option value="{{this.key}}" {{#if (eq this.key ../data.roll.acVariant)}}selected{{/if}}>{{localize this.label}}</option>
             {{/each}}
         </select>
     </div>

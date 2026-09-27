@@ -4,7 +4,7 @@
 // eslint-disable-next-line no-unused-vars
 import OSE from "../config";
 import { formatMoney } from "../money";
-import { denominationOf, pay } from "../purse";
+import { pay } from "../purse";
 
 export default class OseCharacterGpCost extends FormApplication {
   static physicalItemTypes = new Set(["item", "container", "weapon", "armor"]);
@@ -75,27 +75,18 @@ export default class OseCharacterGpCost extends FormApplication {
       preventClose,
       preventRender,
     });
-    // Pay for the cart. Prices are in brass, and a purse may be spread across
-    // gold, silver and brass Items, so the whole purse is totalled in brass,
-    // the price taken out of it, and the change counted back into coins.
+    // Pay for the cart. Prices are in brass and the purse is three coins, so
+    // the whole purse is totalled in brass, the price taken out of it, and the
+    // change counted back into coins.
     const totalCost = await this.#getTotalCost(await this.getData());
-    const items = [...this.object.items];
 
-    if (!items.some((item) => denominationOf(item))) {
-      ui.notifications.error(game.i18n.localize("VF.error.noGP"));
-      return;
-    }
-
-    const { paid, shortfall, updates } = pay(items, totalCost);
+    const { paid, shortfall, coins } = pay(this.object.system.coins, totalCost);
     if (!paid) {
       ui.notifications.error(game.i18n.format("VF.error.notEnoughGP", { short: formatMoney(shortfall) }));
       return;
     }
 
-    await this.object.updateEmbeddedDocuments(
-      "Item",
-      updates.map(({ id, quantity }) => ({ _id: id, "system.quantity.value": quantity })),
-    );
+    await this.object.update({ "system.coins": coins });
 
     // Mark all items in the cart as "paid for" by setting a flag
     await this.#markItemsAsPaid();

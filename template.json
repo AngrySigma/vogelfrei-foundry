@@ -39,16 +39,16 @@
           }
         },
         "saves": {
-          "poison": {
-            "value": 0
-          },
-          "device": {
-            "value": 0
-          },
           "paralysis": {
             "value": 0
           },
+          "poison": {
+            "value": 0
+          },
           "breath": {
+            "value": 0
+          },
+          "device": {
             "value": 0
           },
           "magic": {

@@ -12,6 +12,13 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
     shield: "VF.armor.shield",
   };
 
+  /** Armor.md#proof: how much of the rating stands up to a firearm. */
+  static ProofTypes = {
+    none: "VF.armor.proof.none",
+    partial: "VF.armor.proof.partial",
+    full: "VF.armor.proof.full",
+  };
+
   static defineSchema() {
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
     return {
@@ -24,6 +31,14 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       // melee, a pavise only at range, a shield both by different amounts.
       acMelee: new NumberField({ integer: true, initial: 0 }),
       acRanged: new NumberField({ integer: true, initial: 0 }),
+      // Only a firearm looks at this; everything else meets the full rating.
+      proof: new StringField({
+        initial: "none",
+        choices: Object.keys(OseDataModelArmor.ProofTypes),
+      }),
+      // The Enc column of Armor.md: points the harness costs while worn, or a
+      // shield while carried. Null falls back to the points for its type.
+      encumbrancePoints: new NumberField({ integer: true, min: 0, initial: null, nullable: true }),
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),
@@ -71,7 +86,17 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 
-    return [{ label: OseDataModelArmor.ArmorTypes[this.type], icon: "fa-tshirt" }, ...autoTags, ...this.manualTags]
+    const proof =
+      this.proof && this.proof !== "none"
+        ? { label: OseDataModelArmor.ProofTypes[this.proof], icon: "fa-crosshairs" }
+        : null;
+
+    return [
+      { label: OseDataModelArmor.ArmorTypes[this.type], icon: "fa-tshirt" },
+      proof,
+      ...autoTags,
+      ...this.manualTags,
+    ]
       .flat()
       .filter((t) => !!t);
   }

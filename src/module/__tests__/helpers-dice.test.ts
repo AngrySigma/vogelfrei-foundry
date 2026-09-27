@@ -317,7 +317,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     const data = defender({ melee: 14, meleeMonster: 12, ranged: 15, surprised: 10 });
 
     it("Hits on equal to the target's AC", () => {
-      // The book's example: a total of exactly 14 against AC 14 lands.
+      // A total that exactly matches the AC lands; it need not beat it.
       const roll = createMockRoll(14);
       expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
       expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);

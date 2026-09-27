@@ -265,16 +265,8 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
         spell: 6,
       },
       {
+        // Monsters and NPCs.md: "19+" is 2 on every save.
         low: 19,
-        high: 21,
-        poison: 2,
-        wands: 2,
-        paralysis: 2,
-        breath: 2,
-        spell: 4,
-      },
-      {
-        low: 22,
         high: 99,
         poison: 2,
         wands: 2,
@@ -363,7 +355,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await trashChat();
     });
 
-    const saves = ["poison", "device", "paralysis", "breath", "magic"];
+    const saves = ["paralysis", "poison", "breath", "device", "magic"];
     saves.forEach((save) => {
       it(`is functional for ${save} saves on character`, async () => {
         const actor = (await createMockActor("character")) as OseActor;

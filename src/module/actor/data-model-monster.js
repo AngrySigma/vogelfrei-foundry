@@ -99,14 +99,13 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),
+      // In the book's order: see CONFIG.OSE.saves_short.
       saves: new SchemaField({
-        breath: new SchemaField({ value: new NumberField({ integer: true }) }),
+        paralysis: new SchemaField({ value: new NumberField({ integer: true }) }),
         poison: new SchemaField({ value: new NumberField({ integer: true }) }),
-        paralysis: new SchemaField({
-          value: new NumberField({ integer: true }),
-        }),
-        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
+        breath: new SchemaField({ value: new NumberField({ integer: true }) }),
         device: new SchemaField({ value: new NumberField({ integer: true }) }),
+        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
       }),
       retainer: new SchemaField({
         enabled: new BooleanField(),

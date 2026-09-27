@@ -19,6 +19,16 @@ const removeFalsyElements = (arr) => arr.filter((b) => b);
  */
 const IMPROVISED_DAMAGE = "1d3";
 
+/**
+ * Whether a weapon is a gun. The equipment compendium tags every entry of
+ * Firearms.md and Curious Firearms.md "Firearm"; a hand-made Item takes the
+ * same tag to be treated as one.
+ *
+ * @param {OseItem | undefined} item - The weapon, if any.
+ * @returns {boolean} True when the weapon is tagged as a firearm.
+ */
+const isFirearm = (item) => (item?.system?.tags ?? []).some(({ value }) => String(value).toLowerCase() === "firearm");
+
 export default class OseActor extends Actor {
   static migrateData(source) {
     // Fixing missing img
@@ -152,17 +162,17 @@ export default class OseActor extends Actor {
       "system.thac0.value": thac0,
       "system.thac0.bba": 19 - thac0,
       "system.saves": {
-        poison: {
-          value: saves.d,
-        },
-        device: {
-          value: saves.w,
-        },
         paralysis: {
           value: saves.p,
         },
+        poison: {
+          value: saves.d,
+        },
         breath: {
           value: saves.b,
+        },
+        device: {
+          value: saves.w,
         },
         magic: {
           value: saves.s,
@@ -351,11 +361,11 @@ export default class OseActor extends Actor {
     let rollParts = [actorData.wounds.hd];
 
     if (actorType === "character") {
-      // A character always gains at least 1 hit point per Hit Die,
-      // regardless of CON modifier.
-      rollParts = [
-        `max(${actorData.wounds.hd} + ${actorData.scores.toughness.mod * actorData.details.level}, ${actorData.wounds.hd[0]})`,
-      ];
+      // Class and Career.md: the Wounds die is rolled once, at first level,
+      // and the Toughness bonus added to it once -- not once per level, as OSE
+      // had it. The class minimum is the Referee's to apply; it is not on the
+      // sheet.
+      rollParts = [`max(${actorData.wounds.hd} + ${actorData.scores.toughness.mod}, 1)`];
     }
 
     const data = {
@@ -370,6 +380,37 @@ export default class OseActor extends Actor {
       event: options.event,
       parts: rollParts,
       data,
+      skipDialog: true,
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      flavor: label,
+      title: label,
+    });
+  }
+
+  /**
+   * Roll the class Stamina die with the Toughness bonus added, at least 1.
+   *
+   * That is the hour's-rest recovery roll (Healing.md#stamina-recovery), and
+   * the roll this button is pressed for most. Class and Career.md adds no
+   * Toughness to the Stamina gained on levelling up; applying Toughness to
+   * every roll by default is the house call. The result goes to chat.
+   *
+   * @param {object} options - Roll options.
+   * @param {Event} [options.event] - The triggering click.
+   * @returns {Promise<Roll | false>} The roll.
+   */
+  rollStaminaDie(options = {}) {
+    const die = this.system.stamina?.die;
+    if (!die) {
+      ui.notifications?.warn(game.i18n.localize("VF.StaminaDieMissing"));
+      return false;
+    }
+
+    const label = game.i18n.localize("VF.roll.staminaDie");
+    return OseDice.Roll({
+      event: options.event,
+      parts: [`max(${die} + ${this.system.scores.toughness.mod}, 1)`],
+      data: { actor: this, roll: { type: "hitdice" } },
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
       flavor: label,
@@ -568,6 +609,9 @@ export default class OseActor extends Actor {
       itemId: attData.item?._id,
       roll: {
         type: options.type,
+        // A shot is answered by the target's firearm AC -- no Agility, and
+        // armour only as far as its Proof goes. The dialog can still change it.
+        acVariant: isMissile && isFirearm(attData.item) ? "firearm" : undefined,
         dmg: dmgParts,
         save: attData.roll.save,
         target: attData.roll.target,

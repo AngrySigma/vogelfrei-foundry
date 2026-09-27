@@ -5,8 +5,24 @@ import OSE from "../config";
 import OseCharacterCreator from "../dialog/character-creation";
 import OseCharacterGpCost from "../dialog/character-gp-cost";
 import OseCharacterModifiers from "../dialog/character-modifiers";
+import { coinCount, coinItems } from "../purse";
 import OseActorSheet from "./actor-sheet";
 import { prepareExplorationSkills } from "./exploration-skills";
+import pickCharacterIcon from "./icon-picker";
+
+/**
+ * The options for a die dropdown. A die typed before the dropdown existed --
+ * "2d6", say -- is kept as an option of its own, so opening the sheet never
+ * quietly rewrites it.
+ *
+ * @param {string} current - The die the character has now.
+ * @returns {Record<string, string>} Value to label, for selectOptions.
+ */
+function dieChoices(current) {
+  const dice = [...CONFIG.OSE.dice];
+  if (current && !dice.includes(current)) dice.push(current);
+  return Object.fromEntries([["", "\u2014"], ...dice.map((die) => [die, die.replace(/^1d/, "d")])]);
+}
 
 export default class OseActorSheetCharacter extends OseActorSheet {
   /**
@@ -48,6 +64,10 @@ export default class OseActorSheetCharacter extends OseActorSheet {
       containers: this.actor.system.containers,
     };
     data.treasure = this.actor.system.carriedTreasure;
+    data.purse = {
+      count: coinCount(this.actor.system.coins),
+      items: coinItems(this.actor.system.coins),
+    };
     data.containers = this.actor.system.containers;
     data.abilities = this.actor.system.abilities;
     data.spells = this.actor.system.spells.spellList;
@@ -67,6 +87,19 @@ export default class OseActorSheetCharacter extends OseActorSheet {
     );
   }
 
+  /**
+   * Clicking the portrait opens the bundled icon picker rather than the file
+   * browser, which a Player may not open. See icon-picker.js.
+   *
+   * @param {Event} event - The click on an image with data-edit.
+   * @returns {Promise<void> | void}
+   */
+  _onEditImage(event) {
+    if (event.currentTarget?.dataset?.edit !== "img" || !this.isEditable) return super._onEditImage(event);
+    event.preventDefault();
+    return pickCharacterIcon(this.actor);
+  }
+
   generateScores() {
     new OseCharacterCreator(this.actor, {
       top: this.position.top + 40,
@@ -83,6 +116,9 @@ export default class OseActorSheetCharacter extends OseActorSheet {
 
     // Prepare owned items
     this._prepareItems(data);
+
+    data.woundsDice = dieChoices(this.actor.system.wounds.hd);
+    data.staminaDice = dieChoices(this.actor.system.stamina.die);
 
     data.explorationSkills = prepareExplorationSkills(
       this.actor.system.exploration,

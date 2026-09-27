@@ -150,11 +150,11 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       {
         field: "saves",
         subFields: [
-          { subField: "breath", subSubField: ["value"] },
-          { subField: "poison", subSubField: ["value"] },
           { subField: "paralysis", subSubField: ["value"] },
-          { subField: "magic", subSubField: ["value"] },
+          { subField: "poison", subSubField: ["value"] },
+          { subField: "breath", subSubField: ["value"] },
           { subField: "device", subSubField: ["value"] },
+          { subField: "magic", subSubField: ["value"] },
         ],
       },
     ];
@@ -778,6 +778,22 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
         dataModel.scores.agility = { value: 9 };
         expect(dataModel.scores.agility.init).equal(0);
       });
+    });
+  });
+
+  describe("Saving throw order", () => {
+    // Class and Career.md: an effect that fits two categories is saved against
+    // as the leftmost, so the order is a rule and every list must keep it.
+    const bookOrder = ["paralysis", "poison", "breath", "device", "magic"];
+
+    it("Lists the saves in the book's order in config", () => {
+      expect(Object.keys(CONFIG.OSE.saves_short)).deep.equal(bookOrder);
+      expect(Object.keys(CONFIG.OSE.saves_long)).deep.equal(bookOrder);
+    });
+
+    it("Declares the saves in the book's order in the schema", () => {
+      const saves = OseDataModelCharacter.defineSchema().saves as unknown as { fields: Record<string, unknown> };
+      expect(Object.keys(saves.fields)).deep.equal(bookOrder);
     });
   });
 };

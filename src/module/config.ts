@@ -28,7 +28,7 @@ export type ExplorationSkill = keyof OseConfig["exploration_skills"];
 /** How a roll is compared against its target: exact result, at or above, or at or below. */
 export type RollType = keyof OseConfig["roll_type"];
 
-/** A saving-throw category key: `poison`, `device`, `paralysis`, `breath`, or `magic`. */
+/** A saving-throw category key: `paralysis`, `poison`, `breath`, `device`, or `magic`, in the book's order. */
 export type Save = keyof OseConfig["saves_long"];
 
 /** An armour category key: `unarmored`, `light`, `heavy`, or `shield`. */
@@ -138,20 +138,26 @@ export const OSE = {
     above: "≥",
     below: "≤",
   },
-  /** Abbreviated saving-throw names, as localization keys, keyed by save category. */
+  /**
+   * Abbreviated saving-throw names, as localization keys, keyed by save
+   * category. Order is the book's -- Paralyze, Poison, Breath, Device, Magic --
+   * and it is a rule, not a layout: an effect that fits two categories is
+   * saved against as the leftmost (Class and Career.md). Every list of saves
+   * on a sheet follows it.
+   */
   saves_short: {
-    poison: "VF.saves.poison.short",
-    device: "VF.saves.device.short",
     paralysis: "VF.saves.paralysis.short",
+    poison: "VF.saves.poison.short",
     breath: "VF.saves.breath.short",
+    device: "VF.saves.device.short",
     magic: "VF.saves.magic.short",
   },
   /** Full saving-throw names, as localization keys, keyed by save category. */
   saves_long: {
-    poison: "VF.saves.poison.long",
-    device: "VF.saves.device.long",
     paralysis: "VF.saves.paralysis.long",
+    poison: "VF.saves.poison.long",
     breath: "VF.saves.breath.long",
+    device: "VF.saves.device.long",
     magic: "VF.saves.magic.long",
   },
   /**
@@ -171,6 +177,23 @@ export const OSE = {
     medium: "VF.armor.medium",
     heavy: "VF.armor.heavy",
     shield: "VF.armor.shield",
+  },
+  /**
+   * The dice a Wounds or Stamina die may be, smallest first. Class and
+   * Career.md: Stamina runs 1d2 to 1d4; Wounds are 1d8 for a Warrior.
+   */
+  dice: ["1d2", "1d3", "1d4", "1d6", "1d8", "1d10", "1d12", "1d20"],
+  /** Social Status, as localization keys: what a character's family was. */
+  statuses: {
+    brass: "VF.status.brass",
+    silver: "VF.status.silver",
+    gold: "VF.status.gold",
+  },
+  /** Armour Proof grades, as localization keys. Armor.md#proof */
+  armorProof: {
+    none: "VF.armor.proof.none",
+    partial: "VF.armor.proof.partial",
+    full: "VF.armor.proof.full",
   },
   /** Targeting modes for applying damage, keyed by mode. */
   apply_damage_options: {
@@ -376,14 +399,9 @@ export const OSE = {
       b: 3,
       s: 6,
     },
+    // Monsters and NPCs.md stops at "19+", every save 2. OSE carried on to
+    // 22 with Spells at 4 in between; the book has no such row.
     19: {
-      d: 2,
-      w: 2,
-      p: 2,
-      b: 2,
-      s: 4,
-    },
-    22: {
       d: 2,
       w: 2,
       p: 2,

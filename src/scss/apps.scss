@@ -862,3 +862,64 @@
     }
   }
 }
+// The character portrait picker: icon-picker.js
+.vf-icon-picker {
+  .vf-icon-controls {
+    padding-bottom: 6px;
+    .vf-icon-search {
+      width: 100%;
+      margin-bottom: 6px;
+    }
+  }
+  .vf-icon-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .vf-icon-tab {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 2px 8px;
+    line-height: 1.4;
+    font-size: var(--font-size-12);
+    &.active {
+      border-color: #c9a45c;
+      font-weight: bold;
+    }
+  }
+  // Only the icons scroll; the search box and the tabs stay put.
+  .vf-icon-results {
+    height: 380px;
+    overflow-y: auto;
+  }
+  .vf-icon-grid {
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 6px;
+  }
+  // The icons are round medallions (tools/build-character-icons.py), so the
+  // tiles and their highlight are round too.
+  .vf-icon {
+    padding: 0;
+    height: 56px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    img {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 50%;
+      display: block;
+    }
+    &:hover,
+    &:focus-visible {
+      border-color: #c9a45c;
+    }
+    &.current {
+      border-color: #8c1c13;
+    }
+  }
+}

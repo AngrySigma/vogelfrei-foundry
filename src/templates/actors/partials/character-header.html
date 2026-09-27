@@ -49,11 +49,20 @@
         </select>
         <label>{{localize 'VF.details.alignment'}}</label>
       </li>
+      {{!-- Status is what the family was: it prices a character's upbringing,
+            their starting money and their letters (Skills.md#literacy). --}}
+      <li>
+        <select name="system.details.status" data-dtype="String">
+          <option value="">&mdash;</option>
+          {{selectOptions config.statuses selected=system.details.status localize=true}}
+        </select>
+        <label>{{localize 'VF.details.status'}}</label>
+      </li>
     {{/if}}
   </ul>
   {{#if isOwnerOrObserver}}
     <ul class="summary flexrow">
-      <li class="flex3">
+      <li class="flex2">
         <input
           type="text"
           name="system.details.class"
@@ -61,6 +70,15 @@
           data-dtype="String"
         />
         <label>{{localize 'VF.details.class'}}</label>
+      </li>
+      <li class="flex2">
+        <input
+          type="text"
+          name="system.details.career"
+          value="{{system.details.career}}"
+          data-dtype="String"
+        />
+        <label>{{localize 'VF.details.career'}}</label>
       </li>
       <li
         class="{{#if (gte system.details.xp.value system.details.xp.next)}}notify{{/if}}"

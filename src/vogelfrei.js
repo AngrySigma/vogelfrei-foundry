@@ -4,6 +4,7 @@
  */
 
 import OseActorSheetCharacter from "./module/actor/character-sheet";
+import { migrateCoinItems, registerCoinItemHook } from "./module/actor/coin-items";
 import OseDataModelCharacter from "./module/actor/data-model-character";
 import OseDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import OseDataModelMonster from "./module/actor/data-model-monster";
@@ -89,6 +90,7 @@ Hooks.once("init", async () => {
   // Register APIs of Foundry VTT Modules we explicitly support that provide custom hooks
   registerFVTTModuleAPIs();
   registerArmourEquipHooks();
+  registerCoinItemHook();
   registerActorDirectoryButton();
 
   CONFIG.Actor.documentClass = OseActor;
@@ -161,6 +163,7 @@ Hooks.once("ready", async () => {
   });
 
   await adoptVogelfreiEncumbrance();
+  await migrateCoinItems();
   await syncWorldTime(getChronicle());
   await promptTokenRingSelection();
 });

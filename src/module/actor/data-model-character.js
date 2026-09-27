@@ -6,6 +6,7 @@ import OseDataModelCharacterAC from "./data-model-classes/data-model-character-a
 import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
 import OseDataModelCharacterScores from "./data-model-classes/data-model-character-scores";
 import OseDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
+import { purseValue } from "../purse";
 
 const getItemsOfActorOfType = (actor, filterType, filterFn = null) =>
   actor.items.filter(({ type }) => type === filterType).filter(filterFn || (() => true));
@@ -21,6 +22,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       {
         significantTreasure: game.settings.get(game.system.id, "significantTreasure"),
         scores: this.scores,
+        coins: this.coins,
       },
       this.scores.strength.mod,
     );
@@ -60,6 +62,12 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
         value: new NumberField({ integer: false, initial: 0 }),
         mod: new NumberField({ integer: false, initial: 0 }),
       }),
+      // The purse. Coins are counted, not carried as Items: see purse.ts.
+      coins: new SchemaField({
+        gp: new NumberField({ integer: true, min: 0, initial: 0 }),
+        sp: new NumberField({ integer: true, min: 0, initial: 0 }),
+        bp: new NumberField({ integer: true, min: 0, initial: 0 }),
+      }),
       wounds: new SchemaField({
         hd: new StringField(),
         value: new NumberField({ integer: true }),
@@ -68,17 +76,19 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       stamina: new SchemaField({
         value: new NumberField({ integer: true, initial: 0 }),
         max: new NumberField({ integer: true, initial: 0 }),
+        // The class Stamina die, rolled at first level and again at every
+        // level after (Class and Career.md). The Wounds die is wounds.hd.
+        die: new StringField({ initial: "" }),
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),
+      // In the book's order: see CONFIG.OSE.saves_short.
       saves: new SchemaField({
-        breath: new SchemaField({ value: new NumberField({ integer: true }) }),
+        paralysis: new SchemaField({ value: new NumberField({ integer: true }) }),
         poison: new SchemaField({ value: new NumberField({ integer: true }) }),
-        paralysis: new SchemaField({
-          value: new NumberField({ integer: true }),
-        }),
-        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
+        breath: new SchemaField({ value: new NumberField({ integer: true }) }),
         device: new SchemaField({ value: new NumberField({ integer: true }) }),
+        magic: new SchemaField({ value: new NumberField({ integer: true }) }),
       }),
       exploration: new SchemaField({
         architecture: new NumberField({ integer: true, positive: true, initial: 1 }),
@@ -182,7 +192,8 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
   get carriedTreasure() {
     // Brass is the smallest coin, so the total is always whole. OSE rounded to
     // two decimals here because its prices were decimal gold; ours are not.
-    return this.treasures.reduce((acc, { system: { quantity, cost } }) => acc + quantity.value * cost, 0);
+    const goods = this.treasures.reduce((acc, { system: { quantity, cost } }) => acc + quantity.value * cost, 0);
+    return goods + purseValue(this.coins);
   }
 
   get items() {

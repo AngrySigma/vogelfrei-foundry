@@ -48,9 +48,38 @@
     .tab {
       height: 100%;
     }
+    // The inventory list fills what is left once the purse and the
+    // encumbrance bar have taken their natural height, and scrolls inside it.
+    .tab.active[data-tab="inventory"] {
+      display: flex;
+      flex-direction: column;
+      .inventory-list {
+        flex: 1 1 0;
+        min-height: 0;
+      }
+      .purse,
+      .encumbrance-wrapper {
+        flex: 0 0 auto;
+      }
+    }
     .attributes-tab {
       justify-content: space-between;
       height: 100%;
+    }
+    // The modifier rides in the corner of each ability box: the column is
+    // too narrow to give it a box of its own.
+    .ability-score .score-mod {
+      position: absolute;
+      right: 3px;
+      bottom: 1px;
+      font-size: var(--font-size-16);
+      font-weight: bold;
+      line-height: 1;
+      opacity: 0.85;
+      cursor: help;
+      &:hover {
+        opacity: 1;
+      }
     }
     .resources {
       display: flex;
@@ -146,6 +175,10 @@
           -webkit-mask-image: url("../assets/missile.png");
           mask-image: url("../assets/missile.png");
         }
+        &[data-key="firearm"] .ac-icon {
+          -webkit-mask-image: url("../assets/reload.png");
+          mask-image: url("../assets/reload.png");
+        }
       }
       .ac-value {
         font-weight: bolder;
@@ -178,11 +211,23 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
-        .hit-dice-value {
-          width: 60px;
-          font-size: var(--font-size-18);
-          border-bottom: none;
+        gap: 4px;
+        .die-row {
+          display: flex;
+          align-items: center;
+          gap: 3px;
+        }
+        .die-label {
+          width: 12px;
+          font-size: var(--font-size-12);
+          font-weight: bold;
+          text-align: center;
+        }
+        select {
+          width: 52px;
+          height: 22px;
+          padding: 0 2px;
+          font-size: var(--font-size-14);
         }
         .hit-dice-roll {
           font-size: var(--font-size-14);
@@ -254,6 +299,41 @@
           font-size: var(--font-size-12);
         }
       }
+    }
+  }
+
+  /* Purse: three coin counts above the encumbrance bar */
+  .purse {
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    padding: 3px 5px;
+    border-top: 1px solid $colorDark;
+
+    .purse-title {
+      flex: 0 0 auto;
+      margin: 0;
+      font-size: var(--font-size-13);
+      font-weight: bold;
+    }
+    .purse-coin {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: var(--font-size-12);
+      input {
+        width: 60px;
+        height: 22px;
+        text-align: right;
+      }
+    }
+    .purse-weight {
+      flex: 1 1 auto;
+      text-align: right;
+      font-size: var(--font-size-12);
+      opacity: 0.8;
     }
   }
 
