@@ -12,7 +12,7 @@ import OseActor from "./module/actor/entity";
 import OseActorSheetMonster from "./module/actor/monster-sheet";
 import TokenRulerOSE from "./module/actor/token-ruler";
 import ChronicleApp from "./module/chronicle/chronicle-app";
-import { registerChronicleSetting } from "./module/chronicle/store";
+import { getChronicle, registerChronicleSetting, syncWorldTime } from "./module/chronicle/store";
 import { OSECombat } from "./module/combat/combat";
 import OSECombatTracker from "./module/combat/combat-tracker";
 import { OSECombatant } from "./module/combat/combatant";
@@ -161,6 +161,7 @@ Hooks.once("ready", async () => {
   });
 
   await adoptVogelfreiEncumbrance();
+  await syncWorldTime(getChronicle());
   await promptTokenRingSelection();
 });
 

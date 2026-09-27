@@ -16,6 +16,7 @@
  * a table; it is not a secret store, so nothing belongs here that would matter
  * if it leaked.
  */
+import { DEFAULT_EPOCH, watchSeconds } from "./calendar";
 import { defaultChronicle } from "./chronicle";
 import { clampWatches, setCalendar } from "./day";
 
@@ -69,12 +70,51 @@ export function getChronicle() {
     ...stored,
     watchesPerDay,
     delves: Array.isArray(stored.delves) ? stored.delves : [],
+    feasts: Array.isArray(stored.feasts) ? stored.feasts : [],
     // Nested, so a shallow spread would drop a field added after the world
     // was first saved rather than filling it in.
     travel: { ...defaults.travel, ...(stored.travel || {}) },
+    // Not clamped against the calendar here: this is read at `init`, before
+    // `game.time` exists. The Almanac clamps what it is given.
+    epoch: { ...DEFAULT_EPOCH, ...(stored.epoch || {}) },
   };
   // A watch that no longer exists in a shorter day is brought back inside it.
   return { ...merged, ...setCalendar(merged.day, merged.watch, watchesPerDay) };
+}
+
+/**
+ * Put Foundry's own world clock where the Chronicle says it is.
+ *
+ * One-way. The Chronicle owns the count; `game.time.worldTime` is a readout
+ * of it, kept honest so that scene darkness, the core time display and any
+ * module listening for `updateWorldTime` see the same moment the party does.
+ * Nothing reads the world clock back: a module that moves it does not move
+ * the Chronicle, and the next Chronicle write will put it back.
+ *
+ * The instant written is the start of the current watch, which for the
+ * small-hours watches falls past midnight and so on the following date --
+ * see calendar.ts on why that is right for the clock and not for the count.
+ *
+ * @param {import("./chronicle").Chronicle} chronicle - The Chronicle as saved.
+ * @returns {Promise<void>} Once the clock agrees, or at once if it already did.
+ */
+export async function syncWorldTime(chronicle) {
+  if (!game.user?.isGM || !game.time?.calendar) return;
+  try {
+    const seconds = watchSeconds(
+      game.time.calendar,
+      chronicle.epoch,
+      chronicle.day,
+      chronicle.watch,
+      chronicle.watchesPerDay,
+    );
+    if (Math.round(game.time.worldTime) === Math.round(seconds)) return;
+    await game.time.set(seconds);
+  } catch (error) {
+    // A replacement calendar that this arithmetic cannot walk is the
+    // Referee's business, not a reason to refuse the click that moved time.
+    console.warn("Vogelfrei | Could not put the world clock on the Chronicle's date.", error);
+  }
 }
 
 /**
@@ -100,6 +140,7 @@ export async function updateChronicle(mutate) {
   const next = mutate(foundry.utils.deepClone(getChronicle()));
   if (!next) return;
   await game.settings.set(game.system.id, SETTING, next);
+  await syncWorldTime(next);
 }
 
 /**

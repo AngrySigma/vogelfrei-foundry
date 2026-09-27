@@ -3,6 +3,19 @@
  */
 
 import type { QuenchMethods } from "../../e2e";
+import {
+  type CalendarLike,
+  civilDate,
+  clampEpoch,
+  DEFAULT_EPOCH,
+  daybreakSeconds,
+  type Epoch,
+  feastsOn,
+  longestMonth,
+  monthsCrossed,
+  secondsPerDay,
+  watchSeconds,
+} from "../chronicle/calendar";
 import type { Delve } from "../chronicle/chronicle";
 import {
   adjustLight,
@@ -43,6 +56,17 @@ export const options = { displayName: "Vogelfrei: Chronicle" };
 
 /** A delve at the third watch of the third day, nothing spent yet. */
 const delve = (): Delve => newDelve("The Sunken Barrow", { day: 3, watch: 2 }, "test-delve");
+
+/**
+ * The world calendar, as Foundry built it.
+ *
+ * Simplified Gregorian unless the Referee has swapped it, so the dates below
+ * are asserted against arithmetic anyone can check on a wall calendar.
+ */
+const calendar = (): CalendarLike => game.time.calendar as unknown as CalendarLike;
+
+/** Day one on the first of March, 1487: what a fresh world starts with. */
+const epoch: Epoch = { ...DEFAULT_EPOCH };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("The watch track", () => {
@@ -136,6 +160,99 @@ export default ({ describe, it, expect }: QuenchMethods) => {
         delves: [],
         travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear", distance: "6d6 * 40" },
       });
+    });
+  });
+
+  describe("The calendar", () => {
+    /** A date as a table would read it: year, month ordinal, day of the month. */
+    const read = (day: number, from: Epoch = epoch) => {
+      const at = civilDate(calendar(), from, day);
+      return [at.year, calendar().months.values[at.month]?.ordinal, at.dayOfMonth + 1];
+    };
+
+    it("Calls day one the date the campaign opened", () => {
+      expect(read(1)).deep.equal([1487, 3, 1]);
+    });
+
+    it("Counts the days forward, over the end of a month and the end of a year", () => {
+      expect(read(32)).deep.equal([1487, 4, 1]);
+      expect(read(47)).deep.equal([1487, 4, 16]);
+      expect(read(307)).deep.equal([1488, 1, 1]);
+    });
+
+    it("Moves the date exactly one day per day of the count", () => {
+      const perDay = secondsPerDay(calendar());
+      for (const day of [1, 30, 31, 305, 306, 700]) {
+        expect(daybreakSeconds(calendar(), epoch, day + 1) - daybreakSeconds(calendar(), epoch, day)).equal(perDay);
+      }
+    });
+
+    it("Puts March straight after February, whatever length February ran", () => {
+      const february: Epoch = { year: 1488, month: 2, day: 28 };
+      const [, month, dayOfMonth] = read(2, february);
+      expect(month === 2 || (month === 3 && dayOfMonth === 1)).equal(true);
+      expect(read(4, february)[1]).equal(3);
+    });
+
+    it("Keeps a date the calendar cannot hold inside the month it was written in", () => {
+      // Foundry 14.365 sizes some years at 365 days while reporting them as
+      // leap years, so a 29 February does not exist in every year it is
+      // offered. It clamps back, and must never spill into March.
+      for (const year of [1486, 1487, 1488, 1489, 1490, 1491, 1492]) {
+        const [readYear, month, dayOfMonth] = read(1, { year, month: 2, day: 29 });
+        expect(readYear).equal(year);
+        expect(month).equal(2);
+        expect(dayOfMonth).oneOf([28, 29]);
+      }
+    });
+
+    it("Turns the weekday over with the day, and repeats it every seven", () => {
+      const week = calendar().days.values.length;
+      const first = civilDate(calendar(), epoch, 1);
+      expect(civilDate(calendar(), epoch, 1 + week).dayOfWeek).equal(first.dayOfWeek);
+      expect(civilDate(calendar(), epoch, 2).dayOfWeek).equal((first.dayOfWeek + 1) % week);
+    });
+
+    it("Starts the first watch at daybreak and the rest evenly after it", () => {
+      const perDay = secondsPerDay(calendar());
+      const dawn = daybreakSeconds(calendar(), epoch, 5);
+      expect(watchSeconds(calendar(), epoch, 5, 0, 6)).equal(dawn);
+      expect(watchSeconds(calendar(), epoch, 5, 3, 6)).equal(dawn + perDay / 2);
+    });
+
+    it("Lets the night watches run past midnight without moving the date", () => {
+      const perDay = secondsPerDay(calendar());
+      // The last watch of a six-watch day begins at 02:00 the next morning,
+      // so the clock crosses midnight while the count does not.
+      expect(watchSeconds(calendar(), epoch, 5, 5, 6)).above(daybreakSeconds(calendar(), epoch, 6) - perDay / 4);
+      expect(read(5)).deep.equal([1487, 3, 5]);
+    });
+
+    it("Counts the month boundaries a jump crossed, not just the last", () => {
+      const from = civilDate(calendar(), epoch, 1);
+      expect(monthsCrossed(calendar(), from, civilDate(calendar(), epoch, 20))).equal(0);
+      expect(monthsCrossed(calendar(), from, civilDate(calendar(), epoch, 32))).equal(1);
+      expect(monthsCrossed(calendar(), from, civilDate(calendar(), epoch, 95))).equal(3);
+    });
+
+    it("Finds the feasts kept on a date, and nothing on an ordinary one", () => {
+      const feasts = [
+        { id: "a", name: "Candlemas", month: 3, day: 1 },
+        { id: "b", name: "Midsummer", month: 6, day: 24 },
+      ];
+      expect(feastsOn(feasts, calendar(), civilDate(calendar(), epoch, 1)).map((f) => f.name)).deep.equal([
+        "Candlemas",
+      ]);
+      expect(feastsOn(feasts, calendar(), civilDate(calendar(), epoch, 2))).deep.equal([]);
+    });
+
+    it("Brings a written date back inside the calendar, at the month's longest", () => {
+      const february = calendar().months.values[1];
+      expect(february ? longestMonth(february) : 0).equal(29);
+      expect(clampEpoch(calendar(), { year: 1487, month: 2, day: 31 })).deep.equal({ year: 1487, month: 2, day: 29 });
+      expect(clampEpoch(calendar(), null)).deep.equal(DEFAULT_EPOCH);
+      expect(clampEpoch(calendar(), { year: 1487, month: 99, day: 1 }).month).equal(12);
+      expect(clampEpoch(calendar(), { year: 1487, month: 4, day: 0 }).day).equal(1);
     });
   });
 

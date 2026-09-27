@@ -13,6 +13,17 @@
       <span class="watch">{{calendar.watch}}</span>
     </header>
 
+    {{#if calendar.date}}
+    <div class="date">
+      <span class="civil">{{calendar.date}}</span>
+      {{#each calendar.feasts}}
+      <span class="feast" data-tooltip="{{localize 'VF.chronicle.FeastToday'}}">
+        <i class="fa-solid fa-candle-holder"></i>{{this}}
+      </span>
+      {{/each}}
+    </div>
+    {{/if}}
+
     <div class="daybar">
       {{#if isReferee}}
       <button type="button" class="step" data-action="watchBack" data-tooltip="{{localize 'VF.chronicle.WatchBack'}}">
@@ -40,6 +51,56 @@
       </label>
       <button type="button" data-action="dayForward">{{localize "VF.chronicle.DayForward"}}</button>
     </div>
+    {{/if}}
+
+    {{#if almanac}}
+    <details class="almanac">
+      <summary>{{localize "VF.chronicle.Almanac"}}</summary>
+
+      <div class="epoch">
+        <span>{{localize "VF.chronicle.DayOneFallsOn"}}</span>
+        <input type="number" name="epochDay" min="1" max="{{almanac.maxDay}}" step="1" value="{{almanac.day}}"
+               data-tooltip="{{localize 'VF.chronicle.EpochDay'}}" />
+        <select name="epochMonth" data-tooltip="{{localize 'VF.chronicle.EpochMonth'}}">
+          {{#each almanac.months}}
+          <option value="{{ordinal}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+        <input type="number" name="epochYear" step="1" value="{{almanac.year}}"
+               data-tooltip="{{localize 'VF.chronicle.EpochYear'}}" />
+      </div>
+      <p class="hint">{{localize "VF.chronicle.EpochHint"}}</p>
+
+      <h3>{{localize "VF.chronicle.Feasts"}}</h3>
+      <ul class="unlist feast-list">
+        {{#each almanac.feasts}}
+        <li class="feast-entry" data-feast-id="{{id}}">
+          <span class="name">{{name}}</span>
+          <span class="when">{{when}}</span>
+          <button type="button" class="drop" data-action="dropFeast"
+                  data-tooltip="{{localize 'VF.chronicle.DropFeast'}}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </li>
+        {{else}}
+        <li class="empty">{{localize "VF.chronicle.NoFeasts"}}</li>
+        {{/each}}
+      </ul>
+
+      <div class="add">
+        <input type="text" name="feastName" placeholder="{{localize 'VF.chronicle.FeastPlaceholder'}}" />
+        <input type="number" name="feastDay" min="1" max="{{almanac.maxDay}}" step="1" value="1"
+               data-tooltip="{{localize 'VF.chronicle.EpochDay'}}" />
+        <select name="feastMonth">
+          {{#each almanac.feastMonths}}
+          <option value="{{ordinal}}">{{label}}</option>
+          {{/each}}
+        </select>
+        <button type="button" data-action="addFeast" data-tooltip="{{localize 'VF.chronicle.AddFeast'}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </details>
     {{/if}}
   </section>
 

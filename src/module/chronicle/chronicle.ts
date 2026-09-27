@@ -3,10 +3,13 @@
  *
  * Two counters, deliberately independent.
  *
- * The **watch** track is the calendar, and lives in day.ts. The watch is not a
- * Vogelfrei rule -- the book counts Turns, Rounds and whole days
+ * The **watch** track is the surface clock, and lives in day.ts. The watch is
+ * not a Vogelfrei rule -- the book counts Turns, Rounds and whole days
  * (docs/Adventuring/Time and Movement.md) -- it is borrowed from Hot Springs
- * Island as a bookkeeping unit for time and distance.
+ * Island as a bookkeeping unit for time and distance. calendar.ts hangs a
+ * date off the day counter it keeps, which is a readout and never a second
+ * count: day 47 is the number everything is written against, and "16 April
+ * 1487" is only what the world calls it.
  *
  * The **turn** track belongs to a delve. A Turn is ten minutes, and it is the
  * clock of the dungeon: it burns the torches and brings the random encounters
@@ -18,8 +21,10 @@
  * Foundry-free, so the arithmetic can be checked on its own.
  */
 
+import { DEFAULT_EPOCH, type Epoch, type Feast } from "./calendar";
 import { type Calendar, DEFAULT_WATCHES_PER_DAY, watchesForTurns } from "./day";
 
+export type { Epoch, Feast } from "./calendar";
 export type { Calendar } from "./day";
 
 /** Turns to the hour. A Turn is ten minutes. */
@@ -149,7 +154,15 @@ export type Delve = {
 };
 
 /** Everything the Chronicle remembers. */
-export type Chronicle = Calendar & { watchesPerDay: number; delves: Delve[]; travel: TravelEncounterRule };
+export type Chronicle = Calendar & {
+  watchesPerDay: number;
+  /** The date day one fell on; everything else is counted forward from it. */
+  epoch: Epoch;
+  /** Dates the world keeps, marked when the party lands on one. */
+  feasts: Feast[];
+  delves: Delve[];
+  travel: TravelEncounterRule;
+};
 
 /** A fresh world: the first dawn of the first day, nothing delved yet. */
 export function defaultChronicle(): Chronicle {
@@ -157,6 +170,8 @@ export function defaultChronicle(): Chronicle {
     day: 1,
     watch: 0,
     watchesPerDay: DEFAULT_WATCHES_PER_DAY,
+    epoch: { ...DEFAULT_EPOCH },
+    feasts: [],
     delves: [],
     travel: {
       everyWatches: DEFAULT_WATCHES_PER_DAY,

@@ -1,11 +1,17 @@
 /**
  * @file The Chronicle window: what day it is, and what the party is down.
  *
- * Always available, never modal. The top is the watch track, drawn as a bar of
- * the whole day cut into however many watches this party keeps; the list below
- * is every delve the world remembers, open or not. Closing a delve's window
- * closes nothing -- the record is here until the Referee drops it.
+ * Always available, never modal. The top is the date and the watch track --
+ * the track drawn as a bar of the whole day cut into however many watches
+ * this party keeps, the date read off the day counter through the world
+ * calendar. The list below is every delve the world remembers, open or not.
+ * Closing a delve's window closes nothing -- the record is here until the
+ * Referee drops it.
+ *
+ * The Almanac, which only the Referee sees, is where the date comes from:
+ * what day one fell on, and which dates the world keeps as feasts.
  */
+import { civilDate, clampEpoch, feastsOn, longestMonth, monthIndexOf, monthOrdinalOf, monthsCrossed } from "./calendar";
 import { checksBetween, newDelve, restState, TERRAIN } from "./chronicle";
 import {
   advanceDays,
@@ -21,9 +27,65 @@ import {
 import DelveApp from "./delve-app";
 import { rollEncounterChecks } from "./encounter";
 import { getChronicle, refreshOnChange, updateChronicle } from "./store";
-import announceUpkeep from "./upkeep";
+import announceUpkeep, { announceFeasts, announceMonth } from "./upkeep";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
+/**
+ * The calendar in force, or nothing if Foundry has not built one yet.
+ *
+ * Only absent before `setup`, which no window can be open in; guarded anyway,
+ * because everything downstream degrades to a bare day count rather than
+ * throwing.
+ *
+ * @returns {import("./calendar").CalendarLike|null} The world calendar.
+ */
+function worldCalendar() {
+  return game.time?.calendar ?? null;
+}
+
+/**
+ * Localise a name the calendar gives, which may be a key or may be a word.
+ *
+ * Core's months and weekdays are `CALENDAR.GREGORIAN.*` keys; a Referee's own
+ * calendar is as likely to spell them out. `localize` returns the key back
+ * unchanged when it knows nothing of it, so both work.
+ *
+ * @param {string} name - Whatever the calendar carries.
+ * @returns {string} Something to put on screen.
+ */
+function calendarName(name) {
+  return name ? game.i18n.localize(name) : "";
+}
+
+/**
+ * What a day of the count is called, and what falls on it.
+ *
+ * @param {import("./chronicle").Chronicle} chronicle - The Chronicle.
+ * @param {number} [day] - The day to describe; the current one by default.
+ * @returns {object|null} The written date and its feasts, or null without a calendar.
+ */
+function dateOf(chronicle, day = chronicle.day) {
+  const calendar = worldCalendar();
+  if (!calendar) return null;
+
+  const epoch = clampEpoch(calendar, chronicle.epoch);
+  const components = civilDate(calendar, epoch, day);
+  const month = calendar.months.values[components.month];
+  const weekday = calendar.days.values[components.dayOfWeek];
+  const text = game.i18n.format("VF.chronicle.DateLong", {
+    weekday: calendarName(weekday?.name),
+    day: components.dayOfMonth + 1,
+    month: calendarName(month?.name),
+    year: components.year,
+  });
+
+  return {
+    components,
+    text,
+    feasts: feastsOn(chronicle.feasts, calendar, components).map((feast) => feast.name),
+  };
+}
 
 /**
  * A watch as it is spoken of: "Watch 3, Afternoon".
@@ -59,20 +121,40 @@ function checkFor(chronicle) {
 
 /**
  * Walk the calendar forward, making every travel check the walk crossed and
- * announcing any day that ended on the way.
+ * announcing what the walk ran into: days ended, months turned over, and the
+ * feast the party has woken up to.
+ *
+ * Only the day landed on is searched for feasts. A Referee who skips a
+ * fortnight may have walked past one, and being told about a saint's day a
+ * week behind the party is worse than not being told.
  *
  * @param {(chronicle: import("./chronicle").Chronicle) => import("./day").Calendar} move
  *   Where the walk ends.
  */
 async function travel(move) {
   const before = getChronicle();
+  const wasDated = dateOf(before);
   await updateChronicle((chronicle) => ({ ...chronicle, ...move(chronicle) }));
 
   const after = getChronicle();
   const perDay = after.watchesPerDay;
   const due = checksBetween(watchesElapsed(before, perDay), watchesElapsed(after, perDay), after.travel.everyWatches);
   await rollEncounterChecks(due, checkFor(after));
-  await announceUpkeep(after.day - before.day);
+
+  const days = after.day - before.day;
+  await announceUpkeep(days);
+
+  const isDated = dateOf(after);
+  const calendar = worldCalendar();
+  if (!calendar || !wasDated || !isDated) return;
+
+  const months = monthsCrossed(calendar, wasDated.components, isDated.components);
+  await announceMonth(
+    months,
+    calendarName(calendar.months.values[isDated.components.month]?.name),
+    isDated.components.year,
+  );
+  if (days > 0) await announceFeasts(feastsOn(after.feasts, calendar, isDated.components), isDated.text);
 }
 
 /** @this {ChronicleApp} */
@@ -191,6 +273,68 @@ async function onSaveTravelRule(event) {
 }
 
 /**
+ * Say which date day one fell on.
+ *
+ * The count does not move: the party is still on day 47, it is just a
+ * different 47th day. Nothing is rolled and nothing is announced -- this is
+ * the Referee writing the campaign's first page, not time passing.
+ *
+ * @this {ChronicleApp}
+ */
+async function onSetEpoch() {
+  const calendar = worldCalendar();
+  if (!calendar) return;
+
+  const root = this.element;
+  const read = (name) => Number(root.querySelector(`[name="${name}"]`)?.value);
+  const epoch = clampEpoch(calendar, { year: read("epochYear"), month: read("epochMonth"), day: read("epochDay") });
+  await updateChronicle((chronicle) => ({ ...chronicle, epoch }));
+}
+
+/**
+ * Write a date into the world's almanac.
+ *
+ * @this {ChronicleApp}
+ */
+async function onAddFeast() {
+  const calendar = worldCalendar();
+  if (!calendar) return;
+
+  const root = this.element;
+  const input = root.querySelector('[name="feastName"]');
+  const name = input?.value?.trim() ?? "";
+  if (!name) {
+    ui.notifications?.warn(game.i18n.localize("VF.chronicle.NameTheFeast"));
+    return;
+  }
+
+  const index = monthIndexOf(calendar, Number(root.querySelector('[name="feastMonth"]')?.value));
+  const month = calendar.months.values[index];
+  const longest = month ? longestMonth(month) : 31;
+  const day = Math.min(longest, Math.max(1, Math.trunc(Number(root.querySelector('[name="feastDay"]')?.value) || 1)));
+
+  const feast = { id: foundry.utils.randomID(), name, month: monthOrdinalOf(calendar, index), day };
+  await updateChronicle((chronicle) => ({ ...chronicle, feasts: [...chronicle.feasts, feast] }));
+  if (input) input.value = "";
+}
+
+/**
+ * Strike a date out of the almanac. No confirmation: it is a name and a date.
+ *
+ * @this {ChronicleApp}
+ * @param {PointerEvent} _event - The click.
+ * @param {HTMLElement} target - The button clicked.
+ */
+async function onDropFeast(_event, target) {
+  const { feastId } = target.closest("[data-feast-id]")?.dataset ?? {};
+  if (!feastId) return;
+  await updateChronicle((chronicle) => ({
+    ...chronicle,
+    feasts: chronicle.feasts.filter((feast) => feast.id !== feastId),
+  }));
+}
+
+/**
  * Start a delve. An empty name is fine: newDelve names it after the day.
  *
  * @this {ChronicleApp}
@@ -265,6 +409,8 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       openDelve: onOpenDelve,
       dropDelve: onDropDelve,
       rollTravelEncounter: onRollTravelEncounter,
+      addFeast: onAddFeast,
+      dropFeast: onDropFeast,
     },
   };
 
@@ -290,6 +436,9 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
 
     on('[name="day"]', onSetDay);
     on('[name="watchesPerDay"]', onSetWatchesPerDay);
+    for (const input of this.element.querySelectorAll('[name="epochYear"], [name="epochMonth"], [name="epochDay"]')) {
+      input.addEventListener("change", onSetEpoch.bind(this));
+    }
     for (const input of this.element.querySelectorAll(
       '[name="terrain"], [name="everyWatches"], [name="travelChance"], [name="travelDistance"]',
     )) {
@@ -302,6 +451,23 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
     const chronicle = getChronicle();
     const perDay = chronicle.watchesPerDay;
     const isReferee = game.user.isGM;
+    const calendar = worldCalendar();
+    const date = dateOf(chronicle);
+    const epoch = calendar ? clampEpoch(calendar, chronicle.epoch) : chronicle.epoch;
+
+    // Months, for the two dropdowns.
+    const months = (calendar?.months.values ?? []).map((month, index) => ({
+      ordinal: monthOrdinalOf(calendar, index),
+      label: calendarName(month.name),
+    }));
+
+    // The longest any month of this calendar runs. The day boxes are capped
+    // there rather than at 31, which is only the answer for one calendar, and
+    // a date past the end of its own month is clamped when it is saved.
+    const maxDay = (calendar?.months.values ?? []).reduce(
+      (longest, month) => Math.max(longest, longestMonth(month)),
+      1,
+    );
 
     return {
       isReferee,
@@ -310,7 +476,28 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
         watchesPerDay: perDay,
         phase: phaseOf(chronicle.watch, perDay),
         watch: describeWatch(chronicle.watch, perDay),
+        date: date?.text ?? "",
+        feasts: date?.feasts ?? [],
       },
+      // The Referee's almanac: where the count is anchored, and what the
+      // world keeps. Absent for players, who only ever see the date itself.
+      almanac:
+        isReferee && calendar
+          ? {
+              year: epoch.year,
+              day: epoch.day,
+              maxDay,
+              months: months.map((month) => ({ ...month, selected: month.ordinal === epoch.month })),
+              feastMonths: months,
+              feasts: chronicle.feasts.map((feast) => ({
+                ...feast,
+                when: game.i18n.format("VF.chronicle.FeastOn", {
+                  day: feast.day,
+                  month: months.find((month) => month.ordinal === feast.month)?.label ?? feast.month,
+                }),
+              })),
+            }
+          : null,
       segments: Array.from({ length: perDay }, (_, index) => ({
         index,
         current: index === chronicle.watch,

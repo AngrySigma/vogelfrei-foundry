@@ -24,3 +24,43 @@ export default async function announceUpkeep(days) {
       <p class="vf-upkeep-hint">${game.i18n.localize("VF.chronicle.UpkeepHint")}</p>`,
   });
 }
+
+/**
+ * Announce the months that just turned over.
+ *
+ * Retainers on long contracts are paid by the month, and rent on rooms and
+ * town houses falls due by the month (Retainers/index.md, Lodging.md), so a
+ * month boundary is a bill in a way an ordinary day is not. Like the rations
+ * message this only says that it happened; who is owed what is the Referee's
+ * ledger.
+ *
+ * @param {number} months - How many boundaries were crossed; nothing is said for none.
+ * @param {string} name - What the month just begun is called, already localised.
+ * @param {number} year - The year it falls in.
+ * @returns {Promise<void>} Once the message is posted.
+ */
+export async function announceMonth(months, name, year) {
+  if (months < 1) return;
+  await ChatMessage.create({
+    flavor: game.i18n.format("VF.chronicle.MonthFlavor", { month: name, year }),
+    content: `<p>${game.i18n.localize("VF.chronicle.MonthUpkeep")}</p>`,
+  });
+}
+
+/**
+ * Announce a feast the party has woken up to.
+ *
+ * Spoken aloud, because a feast day is a fact about the world the players are
+ * standing in: the market is shut, the road is full, somebody is watching.
+ *
+ * @param {readonly import("./calendar").Feast[]} feasts - Those falling today.
+ * @param {string} date - The date, already written out.
+ * @returns {Promise<void>} Once the message is posted.
+ */
+export async function announceFeasts(feasts, date) {
+  if (!feasts.length) return;
+  await ChatMessage.create({
+    flavor: game.i18n.format("VF.chronicle.FeastFlavor", { date }),
+    content: `<p>${feasts.map((feast) => foundry.utils.escapeHTML(feast.name)).join("</p><p>")}</p>`,
+  });
+}
