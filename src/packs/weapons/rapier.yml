@@ -33,6 +33,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>Suffers a -2 penalty to hit opponents wearing armour with an Armour Rating of 4 or higher.</p>"
 effects: []
 folder: null
 sort: 0

@@ -1,0 +1,28 @@
+_id: "BZtnWUWsJi3c3Avr"
+_key: "!items!BZtnWUWsJi3c3Avr"
+name: "Longship"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 360000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Antiquated"
+      value: "Antiquated"
+  treasure: false
+  description: "<p>Early-medieval northern European warship</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

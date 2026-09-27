@@ -1,0 +1,29 @@
+_id: "wzlN8PHYaxD8uUYO"
+_key: "!items!wzlN8PHYaxD8uUYO"
+name: "Breastplate"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "medium"
+  acMelee: 3
+  acRanged: 3
+  proof: "partial"
+  encumbrancePoints: 1
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

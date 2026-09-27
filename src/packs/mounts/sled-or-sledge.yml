@@ -1,0 +1,26 @@
+_id: "PPMtv4Jcm6HERZRG"
+_key: "!items!PPMtv4Jcm6HERZRG"
+name: "Sled or sledge"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 360
+  costRural: 240
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Snow, ice, mud, or dragging a heavy load</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

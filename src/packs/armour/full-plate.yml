@@ -1,6 +1,6 @@
-_id: "DTM4NBxvUAF7QZ9O"
-_key: "!items!DTM4NBxvUAF7QZ9O"
-name: "Full-plate"
+_id: "0MuMbmjthVEWulhY"
+_key: "!items!0MuMbmjthVEWulhY"
+name: "Full plate"
 type: "armor"
 img: "icons/svg/shield.svg"
 system:
@@ -19,6 +19,8 @@ system:
   type: "heavy"
   acMelee: 6
   acRanged: 6
+  proof: "none"
+  encumbrancePoints: 2
 effects: []
 folder: null
 sort: 0

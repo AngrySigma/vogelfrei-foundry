@@ -1,6 +1,6 @@
-_id: "J4Sp2gsRrSBSnJai"
-_key: "!items!J4Sp2gsRrSBSnJai"
-name: "Long Rifle (2H)"
+_id: "JLAP0ympJiIpwHnR"
+_key: "!items!JLAP0ympJiIpwHnR"
+name: "Long rifle (2H)"
 type: "weapon"
 img: "icons/svg/target.svg"
 system:
@@ -18,10 +18,12 @@ system:
   tags:
     - title: "Training"
       value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Out of period"
+      value: "Out of period"
     - title: "Firearm"
       value: "Firearm"
-    - title: "Melee: Small/Spear"
-      value: "Melee: Small/Spear"
   damage: "1d12"
   length: 0
   lengthTwoHanded: null
@@ -37,6 +39,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>Kept as the former exaggerated rifle entry</p>"
 effects: []
 folder: null
 sort: 0

@@ -1,0 +1,44 @@
+_id: "9omBOzorizakN7m0"
+_key: "!items!9omBOzorizakN7m0"
+name: "Plug bayonet"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 60
+  costRural: null
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Curious"
+      value: "Curious"
+  damage: "1d4"
+  length: 1
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>Appears only in the age's final years, made for one gun; see below</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

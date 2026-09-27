@@ -1,0 +1,26 @@
+_id: "Oe8tIu5nR8QfAggo"
+_key: "!items!Oe8tIu5nR8QfAggo"
+name: "Frigate"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 2160000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Fast cruising warship</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

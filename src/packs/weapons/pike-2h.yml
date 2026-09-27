@@ -1,0 +1,44 @@
+_id: "e1oXMXPV3Su68E9l"
+_key: "!items!e1oXMXPV3Su68E9l"
+name: "Pike (2H)"
+type: "weapon"
+img: "icons/svg/sword.svg"
+system:
+  cost: 240
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Brace"
+      value: "Brace"
+  damage: "1d8"
+  length: 5
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>May attack from the second rank or Brace. A pike deals only d3 damage inside its reach.</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

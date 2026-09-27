@@ -18,6 +18,8 @@ system:
   tags:
     - title: "Training"
       value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
   damage: "1d6"
   length: 2
   lengthTwoHanded: null
@@ -33,6 +35,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>The watchman's and the gaoler's tool, for taking a man alive or pulling him off a horse. On a hit the victim must save versus Paralyzation or become helpless; the wielder is also helpless against other attacks while holding him.</p>"
 effects: []
 folder: null
 sort: 0

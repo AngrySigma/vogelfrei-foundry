@@ -1,0 +1,29 @@
+_id: "dSSlknbkxVgUJDpn"
+_key: "!items!dSSlknbkxVgUJDpn"
+name: "Full harness, proved breast"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 36000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "heavy"
+  acMelee: 6
+  acRanged: 6
+  proof: "partial"
+  encumbrancePoints: 3
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

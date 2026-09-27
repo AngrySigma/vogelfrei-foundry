@@ -1,0 +1,26 @@
+_id: "w1xgRqhjMxpAtYsS"
+_key: "!items!w1xgRqhjMxpAtYsS"
+name: "Powder and shot, twenty loose charges"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 96
+  costRural: 96
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Shot may be ball, buckshot, or fowling shot as appropriate</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

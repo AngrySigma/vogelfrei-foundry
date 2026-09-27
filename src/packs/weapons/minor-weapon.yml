@@ -1,0 +1,40 @@
+_id: "J4YbxngBixTDrXDt"
+_key: "!items!J4YbxngBixTDrXDt"
+name: "Minor weapon"
+type: "weapon"
+img: "icons/svg/sword.svg"
+system:
+  cost: 60
+  costRural: 60
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  damage: "1d4"
+  length: 1
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>A Minor weapon used inside an opponent's reach, or while wrestling that opponent, ignores 2 points of the target's Armour Rating. It does nothing to a firearm's shot, which the Proof rules govern instead.</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

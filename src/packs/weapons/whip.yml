@@ -33,6 +33,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>Ineffective against targets in metal armour, but may attack opponents up to 10' away.</p>"
 effects: []
 folder: null
 sort: 0

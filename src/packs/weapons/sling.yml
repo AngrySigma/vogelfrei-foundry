@@ -33,6 +33,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>May use stones as ammunition, halving effective range.</p>"
 effects: []
 folder: null
 sort: 0

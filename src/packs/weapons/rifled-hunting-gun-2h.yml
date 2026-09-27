@@ -1,0 +1,50 @@
+_id: "fJa6STvPc7w670zj"
+_key: "!items!fJa6STvPc7w670zj"
+name: "Rifled hunting gun (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 4800
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Firearm"
+      value: "Firearm"
+    - title: "Firelock"
+      value: "Firelock"
+    - title: "Melee: Small"
+      value: "Melee: Small"
+  damage: "1d10"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 100
+    medium: 300
+    long: 900
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: ""
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

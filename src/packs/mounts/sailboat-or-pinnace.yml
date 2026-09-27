@@ -1,0 +1,26 @@
+_id: "HAXa5Th36K2A3Ku4"
+_key: "!items!HAXa5Th36K2A3Ku4"
+name: "Sailboat or pinnace"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 72000
+  costRural: 144000
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Dispatch, scouting, fishing, or tender work</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

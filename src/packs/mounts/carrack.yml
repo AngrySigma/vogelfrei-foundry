@@ -1,0 +1,28 @@
+_id: "P5b7aGcBSC73cdKb"
+_key: "!items!P5b7aGcBSC73cdKb"
+name: "Carrack"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 576000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Antiquated"
+      value: "Antiquated"
+  treasure: false
+  description: "<p>Large late-medieval and 16th-century ocean vessel</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

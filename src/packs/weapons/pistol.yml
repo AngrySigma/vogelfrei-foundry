@@ -4,7 +4,7 @@ name: "Pistol"
 type: "weapon"
 img: "icons/svg/target.svg"
 system:
-  cost: 360
+  cost: 720
   costRural: null
   costMinimum: false
   encumbrance: "normal"
@@ -20,6 +20,8 @@ system:
       value: "Training"
     - title: "Firearm"
       value: "Firearm"
+    - title: "Firelock"
+      value: "Firelock"
     - title: "Melee: Minor"
       value: "Melee: Minor"
   damage: "1d8"
@@ -37,6 +39,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: ""
 effects: []
 folder: null
 sort: 0

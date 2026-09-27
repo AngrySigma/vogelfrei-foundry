@@ -1,0 +1,26 @@
+_id: "QePjV2JC6osFGYEo"
+_key: "!items!QePjV2JC6osFGYEo"
+name: "Pirogue"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 480
+  costRural: 360
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Large dugout or plank-built New World canoe</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

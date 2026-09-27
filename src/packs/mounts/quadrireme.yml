@@ -1,0 +1,28 @@
+_id: "lqfqA24iXdzrrNl4"
+_key: "!items!lqfqA24iXdzrrNl4"
+name: "Quadrireme"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 600000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Antiquated"
+      value: "Antiquated"
+  treasure: false
+  description: "<p>Large oared warship of classical antiquity</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

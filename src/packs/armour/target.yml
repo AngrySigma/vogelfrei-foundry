@@ -1,0 +1,29 @@
+_id: "Znn8yQHlcM9OExVd"
+_key: "!items!Znn8yQHlcM9OExVd"
+name: "Target"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 180
+  costRural: 360
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "shield"
+  acMelee: 2
+  acRanged: 3
+  proof: "none"
+  encumbrancePoints: 1
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,26 @@
+_id: "zvr3iWga6yjbhWVw"
+_key: "!items!zvr3iWga6yjbhWVw"
+name: "Bullet mould"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 60
+  costRural: 60
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Casts one specified calibre; lead is purchased separately</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

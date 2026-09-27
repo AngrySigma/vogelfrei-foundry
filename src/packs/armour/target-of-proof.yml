@@ -1,0 +1,29 @@
+_id: "UucIXDrQgmmSByvi"
+_key: "!items!UucIXDrQgmmSByvi"
+name: "Target of proof"
+type: "armor"
+img: "icons/svg/shield.svg"
+system:
+  cost: 3600
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  type: "shield"
+  acMelee: 2
+  acRanged: 3
+  proof: "full"
+  encumbrancePoints: 2
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

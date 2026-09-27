@@ -1,0 +1,46 @@
+_id: "lIAwhod6eXzKJruu"
+_key: "!items!lIAwhod6eXzKJruu"
+name: "Cane pistol"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 1440
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Out of period"
+      value: "Out of period"
+    - title: "Firearm"
+      value: "Firearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 10
+    medium: 20
+    long: 50
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>Kept as a later concealed weapon</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

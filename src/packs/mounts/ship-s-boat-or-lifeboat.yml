@@ -1,0 +1,26 @@
+_id: "jjYNizSgehEz7SpB"
+_key: "!items!jjYNizSgehEz7SpB"
+name: "Ship's boat or lifeboat"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Carried aboard a vessel; landing and rescue</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

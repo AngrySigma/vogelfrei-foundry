@@ -1,0 +1,26 @@
+_id: "LY0lTDcriEPRriyK"
+_key: "!items!LY0lTDcriEPRriyK"
+name: "Brigantine"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 540000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Small two-masted trader, raider, or scout</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

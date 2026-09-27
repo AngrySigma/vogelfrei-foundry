@@ -1,0 +1,26 @@
+_id: "HNQSahpJUYe7ZXJU"
+_key: "!items!HNQSahpJUYe7ZXJU"
+name: "River galley"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 48000
+  costRural: 96000
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Oared patrol, war, and upstream travel</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

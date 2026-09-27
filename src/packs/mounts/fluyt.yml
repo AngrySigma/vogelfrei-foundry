@@ -1,0 +1,26 @@
+_id: "FqQPBk1ZbnWtlnXz"
+_key: "!items!FqQPBk1ZbnWtlnXz"
+name: "Fluyt"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 576000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Economical ocean-going merchantman</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

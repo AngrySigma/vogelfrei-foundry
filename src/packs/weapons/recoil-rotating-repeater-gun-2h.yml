@@ -1,0 +1,48 @@
+_id: "IDIV7R3EHnNPyO3f"
+_key: "!items!IDIV7R3EHnNPyO3f"
+name: "Recoil-rotating repeater gun (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 1440
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Out of period"
+      value: "Out of period"
+    - title: "Firearm"
+      value: "Firearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 30
+    medium: 60
+    long: 300
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>Its self-rotation by recoil is outside period technology</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

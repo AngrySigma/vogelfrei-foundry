@@ -1,0 +1,28 @@
+_id: "pIBXgpTGFy4RB7G0"
+_key: "!items!pIBXgpTGFy4RB7G0"
+name: "Corvette"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 1620000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Antiquated"
+      value: "Antiquated"
+  treasure: false
+  description: "<p>The standardized corvette category belongs to later naval usage; use a Sloop or small Frigate</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

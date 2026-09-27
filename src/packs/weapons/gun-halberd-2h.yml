@@ -1,6 +1,6 @@
-_id: "CSvO58Tn0nnqieWY"
-_key: "!items!CSvO58Tn0nnqieWY"
-name: "Gun Halberd (2H)"
+_id: "NvGqrN6bUjEJjS7e"
+_key: "!items!NvGqrN6bUjEJjS7e"
+name: "Gun halberd (2H)"
 type: "weapon"
 img: "icons/svg/target.svg"
 system:
@@ -18,10 +18,12 @@ system:
   tags:
     - title: "Training"
       value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Curious"
+      value: "Curious"
     - title: "Firearm"
       value: "Firearm"
-    - title: "Melee: Polearm"
-      value: "Melee: Polearm"
   damage: "1d8"
   length: 0
   lengthTwoHanded: null
@@ -37,6 +39,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>Functions as a Polearm in melee</p>"
 effects: []
 folder: null
 sort: 0

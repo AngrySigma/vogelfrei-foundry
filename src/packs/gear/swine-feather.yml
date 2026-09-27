@@ -1,0 +1,26 @@
+_id: "UoHp0s43Z7YnaeOh"
+_key: "!items!UoHp0s43Z7YnaeOh"
+name: "Swine feather"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 36
+  costRural: 36
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>A five-foot iron-shod stake; see below</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

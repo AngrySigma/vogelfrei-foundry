@@ -1,0 +1,26 @@
+_id: "cgp1bgjjZDupOoCT"
+_key: "!items!cgp1bgjjZDupOoCT"
+name: "Wagon"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 1920
+  costRural: 900
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Four wheels; freight, settlers, or baggage</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

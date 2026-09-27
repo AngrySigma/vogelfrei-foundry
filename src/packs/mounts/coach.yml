@@ -1,0 +1,26 @@
+_id: "wjqTRr1JUhTZ7e3M"
+_key: "!items!wjqTRr1JUhTZ7e3M"
+name: "Coach"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Passengers on maintained roads</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

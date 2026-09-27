@@ -1,0 +1,26 @@
+_id: "6jnjsORZMBxMqfBk"
+_key: "!items!6jnjsORZMBxMqfBk"
+name: "Handcart"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 180
+  costRural: 120
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>One person; expedition gear or market goods</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,17 +1,18 @@
 """Reading the rulebook's equipment tables.
 
-The tables in ~/tabletop/vogelfrei/docs/Equipment are hand-written HTML, not
+Some tables in ~/tabletop/vogelfrei/docs/Equipment are hand-written HTML, not
 Markdown, and they use rowspan and colspan freely -- one cell spanning three
 rows to group Blank/Reading/Spellbook under "Book". Reading them means
-expanding that back into a rectangular grid.
+expanding that back into a rectangular grid. The weapons, armour and vehicles
+are Markdown pipe tables instead, read by read_pipe_tables.
 
 Emphasis carries meaning. From Equipment/index.md:
 
     *Italicized* items are Non-Encumbering for encumbrance purposes.
     Items in ***bold italics*** are Oversized.
 
-so a cell's <em>/<strong> markers are data, not decoration, and the parser
-keeps them.
+so a cell's <em>/<strong> markers -- or its Markdown asterisks -- are data,
+not decoration, and the parsers keep them.
 """
 from __future__ import annotations
 
@@ -195,28 +196,32 @@ def read(path: Path) -> list[Table]:
     return parser.tables
 
 
-def read_pipe_table(path: Path) -> list[dict[str, str]]:
-    """Read a Markdown pipe table. Armor.md is the only one that uses them.
-
-    Its header is two rows deep -- a blank-headed row carrying City/Rural --
-    which is why the second row is folded into the column names rather than
-    treated as data.
+def pipe_cell(text: str) -> Cell:
+    """A pipe-table cell as a Cell, its Markdown emphasis read the way the HTML
+    tables' <em> and <strong> are: ``*Sling*`` is Non-Encumbering and
+    ``***Pike (2H)***`` Oversized.
     """
-    lines = [
-        line.strip()
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip().startswith("|")
-    ]
-    if not lines:
-        return []
+    raw = (text or "").strip()
+    stars = len(raw) - len(raw.lstrip("*"))
+    return Cell(
+        text=raw.strip("*_").strip(),
+        em=stars in (1, 3),
+        strong=stars >= 2,
+    )
 
-    def cells(line: str) -> list[str]:
-        return [part.strip() for part in line.strip().strip("|").split("|")]
 
-    header = cells(lines[0])
+def _pipe_cells(line: str) -> list[str]:
+    return [part.strip() for part in line.strip().strip("|").split("|")]
+
+
+def _pipe_table(lines: list[str]) -> list[dict[str, str]]:
+    header = _pipe_cells(lines[0])
     # Drop the |---|---| separator, then fold any header continuation rows in.
-    body = [cells(line) for line in lines[1:] if not set(line) <= set("|- :")]
+    body = [_pipe_cells(line) for line in lines[1:] if not set(line) <= set("|- :")]
 
+    # A cost header is two rows deep -- "Cost" over a row carrying City/Rural
+    # and blanks elsewhere -- so the second row is folded into the column
+    # names rather than read as data.
     while body and sum(1 for value in body[0] if value) <= len(header) // 2:
         for index, value in enumerate(body[0]):
             if value and index < len(header):
@@ -226,3 +231,23 @@ def read_pipe_table(path: Path) -> list[dict[str, str]]:
     return [
         {header[i]: row[i] for i in range(min(len(header), len(row)))} for row in body
     ]
+
+
+def read_pipe_tables(path: Path) -> list[list[dict[str, str]]]:
+    """Every Markdown pipe table on a page, in order, each as a list of rows
+    keyed by column name. Cell text is raw: emphasis is kept for pipe_cell.
+
+    Tables are told apart by any non-table line between them, so a page with
+    two tables -- Firearms.md's guns and its implements -- reads as two.
+    """
+    found: list[list[str]] = []
+    current: list[str] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("|"):
+            current.append(line.strip())
+        elif current:
+            found.append(current)
+            current = []
+    if current:
+        found.append(current)
+    return [_pipe_table(lines) for lines in found]

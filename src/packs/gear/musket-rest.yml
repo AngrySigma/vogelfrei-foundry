@@ -1,0 +1,26 @@
+_id: "J4RGbQAH7JsIGi8S"
+_key: "!items!J4RGbQAH7JsIGi8S"
+name: "Musket rest"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 120
+  costRural: 120
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Removes the unsupported-musket penalty</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

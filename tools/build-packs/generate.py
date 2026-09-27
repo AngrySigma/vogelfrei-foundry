@@ -32,6 +32,8 @@ DEFAULT_RULEBOOK = Path.home() / "tabletop/vogelfrei"
 
 # --------------------------------------------------------------------------
 # Money. 1 gp = 50 sp = 600 bp; see src/module/money.ts, which this mirrors.
+# Coins themselves are not Items: a character's purse is three counts on the
+# sheet (src/module/purse.ts), so the gear pack ships no coins.
 # --------------------------------------------------------------------------
 
 BP_PER_SP = 12
@@ -82,32 +84,19 @@ def parse_money_pair(text: str) -> tuple[tuple[int | None, bool], tuple[int | No
 # Armour
 # --------------------------------------------------------------------------
 
-# Time and Movement.md gives armour encumbrance by what the armour is, not by
-# an abstract weight class:
-#
-#     Character is wearing metal armor          +1 Point
-#     Three-quarter or heavier armor            +2 Points
-#
-# which is exactly the light / medium / heavy the data model carries. Mail and
-# plate are metal; a padded wams and a leather buff coat are not.
-ARMOUR_CATEGORY = {
-    "Wams": "light",
-    "Buff Coat": "light",
-    "Jack Chain": "medium",
-    "Chain": "medium",
-    "Brigandine": "medium",
-    "Half-armour": "medium",
-    "Three-quarter armour": "heavy",
-    "Full-plate": "heavy",
-}
+# Armor.md gives each harness its own Enc figure -- the points it costs while
+# worn -- and a Proof grade that only a firearm looks at. The data model's
+# light / medium / heavy category is read off Enc: free, one point, or more.
+PROOF = {"": "none", "partial": "partial", "full": "full"}
 
-# The shields are not worn, they are carried, and their line in the table gives
-# an AC bonus rather than an Armour Rating.
-SHIELD_AC = {
-    "Buckler": {"melee": 2, "ranged": 0, "encumbrance": "normal"},
-    "Shield": {"melee": 2, "ranged": 3, "encumbrance": "oversized"},
-    "Pavise": {"melee": 0, "ranged": 5, "encumbrance": "oversized"},
-}
+
+def armour_category(points: int) -> str:
+    if points <= 0:
+        return "light"
+    return "medium" if points == 1 else "heavy"
+
+
+SHIELD_BONUS = re.compile(r"\+(\d+)\s+(Melee|Ranged)\s+AC", re.IGNORECASE)
 
 
 # --------------------------------------------------------------------------
@@ -268,122 +257,286 @@ def name_of(cells: list[tables.Cell]) -> tuple[str, tables.Cell]:
     return f"{group.clean}, {leaf.clean}", marker
 
 
+def enc_points(text: str) -> int | None:
+    """Read an Enc cell: "+2" is two points, a dash is none given."""
+    cleaned = (text or "").strip()
+    if cleaned in DASHES:
+        return None
+    match = re.match(r"^\+?(\d+)$", cleaned)
+    if not match:
+        raise RuleError(f"unreadable Enc {text!r}")
+    return int(match.group(1))
+
+
+def needs_training(text: str) -> bool:
+    """The Training column says "Training" or carries a dash."""
+    return (text or "").strip().lower() == "training"
+
+
+HANDS = re.compile(r"\((1H|1/2H|2H)\)")
+
+
+def weapon_tags(name: str, *, training: bool) -> list[dict]:
+    tags = [tag("Training")] if training else []
+    hands = HANDS.search(name)
+    if hands and hands.group(1) == "2H":
+        tags.append(tag("Two-handed"))
+    return tags
+
+
+LINK = re.compile(r"\[([^\]]+)\]\([^)]*\)")
+BOLD = re.compile(r"\*\*([^*]+)\*\*")
+ITALIC = re.compile(r"\*([^*]+)\*")
+
+
+def markdown_html(text: str) -> str:
+    """One line of the book's Markdown as a description paragraph. Links lose
+    their target -- it points into the rulebook site, not into Foundry."""
+    text = LINK.sub(r"\1", (text or "").strip())
+    text = BOLD.sub(r"<strong>\1</strong>", text)
+    text = ITALIC.sub(r"<em>\1</em>", text)
+    return f"<p>{text}</p>" if text else ""
+
+
+def base_name(name: str) -> str:
+    """"Lance (1/2H)" and "War flail (2H)" as their traits table names them."""
+    return HANDS.sub("", name).strip().lower()
+
+
+# The traits tables name a weapon by what it is, not always by its row: the
+# Dagger trait belongs to the Minor weapon, which is what a dagger is.
+TRAIT_ALIASES = {"dagger": "minor weapon"}
+
+
+def weapon_traits(path: Path) -> dict[str, str]:
+    """The Weapon Traits table on a weapons page, keyed by lower-case name."""
+    traits = {}
+    for table in tables.read_pipe_tables(path):
+        for row in table:
+            if "Weapon" in row and "Effects" in row:
+                name = row["Weapon"].strip().lower()
+                traits[TRAIT_ALIASES.get(name, name)] = row["Effects"]
+    return traits
+
+
+def weapon_system(
+    cell: tables.Cell,
+    row: dict[str, str],
+    *,
+    damage: str,
+    melee: bool,
+    tags: list[dict],
+    description: str,
+    city_key: str = "Cost City",
+    rural_key: str = "Rural",
+) -> dict:
+    system = physical(cell, row.get(city_key, ""), row.get(rural_key, ""))
+    system.update(
+        {
+            "damage": damage_die(damage),
+            "length": 0,
+            "lengthTwoHanded": None,
+            "melee": melee,
+            "missile": not melee,
+            "range": {"short": 0, "medium": 0, "long": 0},
+            "bonus": 0,
+            "pattern": "transparent",
+            "slow": False,
+            "counter": {"value": 0, "max": 0},
+            "tags": tags,
+            "description": description,
+        }
+    )
+    return system
+
+
 def melee_weapons(path: Path) -> list[Item]:
+    traits = weapon_traits(path)
     items = []
-    for row in tables.read(path)[0].rows():
-        name, cell = name_of(row["Weapon"])
+    for row in tables.read_pipe_tables(path)[0]:
+        cell = tables.pipe_cell(row["Weapon"])
+        name = cell.clean
         if name == "Improvised":
             # A fist or a chair leg is not something you buy; entity.js already
             # rolls it as the fallback for an attack with no weapon.
             continue
 
-        system = physical(cell, row["Cost City"][0].clean, row["Cost Rural"][0].clean)
-        system.update(
-            {
-                "damage": damage_die(row["Damage"][0].clean),
-                **parse_length(row["Length"][0].clean),
-                "melee": True,
-                "missile": False,
-                "range": {"short": 0, "medium": 0, "long": 0},
-                "bonus": 0,
-                "pattern": "transparent",
-                "slow": False,
-                "counter": {"value": 0, "max": 0},
-                "tags": [tag("Training")] if cell.needs_training else [],
-            }
+        trait = traits.get(base_name(name), "")
+        tags = weapon_tags(name, training=needs_training(row.get("Training", "")))
+        if "Brace" in trait:
+            tags.append(tag("Brace"))
+
+        system = weapon_system(
+            cell,
+            row,
+            damage=row["Damage"],
+            melee=True,
+            tags=tags,
+            description=markdown_html(trait),
         )
-        items.append(
-            Item(name, "weapon", "weapons", system, "icons/svg/sword.svg")
-        )
+        system.update(parse_length(row["Length"]))
+        items.append(Item(name, "weapon", "weapons", system, "icons/svg/sword.svg"))
     return items
 
 
-def ranged_weapons(path: Path, *, firearms: bool = False) -> list[Item]:
+def ranged_weapons(path: Path) -> list[Item]:
+    traits = weapon_traits(path)
     items = []
-    for row in tables.read(path)[0].rows():
-        name, cell = name_of(row["Weapon" if not firearms else "Firearm"])
-        if name == "Thrown Weapon":
+    for row in tables.read_pipe_tables(path)[0]:
+        cell = tables.pipe_cell(row["Weapon"])
+        name = cell.clean
+        if name == "Thrown weapon":
             # Not goods but a rule: any melee weapon may be thrown, keeping its
             # own damage and its own price. There is nothing to buy.
             continue
 
-        system = physical(cell, row["Cost City"][0].clean, row["Cost Rural"][0].clean)
-
-        # Every ranged weapon and firearm takes instruction to use, per
-        # Weapons/index.md, so they are all tagged whether asterisked or not.
-        tags = [tag("Training")]
-        if firearms:
-            tags.append(tag("Firearm"))
-            equivalent = row.get("Melee Equivalent", [])
-            if equivalent and equivalent[0].clean not in DASHES:
-                tags.append(tag(f"Melee: {equivalent[0].clean}"))
-
-        system.update(
-            {
-                "damage": damage_die(row["Damage"][0].clean),
-                "length": 0,
-                "lengthTwoHanded": None,
-                "melee": False,
-                "missile": True,
-                "range": parse_range(row["Range (S/M/L)"][0].clean),
-                "bonus": 0,
-                "pattern": "transparent",
-                "slow": False,
-                "counter": {"value": 0, "max": 0},
-                "tags": tags,
-            }
+        system = weapon_system(
+            cell,
+            row,
+            damage=row["Damage"],
+            melee=False,
+            tags=weapon_tags(name, training=needs_training(row.get("Training", ""))),
+            description=markdown_html(traits.get(base_name(name), "")),
         )
+        system["range"] = parse_range(row["Range (S/M/L)"])
         items.append(Item(name, "weapon", "weapons", system, "icons/svg/target.svg"))
+    return items
+
+
+def firearms(path: Path) -> list[Item]:
+    """Firearms.md: the guns of the age, then the powder and implements."""
+    guns, implements = tables.read_pipe_tables(path)[:2]
+    items = []
+    for row in guns:
+        cell = tables.pipe_cell(row["Firearm"])
+        name = cell.clean
+        # Every firearm takes instruction, per the page, whatever the column.
+        tags = weapon_tags(name, training=True) + [tag("Firearm")]
+        lock = row.get("Usual lock", "").strip()
+        if lock and lock not in DASHES:
+            tags.append(tag(lock))
+        equivalent = row.get("Melee equivalent", "").strip()
+        if equivalent and equivalent not in DASHES:
+            tags.append(tag(f"Melee: {equivalent}"))
+
+        system = weapon_system(
+            cell, row, damage=row["Damage"], melee=False, tags=tags, description=""
+        )
+        system["range"] = parse_range(row["Range (S/M/L)"])
+        items.append(Item(name, "weapon", "weapons", system, "icons/svg/target.svg"))
+
+    for row in implements:
+        cell = tables.pipe_cell(row["Item"])
+        system = physical(cell, row.get("Cost", ""), "")
+        system["costRural"] = system["cost"]
+        system.update({"treasure": False, "description": markdown_html(row.get("Notes", ""))})
+        if cell.clean.startswith("Powder and ball, one"):
+            # Small things of one kind stack, as arrows do.
+            system["stackSize"] = 20
+        items.append(Item(cell.clean, "item", "gear", system, "icons/svg/item-bag.svg"))
+    return items
+
+
+def curious_firearms(path: Path) -> list[Item]:
+    """Curious Firearms.md, an Advanced page: arms the Referee may admit.
+
+    Shipped so the Referee need not type them in, and tagged so nobody mistakes
+    one for an ordinary purchase. The plug bayonet is a Minor melee weapon and
+    the grenade a thrown charge that meets no armour -- neither is shot, so
+    neither is tagged Firearm, which would put the target on its firearm AC.
+    """
+    period, outside = tables.read_pipe_tables(path)[:2]
+    items = []
+    for rows, marker, note_key in (
+        (period, "Curious", "Notes"),
+        (outside, "Out of period", "Why it is here"),
+    ):
+        for row in rows:
+            cell = tables.pipe_cell(row["Firearm"])
+            name = cell.clean
+            melee = name == "Plug bayonet"
+            tags = weapon_tags(name, training=not name == "Grenade") + [tag(marker)]
+            if not melee and name != "Grenade":
+                tags.append(tag("Firearm"))
+
+            system = weapon_system(
+                cell,
+                row,
+                damage=row["Damage"],
+                melee=melee,
+                tags=tags,
+                description=markdown_html(row.get(note_key, "")),
+                city_key="Cost",
+                rural_key="",
+            )
+            system["costRural"] = None
+            if melee:
+                system["length"] = 1
+            else:
+                system["range"] = parse_range(row["Range (S/M/L)"])
+            items.append(Item(name, "weapon", "weapons", system, "icons/svg/target.svg"))
     return items
 
 
 def armour(path: Path) -> list[Item]:
     items = []
-    for row in tables.read_pipe_table(path):
-        name = row["Armor"].replace("*", "").strip()
-        name = re.sub(r"[*_]", "", name).strip()
+    for row in tables.read_pipe_tables(path)[0]:
+        cell = tables.pipe_cell(row["Armor"])
+        name = cell.clean
         if not name:
             continue
 
-        emphasis = row["Armor"]
-        cell = tables.Cell(
-            text=name,
-            em="*" in emphasis or "_" in emphasis,
-            strong="**" in emphasis or "__" in emphasis,
-        )
+        system = physical(cell, row.get("Cost City", ""), row.get("Rural", ""))
+        proof_text = row.get("Proof", "").strip().lower()
+        proof = PROOF.get("" if proof_text in DASHES else proof_text)
+        if proof is None:
+            raise RuleError(f"unreadable Proof {row.get('Proof')!r} for {name!r}")
+        points = enc_points(row.get("Enc", ""))
+        rating = row.get("Armor Rating", "").strip()
 
-        city = row.get("Cost City", "")
-        rural = row.get("Rural", "")
-        system = physical(cell, city, rural)
-
-        rating = row.get("Armor Rating", "")
-        if name in SHIELD_AC:
-            shield = SHIELD_AC[name]
+        if rating.startswith("+"):
+            bonuses = {kind.lower(): int(value) for value, kind in SHIELD_BONUS.findall(rating)}
+            if not bonuses:
+                raise RuleError(f"unreadable shield bonus {rating!r} for {name!r}")
             system.update(
                 {
                     "type": "shield",
-                    "acMelee": shield["melee"],
-                    "acRanged": shield["ranged"],
-                    "encumbrance": shield["encumbrance"],
+                    "acMelee": bonuses.get("melee", 0),
+                    "acRanged": bonuses.get("ranged", 0),
                 }
             )
         else:
-            category = ARMOUR_CATEGORY.get(name)
-            if category is None:
-                raise RuleError(
-                    f"no encumbrance category known for armour {name!r}; "
-                    "Time and Movement.md sets it by whether the armour is "
-                    "metal and whether it is three-quarter or heavier"
-                )
-            match = re.match(r"^(\d+)$", rating.strip())
+            match = re.match(r"^(\d+)$", rating)
             if not match:
                 raise RuleError(f"unreadable Armour Rating {rating!r} for {name!r}")
             value = int(match.group(1))
+            points = points or 0
             system.update(
-                {"type": category, "acMelee": value, "acRanged": value}
+                {"type": armour_category(points), "acMelee": value, "acRanged": value}
             )
 
+        system.update({"proof": proof, "encumbrancePoints": points})
         items.append(Item(name, "armor", "armour", system, "icons/svg/shield.svg"))
+    return items
+
+
+def vehicles(path: Path, *, antiquated: bool = False) -> list[Item]:
+    """Vehicles.md, and the Advanced page of earlier and later ones."""
+    items = []
+    for rows in tables.read_pipe_tables(path):
+        for row in rows:
+            cell = tables.pipe_cell(row["Vehicle"])
+            city = row.get("Cost City", row.get("Cost", ""))
+            system = physical(cell, city, row.get("Rural", ""))
+            note = row.get("Typical use") or row.get("Period note", "")
+            system.update(
+                {
+                    "treasure": False,
+                    "description": markdown_html(note),
+                    "tags": [tag("Antiquated")] if antiquated else [],
+                }
+            )
+            items.append(Item(cell.clean, "item", "mounts", system, "icons/svg/cart.svg"))
     return items
 
 
@@ -422,7 +575,7 @@ def simple(path: Path, pack: str, column: str, item_type: str, img: str) -> list
 
 
 # --------------------------------------------------------------------------
-# Coins
+# Ammunition
 # --------------------------------------------------------------------------
 
 """Ammunition, which Ranged Weapons.md prices in a note rather than a table:
@@ -461,39 +614,6 @@ def ammunition() -> list[Item]:
     return items
 
 
-COINS = [
-    ("Gold Pieces", BP_PER_GP, "icons/svg/coins.svg"),
-    ("Silver Pieces", BP_PER_SP, "icons/svg/coins.svg"),
-    ("Brass Pieces", 1, "icons/svg/coins.svg"),
-]
-
-
-def coins() -> list[Item]:
-    """The three coins, as treasure Items the purse can be paid out of.
-
-    A hundred coins count as one carried item (Time and Movement.md), which is
-    what the stack size says.
-    """
-    items = []
-    for name, value, img in COINS:
-        system = {
-            "cost": value,
-            "costRural": value,
-            "costMinimum": False,
-            "encumbrance": "normal",
-            "stackSize": 100,
-            "quantity": {"value": 0, "max": 0},
-            "weight": 0,
-            "containerId": "",
-            "equipped": False,
-            "treasure": True,
-            "tags": [tag("coins")],
-            "description": "",
-        }
-        items.append(Item(name, "item", "gear", system, img))
-    return items
-
-
 # --------------------------------------------------------------------------
 # Writing
 # --------------------------------------------------------------------------
@@ -515,7 +635,8 @@ def collect(rulebook: Path) -> list[Item]:
     items: list[Item] = []
     items += melee_weapons(equipment / "Weapons/Melee Weapons.md")
     items += ranged_weapons(equipment / "Weapons/Ranged Weapons.md")
-    items += ranged_weapons(equipment / "Weapons/Firearms.md", firearms=True)
+    items += firearms(equipment / "Weapons/Firearms.md")
+    items += curious_firearms(equipment / "Weapons/Curious Firearms.md")
     items += armour(equipment / "Armor.md")
     items += simple(
         equipment / "Miscellaneous.md", "gear", "Equipment", "item", "icons/svg/item-bag.svg"
@@ -525,9 +646,9 @@ def collect(rulebook: Path) -> list[Item]:
         equipment / "Containers.md", "containers", "Container", "container", "icons/svg/chest.svg"
     )
     items += simple(equipment / "Animals.md", "mounts", "Animal", "item", "icons/svg/mounted-knight.svg")
-    items += simple(equipment / "Vehicles.md", "mounts", "Vehicle", "item", "icons/svg/cart.svg")
+    items += vehicles(equipment / "Vehicles.md")
+    items += vehicles(equipment / "Antiquated Vehicles.md", antiquated=True)
     items += ammunition()
-    items += coins()
     return items
 
 

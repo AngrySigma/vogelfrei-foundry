@@ -1,0 +1,26 @@
+_id: "HFXrfg289GFoHKrv"
+_key: "!items!HFXrfg289GFoHKrv"
+name: "Canoe or dugout"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 360
+  costRural: 300
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Rivers, lakes, and sheltered coasts</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

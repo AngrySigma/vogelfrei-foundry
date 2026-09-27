@@ -15,9 +15,13 @@ system:
   weight: 0
   containerId: ""
   equipped: false
-  tags: []
+  tags:
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Brace"
+      value: "Brace"
   damage: "1d8"
-  length: 5
+  length: 4
   lengthTwoHanded: null
   melee: true
   missile: false
@@ -31,6 +35,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>A halberd, bill, glaive, or poleaxe — the sergeant's weapon and the guard's. May attack from the second rank or Brace. It needs both hands for the leverage that makes it worth carrying, and so can never be used with a shield.</p>"
 effects: []
 folder: null
 sort: 0

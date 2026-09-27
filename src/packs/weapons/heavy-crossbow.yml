@@ -1,0 +1,42 @@
+_id: "lOqUhoau8XWGeIOH"
+_key: "!items!lOqUhoau8XWGeIOH"
+name: "Heavy crossbow"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 360
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 50
+    medium: 200
+    long: 600
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>Fire every third Round; ignore 3 Armor Rating.</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

@@ -1,0 +1,26 @@
+_id: "xQodgtfxlBGhoewJ"
+_key: "!items!xQodgtfxlBGhoewJ"
+name: "Powder and ball, one prepared charge"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 5
+  costRural: 5
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 20
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>One shot; cartridge form and availability are campaign-specific</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

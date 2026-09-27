@@ -1,0 +1,48 @@
+_id: "yz837aJ3K26hO4mz"
+_key: "!items!yz837aJ3K26hO4mz"
+name: "Magazine gun (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 7200
+  costRural: null
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Curious"
+      value: "Curious"
+    - title: "Firearm"
+      value: "Firearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 30
+    medium: 60
+    long: 300
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>A unique manually operated repeating mechanism holding 1d8 shots</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

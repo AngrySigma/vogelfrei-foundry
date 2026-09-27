@@ -1,0 +1,46 @@
+_id: "sS26b7hMWdY508hj"
+_key: "!items!sS26b7hMWdY508hj"
+name: "Pepperbox"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 1200
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Out of period"
+      value: "Out of period"
+    - title: "Firearm"
+      value: "Firearm"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 20
+    medium: 40
+    long: 80
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>The familiar revolving pepperbox is a 19th-century weapon</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

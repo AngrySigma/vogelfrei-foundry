@@ -1,0 +1,26 @@
+_id: "DKlCh6SHzneYz8Kr"
+_key: "!items!DKlCh6SHzneYz8Kr"
+name: "Cleaning and loading tools"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 60
+  costRural: 60
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Rammer, worm, measure, and turnscrew</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

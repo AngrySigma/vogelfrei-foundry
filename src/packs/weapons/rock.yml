@@ -7,7 +7,7 @@ system:
   cost: 0
   costRural: null
   costMinimum: false
-  encumbrance: "normal"
+  encumbrance: "none"
   stackSize: 0
   quantity:
     value: 0
@@ -15,9 +15,7 @@ system:
   weight: 0
   containerId: ""
   equipped: false
-  tags:
-    - title: "Training"
-      value: "Training"
+  tags: []
   damage: "1d2"
   length: 0
   lengthTwoHanded: null
@@ -33,6 +31,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: ""
 effects: []
 folder: null
 sort: 0

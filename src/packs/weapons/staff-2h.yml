@@ -7,7 +7,7 @@ system:
   cost: 60
   costRural: 36
   costMinimum: false
-  encumbrance: "normal"
+  encumbrance: "oversized"
   stackSize: 0
   quantity:
     value: 0
@@ -15,7 +15,9 @@ system:
   weight: 0
   containerId: ""
   equipped: false
-  tags: []
+  tags:
+    - title: "Two-handed"
+      value: "Two-handed"
   damage: "1d6"
   length: 4
   lengthTwoHanded: null
@@ -31,6 +33,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: ""
 effects: []
 folder: null
 sort: 0

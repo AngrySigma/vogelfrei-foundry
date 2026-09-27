@@ -1,6 +1,6 @@
-_id: "4TEtMlOSnLcl4xQf"
-_key: "!items!4TEtMlOSnLcl4xQf"
-name: "Buff Coat"
+_id: "L6VfER1OlPtEtUvS"
+_key: "!items!L6VfER1OlPtEtUvS"
+name: "Buff coat"
 type: "armor"
 img: "icons/svg/shield.svg"
 system:
@@ -19,6 +19,8 @@ system:
   type: "light"
   acMelee: 2
   acRanged: 2
+  proof: "none"
+  encumbrancePoints: 0
 effects: []
 folder: null
 sort: 0

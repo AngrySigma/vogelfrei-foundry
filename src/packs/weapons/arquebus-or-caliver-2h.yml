@@ -1,0 +1,50 @@
+_id: "Vkp7UNs9cbaX8VUz"
+_key: "!items!Vkp7UNs9cbaX8VUz"
+name: "Arquebus or caliver (2H)"
+type: "weapon"
+img: "icons/svg/target.svg"
+system:
+  cost: 480
+  costRural: 960
+  costMinimum: false
+  encumbrance: "oversized"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
+    - title: "Firearm"
+      value: "Firearm"
+    - title: "Matchlock"
+      value: "Matchlock"
+    - title: "Melee: Small"
+      value: "Melee: Small"
+  damage: "1d8"
+  length: 0
+  lengthTwoHanded: null
+  melee: false
+  missile: true
+  range:
+    short: 50
+    medium: 100
+    long: 400
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: ""
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

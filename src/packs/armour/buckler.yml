@@ -19,6 +19,8 @@ system:
   type: "shield"
   acMelee: 2
   acRanged: 0
+  proof: "none"
+  encumbrancePoints: null
 effects: []
 folder: null
 sort: 0

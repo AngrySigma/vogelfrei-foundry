@@ -1,0 +1,26 @@
+_id: "ZQDw8FYqjWiiCqKd"
+_key: "!items!ZQDw8FYqjWiiCqKd"
+name: "Pinnace"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 540000
+  costRural: null
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Small fast vessel for scouting, dispatch and inshore work</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

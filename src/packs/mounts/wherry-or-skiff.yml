@@ -1,0 +1,26 @@
+_id: "yX4YpSINICa1FDDb"
+_key: "!items!yX4YpSINICa1FDDb"
+name: "Wherry or skiff"
+type: "item"
+img: "icons/svg/cart.svg"
+system:
+  cost: 960
+  costRural: 720
+  costMinimum: false
+  encumbrance: "normal"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Passengers and light cargo in harbour or river</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

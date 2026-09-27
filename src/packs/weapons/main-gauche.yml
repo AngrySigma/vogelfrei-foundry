@@ -1,0 +1,42 @@
+_id: "rPlDk5UfkDqeAZPV"
+_key: "!items!rPlDk5UfkDqeAZPV"
+name: "Main-gauche"
+type: "weapon"
+img: "icons/svg/sword.svg"
+system:
+  cost: 180
+  costRural: null
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags:
+    - title: "Training"
+      value: "Training"
+  damage: "1d4"
+  length: 1
+  lengthTwoHanded: null
+  melee: true
+  missile: false
+  range:
+    short: 0
+    medium: 0
+    long: 0
+  bonus: 0
+  pattern: "transparent"
+  slow: false
+  counter:
+    value: 0
+    max: 0
+  description: "<p>Adds +1 Melee AC while paired with a one-handed sword or a rapier. It cannot be combined with the benefit of a shield.</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}

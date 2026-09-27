@@ -18,6 +18,8 @@ system:
   tags:
     - title: "Training"
       value: "Training"
+    - title: "Two-handed"
+      value: "Two-handed"
   damage: "1d6"
   length: 0
   lengthTwoHanded: null
@@ -33,6 +35,7 @@ system:
   counter:
     value: 0
     max: 0
+  description: "<p>Requires an attack from surprise or a successful wrestling attempt. On a hit, the target is immobilized and takes 1d6 damage per Round until freed.</p>"
 effects: []
 folder: null
 sort: 0

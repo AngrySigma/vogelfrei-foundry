@@ -1,0 +1,26 @@
+_id: "wTKp8S69f4ZG1N5T"
+_key: "!items!wTKp8S69f4ZG1N5T"
+name: "Priming flask of fine powder"
+type: "item"
+img: "icons/svg/item-bag.svg"
+system:
+  cost: 24
+  costRural: 24
+  costMinimum: false
+  encumbrance: "none"
+  stackSize: 0
+  quantity:
+    value: 0
+    max: 0
+  weight: 0
+  containerId: ""
+  equipped: false
+  tags: []
+  treasure: false
+  description: "<p>Twenty primings; priming with coarse powder misfires one grade worse</p>"
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+flags: {}
