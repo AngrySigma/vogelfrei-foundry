@@ -21,7 +21,7 @@ starting brief.
 | --- | --- | --- |
 | `~/foundry/` | Foundry VTT **application install** (Electron bundle + `resources/app` server). Version **14.365**. | **No.** Read only. See constraints. |
 | `~/foundrydata/` | **PROD** Foundry data dir. The `foundry.service` systemd unit runs it on **port 30000**. Holds the live campaign world *In Profundum* (`worlds/better-than-any-man`) and its player images. vogelfrei here is a normal install from the GitHub release manifest, updated through Foundry like on any other server. | **No. Never.** Not for tests, not for "just a look" writes. Read only, and only when asked. |
-| `~/foundrydata-dev/` | **DEV** Foundry data dir, **port 30001**, started on demand with `npm run serve:dev`. `Data/systems/vogelfrei` is a symlink to this repo, so builds show up on reload. Holds the throwaway test worlds (`newworld`, `otherworld`). Must never contain *In Profundum*. | Yes — worlds, actors and settings here are expendable. |
+| `~/foundrydata-dev/` | **DEV** Foundry data dir, **port 30001**, run by the `foundry-dev` systemd service. `Data/systems/vogelfrei` is a symlink to this repo, so builds show up on reload. Holds the throwaway test worlds (`newworld`, `otherworld`). Must never contain *In Profundum*. | Yes — worlds, actors and settings here are expendable. |
 | `~/foundrydata-dev/Data/systems/ose/` | **OSE 2.3.0**, the baseline to fork. A *build artifact* — see below. | **No.** Treat as an upstream reference copy. |
 | `~/foundrydata-dev/Data/modules/classicfantasycompendium/` | Classic Fantasy Compendium 2.0.0 — OSE SRD content in LevelDB packs. Useful as a worked example of pack structure. | No. |
 | `~/tabletop/vogelfrei/` | The **rulebook source** (Zensical static site, 158 Markdown pages under `docs/`). The rules authority. Its own git repo, its own `CLAUDE.md`. | Read. Don't edit rules from here — that's a separate repo and a separate decision. |
@@ -29,8 +29,10 @@ starting brief.
 
 Both instances share the one app install. Prod: `foundry.service` →
 `node ~/foundry/resources/app/main.js --dataPath=/home/iiov/foundrydata`, port 30000, always on,
-players connected. Dev: `npm run serve:dev` (reads `foundryconfig.json`, whose `dataPath` must list
-**only** `~/foundrydata-dev`), port 30001. Node v24.19.0, npm 11.17.0, git 2.34.1 available. GitHub is
+players connected. Dev: `foundry-dev.service`, same command with `--dataPath=/home/iiov/foundrydata-dev`,
+port 30001. Both services, the dev data dir and the firewall rules are managed in the
+`AngrySigma/vogelfrei-infra` Ansible repo (`roles/foundry`), not here. The local
+`foundryconfig.json` (used by `npm run link`) must list **only** `~/foundrydata-dev`. Node v24.19.0, npm 11.17.0, git 2.34.1 available. GitHub is
 reachable (`git ls-remote` to `NecroticGnome/ose-foundry-core` succeeds).
 
 ## Constraints
