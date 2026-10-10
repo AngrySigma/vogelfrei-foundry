@@ -38,6 +38,7 @@ import templates from "./module/preloadTemplates";
 import * as renderList from "./module/renderList";
 import { initializeTokenRing, promptTokenRingSelection } from "./module/rings";
 import registerSettings from "./module/settings";
+import { ensureUploadDir, registerUploadGuard } from "./module/upload-guard";
 
 import "./e2e";
 
@@ -63,6 +64,7 @@ Hooks.once("init", async () => {
   // Register custom system settings
   registerSettings();
   registerChronicleSetting();
+  registerUploadGuard();
 
   CONFIG.Combat.documentClass = OSECombat;
   CONFIG.Combatant.documentClass = OSECombatant;
@@ -166,6 +168,7 @@ Hooks.once("ready", async () => {
   await migrateCoinItems();
   await syncWorldTime(getChronicle());
   await promptTokenRingSelection();
+  await ensureUploadDir();
 });
 
 /**

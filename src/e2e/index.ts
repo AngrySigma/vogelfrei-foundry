@@ -36,6 +36,10 @@ import helpersTreasureTests, {
 } from "../module/__tests__/helpers-treasure.test";
 import moneyTests, { key as moneyKey, options as moneyOptions } from "../module/__tests__/money.test";
 import purseTests, { key as purseKey, options as purseOptions } from "../module/__tests__/purse.test";
+import uploadGuardTests, {
+  key as uploadGuardKey,
+  options as uploadGuardOptions,
+} from "../module/__tests__/upload-guard.test";
 import actorAlignmentTests, {
   key as actorAlignmentKey,
   options as actorAlignmentOptions,
@@ -259,4 +263,5 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(chronicleKey, chronicleTests, chronicleOptions);
   quench.registerBatch(moneyKey, moneyTests, moneyOptions);
   quench.registerBatch(purseKey, purseTests, purseOptions);
+  quench.registerBatch(uploadGuardKey, uploadGuardTests, uploadGuardOptions);
 });
