@@ -20,14 +20,17 @@ starting brief.
 | Path | What it is | May Claude write to it? |
 | --- | --- | --- |
 | `~/foundry/` | Foundry VTT **application install** (Electron bundle + `resources/app` server). Version **14.365**. | **No.** Read only. See constraints. |
-| `~/foundrydata/` | Foundry **user data dir** (`--dataPath`). Holds `Data/{systems,modules,worlds,assets}`, `Config/options.json`, `Logs/`. | Only under `Data/systems/vogelfrei/` (or a symlink to it) for live testing. |
-| `~/foundrydata/Data/systems/ose/` | **OSE 2.3.0**, the baseline to fork. A *build artifact* — see below. | **No.** Treat as an upstream reference copy. |
-| `~/foundrydata/Data/modules/classicfantasycompendium/` | Classic Fantasy Compendium 2.0.0 — OSE SRD content in LevelDB packs. Useful as a worked example of pack structure. | No. |
+| `~/foundrydata/` | **PROD** Foundry data dir. The `foundry.service` systemd unit runs it on **port 30000**. Holds the live campaign world *In Profundum* (`worlds/better-than-any-man`) and its player images. vogelfrei here is a normal install from the GitHub release manifest, updated through Foundry like on any other server. | **No. Never.** Not for tests, not for "just a look" writes. Read only, and only when asked. |
+| `~/foundrydata-dev/` | **DEV** Foundry data dir, **port 30001**, started on demand with `npm run serve:dev`. `Data/systems/vogelfrei` is a symlink to this repo, so builds show up on reload. Holds the throwaway test worlds (`newworld`, `otherworld`). Must never contain *In Profundum*. | Yes — worlds, actors and settings here are expendable. |
+| `~/foundrydata-dev/Data/systems/ose/` | **OSE 2.3.0**, the baseline to fork. A *build artifact* — see below. | **No.** Treat as an upstream reference copy. |
+| `~/foundrydata-dev/Data/modules/classicfantasycompendium/` | Classic Fantasy Compendium 2.0.0 — OSE SRD content in LevelDB packs. Useful as a worked example of pack structure. | No. |
 | `~/tabletop/vogelfrei/` | The **rulebook source** (Zensical static site, 158 Markdown pages under `docs/`). The rules authority. Its own git repo, its own `CLAUDE.md`. | Read. Don't edit rules from here — that's a separate repo and a separate decision. |
 | `~/foundry-dev/` | This directory. Workspace for the Vogelfrei system. | Yes. |
 
-Foundry is currently **running**: `node ~/foundry/resources/app/main.js --dataPath=/home/iiov/foundrydata`,
-port 30000, no world created yet. Node v24.19.0, npm 11.17.0, git 2.34.1 available. GitHub is
+Both instances share the one app install. Prod: `foundry.service` →
+`node ~/foundry/resources/app/main.js --dataPath=/home/iiov/foundrydata`, port 30000, always on,
+players connected. Dev: `npm run serve:dev` (reads `foundryconfig.json`, whose `dataPath` must list
+**only** `~/foundrydata-dev`), port 30001. Node v24.19.0, npm 11.17.0, git 2.34.1 available. GitHub is
 reachable (`git ls-remote` to `NecroticGnome/ose-foundry-core` succeeds).
 
 ## Constraints
@@ -36,9 +39,11 @@ reachable (`git ls-remote` to `NecroticGnome/ose-foundry-core` succeeds).
    API is encouraged; patching it is forbidden. No exceptions, no "just this one line".
 2. **Never modify the installed OSE system** in place. It is the reference baseline and the
    control group. Vogelfrei gets its **own system id** and its own directory.
-3. This is a **throwaway Foundry instance** — worlds, actors and settings inside it are
-   expendable, so destructive experiments *inside a test world* are fine. The install and
-   the OSE copy are not.
+3. **Prod (`~/foundrydata`, port 30000) is off limits** — it runs a live campaign. All testing
+   happens in the **dev instance** (`~/foundrydata-dev`, port 30001), whose worlds, actors and
+   settings are expendable, so destructive experiments *inside a dev test world* are fine. The
+   install and the OSE copy are not. Prod only ever receives vogelfrei as a published GitHub
+   release.
 4. `~/tabletop/vogelfrei` is the source of truth for rules. If the implementation and the
    book disagree, the book wins — or the discrepancy gets reported, not silently patched.
 
@@ -141,7 +146,7 @@ the entire upstream TypeScript/JS source is recoverable offline:
 
 ```python
 import json
-m = json.load(open('/home/iiov/foundrydata/Data/systems/ose/dist/ose.js.map'))
+m = json.load(open('/home/iiov/foundrydata-dev/Data/systems/ose/dist/ose.js.map'))
 src = dict(zip(m['sources'], m['sourcesContent']))   # keys like '../src/module/actor/entity.js'
 ```
 
@@ -205,7 +210,7 @@ Both routes work; do both.
    installation will.
 
 For local testing, symlink instead of copying:
-`ln -s ~/foundry-dev/<build-output> ~/foundrydata/Data/systems/vogelfrei`.
+`ln -s ~/foundry-dev ~/foundrydata-dev/Data/systems/vogelfrei` (already in place) — never into prod.
 
 ## Recommended approach
 

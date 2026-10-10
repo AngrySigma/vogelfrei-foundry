@@ -17,6 +17,7 @@
     "watch:js": "rollup -c --watch",
     "watch:css": "sass --watch src/vogelfrei.scss dist/vogelfrei.css --source-map",
     "typecheck": "tsc --noEmit",
+    "serve:dev": "node ./tools/serve-dev.mjs",
     "link": "node ./tools/symlink.cjs",
     "unlink": "node ./tools/symlink.cjs -c",
     "lint": "biome check src",
