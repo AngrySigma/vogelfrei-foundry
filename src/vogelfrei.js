@@ -22,7 +22,6 @@ import registerFVTTModuleAPIs from "./module/fvttModuleAPIs";
 import * as chat from "./module/helpers-chat";
 import handlebarsHelpers from "./module/helpers-handlebars";
 import * as macros from "./module/helpers-macros";
-import * as party from "./module/helpers-party";
 import * as treasure from "./module/helpers-treasure";
 import OseDataModelAbility from "./module/item/data-model-ability";
 import OseDataModelArmor from "./module/item/data-model-armor";
@@ -33,7 +32,9 @@ import OseDataModelWeapon from "./module/item/data-model-weapon";
 import OseItem from "./module/item/entity";
 import registerArmourEquipHooks from "./module/item/equip-armour";
 import OseItemSheet from "./module/item/item-sheet";
-import OsePartySheet from "./module/party/party-sheet";
+import registerPartyDirectoryButton from "./module/party/directory-button";
+import PartyApp from "./module/party/party-app";
+import { adoptLegacyParty, registerPartyHooks, registerPartySetting } from "./module/party/store";
 import templates from "./module/preloadTemplates";
 import * as renderList from "./module/renderList";
 import { initializeTokenRing, promptTokenRingSelection } from "./module/rings";
@@ -64,6 +65,7 @@ Hooks.once("init", async () => {
   // Register custom system settings
   registerSettings();
   registerChronicleSetting();
+  registerPartySetting();
   registerUploadGuard();
 
   CONFIG.Combat.documentClass = OSECombat;
@@ -83,8 +85,8 @@ Hooks.once("init", async () => {
     rollTableMacro: macros.rollTableMacro,
   };
 
-  // Init Party Sheet handler
-  OsePartySheet.init();
+  registerPartyHooks();
+  registerPartyDirectoryButton();
 
   // Custom Handlebars helpers
   handlebarsHelpers();
@@ -167,6 +169,7 @@ Hooks.once("ready", async () => {
   await adoptVogelfreiEncumbrance();
   await migrateCoinItems();
   await syncWorldTime(getChronicle());
+  await adoptLegacyParty();
   await promptTokenRingSelection();
   await ensureUploadDir();
 });
@@ -193,9 +196,6 @@ async function adoptVogelfreiEncumbrance() {
   ui.notifications?.info(game.i18n.localize("VF.messages.EncumbranceAdopted"));
 }
 
-// Party sheet control
-Hooks.on("activateActorDirectory", party.addControl);
-
 /**
  * @param {Application} app
  * @param {HTMLElement} html
@@ -212,7 +212,6 @@ Hooks.on("getChatLogEntryContext", chat.addChatMessageContextOptions);
 Hooks.on("getChatMessageContextOptions", chat.addChatMessageContextOptions);
 Hooks.on("renderChatMessageHTML", chat.addChatMessageButtons);
 Hooks.on("renderRollTableSheet", treasure.augmentTable);
-Hooks.on("updateActor", party.update);
 /**
  * @param {OSECombatTracker} app - The combat tracker application
  * @param {HTMLElement} html - The HTML element of the combat tracker
@@ -316,8 +315,6 @@ Hooks.on("renderActorSheet", (app, html) => {
 Hooks.on("renderCompendium", renderList.RenderCompendium);
 Hooks.on("activateItemDirectory", renderList.RenderItemDirectory);
 
-Hooks.on("VF.Party.showSheet", OsePartySheet.showPartySheet);
-
 /**
  * Put the Chronicle on the token toolbar, for everyone.
  *
@@ -337,6 +334,15 @@ Hooks.on("getSceneControlButtons", (controls) => {
     button: true,
     visible: true,
     onChange: () => ChronicleApp.show(),
+  };
+  controls.tokens.tools.party = {
+    name: "party",
+    title: "VF.party.Title",
+    icon: "fa-solid fa-users",
+    order: Object.keys(controls.tokens.tools).length,
+    button: true,
+    visible: true,
+    onChange: () => PartyApp.show(),
   };
 });
 Hooks.once("initializeDynamicTokenRingConfig", initializeTokenRing);

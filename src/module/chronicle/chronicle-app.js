@@ -11,6 +11,9 @@
  * The Almanac, which only the Referee sees, is where the date comes from:
  * what day one fell on, and which dates the world keeps as feasts.
  */
+
+import PartyApp, { partyPace } from "../party/party-app";
+import { refreshOnChange as refreshOnPartyChange } from "../party/store";
 import { civilDate, clampEpoch, feastsOn, longestMonth, monthIndexOf, monthOrdinalOf, monthsCrossed } from "./calendar";
 import { checksBetween, newDelve, restState, TERRAIN } from "./chronicle";
 import {
@@ -409,6 +412,7 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
       openDelve: onOpenDelve,
       dropDelve: onDropDelve,
       rollTravelEncounter: onRollTravelEncounter,
+      openParty: () => PartyApp.show(),
       addFeast: onAddFeast,
       dropFeast: onDropFeast,
     },
@@ -471,6 +475,7 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
 
     return {
       isReferee,
+      party: partyPace(),
       calendar: {
         day: chronicle.day,
         watchesPerDay: perDay,
@@ -525,3 +530,5 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
 }
 
 refreshOnChange(ChronicleApp);
+// The party line shows the pace, which moves whenever someone's load does.
+refreshOnPartyChange(ChronicleApp);

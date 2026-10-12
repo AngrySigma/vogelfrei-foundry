@@ -26,10 +26,6 @@ import helpersMacrosTests, {
   key as helpersMacrosKey,
   options as helpersMacrosOptions,
 } from "../module/__tests__/helpers-macros.test";
-import helpersPartyTests, {
-  key as helpersPartyKey,
-  options as helpersPartyOptions,
-} from "../module/__tests__/helpers-party.test";
 import helpersTreasureTests, {
   key as helpersTreasureKey,
   options as helpersTreasureOptions,
@@ -145,19 +141,19 @@ import itemSheetTests, {
   key as itemSheetKey,
   options as itemSheetOptions,
 } from "../module/item/__tests__/sheet-item.test";
+import partyFormationTests, {
+  key as partyFormationKey,
+  options as partyFormationOptions,
+} from "../module/party/__tests__/formation.test";
 // PARTY TESTING IMPORTS
-import partyEntityTests, {
-  key as partyEntityKey,
-  options as partyEntityOptions,
-} from "../module/party/__tests__/entity-party.test";
-import partySheetTests, {
-  key as partySheetKey,
-  options as partySheetOptions,
-} from "../module/party/__tests__/sheet-party.test";
-import partyXpSheetTests, {
-  key as partyXpSheetKey,
-  options as partyXpSheetOptions,
-} from "../module/party/__tests__/sheet-party-xp.test";
+import partyRosterTests, {
+  key as partyRosterKey,
+  options as partyRosterOptions,
+} from "../module/party/__tests__/roster.test";
+import partyXpSplitTests, {
+  key as partyXpSplitKey,
+  options as partyXpSplitOptions,
+} from "../module/party/__tests__/xp-split.test";
 
 export type QuenchMethods = {
   [s: string]: any;
@@ -245,9 +241,9 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   /* PARTY TESTING                         */
   /* ------------------------------------------- */
 
-  quench.registerBatch(partyEntityKey, partyEntityTests, partyEntityOptions);
-  quench.registerBatch(partySheetKey, partySheetTests, partySheetOptions);
-  quench.registerBatch(partyXpSheetKey, partyXpSheetTests, partyXpSheetOptions);
+  quench.registerBatch(partyRosterKey, partyRosterTests, partyRosterOptions);
+  quench.registerBatch(partyXpSplitKey, partyXpSplitTests, partyXpSplitOptions);
+  quench.registerBatch(partyFormationKey, partyFormationTests, partyFormationOptions);
 
   /* ------------------------------------------- */
   /* HELPER TESTING                               */
@@ -258,7 +254,6 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(helpersDiceKey, helpersDiceTests, helpersDiceOptions);
   quench.registerBatch(helpersHandlebarsKey, helpersHandlebarsTests, helpersHandlebarsOptions);
   quench.registerBatch(helpersMacrosKey, helpersMacrosTests, helpersMacrosOptions);
-  quench.registerBatch(helpersPartyKey, helpersPartyTests, helpersPartyOptions);
   quench.registerBatch(helpersTreasureKey, helpersTreasureTests, helpersTreasureOptions);
   quench.registerBatch(chronicleKey, chronicleTests, chronicleOptions);
   quench.registerBatch(moneyKey, moneyTests, moneyOptions);

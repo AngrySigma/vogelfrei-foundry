@@ -21,16 +21,16 @@ const preloadHandlebarsTemplates = async () => {
     `${OSE.systemPath()}/templates/actors/partials/monster-attributes-tab.html`,
     // Item Display
     `${OSE.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
-    // Party Sheet
-    `${OSE.systemPath()}/templates/apps/party-sheet.html`,
     `${OSE.systemPath()}/templates/apps/pending-rolls.html`,
-    // `${OSE.systemPath()}/templates/apps/party-xp.html`,
     // Combat Tab
     `${OSE.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`,
     `${OSE.systemPath()}/templates/apps/combat-set-groups.hbs`,
     // Chronicle
     `${OSE.systemPath()}/templates/apps/chronicle.hbs`,
     `${OSE.systemPath()}/templates/apps/delve.hbs`,
+    // Party
+    `${OSE.systemPath()}/templates/apps/party.hbs`,
+    `${OSE.systemPath()}/templates/apps/formation.hbs`,
   ];
   return foundry.applications.handlebars.loadTemplates(templatePaths);
 };

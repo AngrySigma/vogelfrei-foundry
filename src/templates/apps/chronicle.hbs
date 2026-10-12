@@ -104,6 +104,16 @@
     {{/if}}
   </section>
 
+  <button type="button" class="party-line" data-action="openParty" data-tooltip="{{localize 'VF.party.Open'}}">
+    <i class="fa-solid fa-users"></i>
+    {{#if party.perTurn}}
+    <span class="pace">{{party.perTurn.value}}' &middot; {{party.perDay.value}} {{localize "VF.party.Miles"}}</span>
+    <span class="who">{{party.perTurn.names}}</span>
+    {{else}}
+    <span class="pace">{{localize "VF.party.Title"}}</span>
+    {{/if}}
+  </button>
+
   {{#if travel}}
   <section class="encounters">
     <h3>{{localize "VF.chronicle.RandomEncounters"}}</h3>

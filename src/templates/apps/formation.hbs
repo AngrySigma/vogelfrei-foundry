@@ -1,0 +1,79 @@
+<section class="tab vf-formation {{tab.cssClass}}" data-group="primary" data-tab="formation"
+         data-layout="{{formation.layout.id}}">
+
+  <nav class="layouts">
+    {{#each formation.layouts}}
+    <button type="button" class="layout-chip {{#if viewing}}viewing{{/if}} {{#if active}}active{{/if}}"
+            data-action="viewLayout" data-layout="{{id}}"
+            {{#if active}}data-tooltip="{{localize 'VF.formation.Marching'}}"{{/if}}>
+      {{#if active}}<i class="fa-solid fa-flag"></i>{{/if}}
+      {{name}} <span class="width">{{width}}</span>
+    </button>
+    {{/each}}
+  </nav>
+
+  <div class="layout-controls">
+    <input type="text" name="layoutName" value="{{formation.layout.name}}" maxlength="40"
+           data-tooltip="{{localize 'VF.formation.Name'}}" />
+    <label class="width" data-tooltip="{{localize 'VF.formation.WidthHint'}}">
+      <i class="fa-solid fa-arrows-left-right"></i>
+      <input type="number" name="layoutWidth" min="1" max="{{formation.layout.maxWidth}}" step="1"
+             value="{{formation.layout.width}}" />
+    </label>
+    {{#if formation.layout.removable}}
+    <button type="button" class="icon" data-action="removeLayout" data-tooltip="{{localize 'VF.formation.RemoveLayout'}}">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+    {{/if}}
+  </div>
+
+  {{#if formation.layout.active}}
+  <p class="marching"><i class="fa-solid fa-flag"></i> {{localize "VF.formation.Marching"}}</p>
+  {{else}}
+  <button type="button" class="adopt" data-action="activateLayout">
+    <i class="fa-solid fa-flag"></i> {{localize "VF.formation.Adopt"}}
+  </button>
+  {{/if}}
+
+  <div class="front"><i class="fa-solid fa-angles-up"></i> {{localize "VF.formation.Front"}}</div>
+  <div class="grid" style="--files: {{formation.layout.width}}">
+    {{#each formation.ranks}}
+    {{#each this}}
+    <div class="square {{#if person}}filled{{/if}}" data-index="{{index}}">
+      <span class="number">{{number}}</span>
+      {{#if person}}
+      <div class="person" data-uuid="{{person.uuid}}" draggable="true" data-tooltip="{{person.name}}">
+        <img src="{{person.img}}" alt="" draggable="false" />
+        <span class="name">{{person.name}}</span>
+      </div>
+      <button type="button" class="clear" data-action="clearSquare" data-tooltip="{{localize 'VF.formation.Clear'}}">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      {{/if}}
+    </div>
+    {{/each}}
+    {{/each}}
+  </div>
+
+  <h3>{{localize "VF.formation.Bench"}}</h3>
+  <div class="bench">
+    {{#each formation.bench}}
+    <div class="person" data-uuid="{{uuid}}" draggable="true">
+      <img src="{{img}}" alt="" draggable="false" />
+      <span class="name">{{name}}</span>
+    </div>
+    {{else}}
+    <p class="empty">
+      {{#if formation.nobody}}{{localize "VF.formation.NobodyOnRoster"}}{{else}}{{localize "VF.formation.AllPlaced"}}{{/if}}
+    </p>
+    {{/each}}
+  </div>
+
+  <div class="add">
+    <input type="text" name="newLayout" placeholder="{{localize 'VF.formation.NewLayoutPlaceholder'}}" maxlength="40" />
+    <button type="button" data-action="addLayout" data-tooltip="{{localize 'VF.formation.AddLayout'}}">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+  <p class="hint">{{localize "VF.formation.Hint"}}</p>
+</section>

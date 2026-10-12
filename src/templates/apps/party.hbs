@@ -1,0 +1,66 @@
+<section class="tab vf-party-body {{tab.cssClass}}" data-group="primary" data-tab="roster">
+
+  <header class="pace">
+    {{#if pace.perTurn}}
+    <div class="pace-row" data-tooltip="{{localize 'VF.party.PerTurnHint'}}">
+      <span class="label">{{localize "VF.party.PerTurn"}}</span>
+      <span class="value">{{pace.perTurn.value}}'</span>
+      <span class="who">{{pace.perTurn.names}}</span>
+    </div>
+    <div class="pace-row" data-tooltip="{{localize 'VF.party.PerDayHint'}}">
+      <span class="label">{{localize "VF.party.PerDay"}}</span>
+      <span class="value">{{pace.perDay.value}} {{localize "VF.party.Miles"}}</span>
+      <span class="who">{{pace.perDay.names}}</span>
+    </div>
+    {{else}}
+    <p class="empty">{{localize "VF.party.NoPace"}}</p>
+    {{/if}}
+  </header>
+
+  {{#if isReferee}}
+  <button type="button" class="split-xp" data-action="splitXP" {{#if empty}}disabled{{/if}}>
+    <i class="fa-solid fa-scale-balanced"></i> {{localize "VF.party.xp.Title"}}
+  </button>
+  {{/if}}
+
+  {{#if (and isReferee empty)}}
+  <p class="hint">{{localize "VF.party.DropHint"}}</p>
+  {{/if}}
+
+  {{#each roles}}
+  <section class="role" data-role="{{role}}">
+    <h3>
+      <span>{{localize label}} <span class="count">{{count}}</span></span>
+      {{#if count}}<span class="total" data-tooltip="{{localize 'VF.party.SharesTotal'}}">{{shares}}</span>{{/if}}
+    </h3>
+    <ol class="unlist members">
+      {{#each members}}
+      <li class="member {{#if missing}}missing{{/if}}" data-uuid="{{uuid}}" {{#if @root.isReferee}}draggable="true"{{/if}}>
+        <img class="portrait" src="{{img}}" alt="" draggable="false" />
+        <span class="name">
+          {{#if canOpen}}<a data-action="openSheet">{{name}}</a>{{else}}{{name}}{{/if}}
+          {{#if encumbrance}}<span class="load">{{encumbrance}}</span>{{/if}}
+        </span>
+        {{#unless missing}}
+        <span class="move" data-tooltip="{{localize 'VF.party.MemberPace'}}">
+          {{#if (ne perTurn null)}}{{perTurn}}'{{else}}&mdash;{{/if}}
+        </span>
+        {{/unless}}
+        {{#if @root.isReferee}}
+        <input type="number" name="shares" min="0" step="0.05" value="{{shares}}"
+               data-tooltip="{{localize 'VF.party.Shares'}}" />
+        <button type="button" class="drop" data-action="removeMember" data-tooltip="{{localize 'VF.party.Remove'}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        {{else}}
+        <span class="shares" data-tooltip="{{localize 'VF.party.Shares'}}">{{shares}}</span>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.party.NoneInRole"}}</li>
+      {{/each}}
+    </ol>
+  </section>
+  {{/each}}
+
+</section>
