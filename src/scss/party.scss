@@ -197,3 +197,210 @@
   font-size: var(--font-size-12);
   opacity: 0.75;
 }
+
+// The tab strip.
+.vf-party nav.tabs {
+  margin-bottom: 6px;
+}
+
+// The marching order.
+.vf-party .vf-formation {
+  .layouts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+
+    .layout-chip {
+      flex: 0 0 auto;
+      width: auto;
+      padding: 0 8px;
+      line-height: 22px;
+
+      &.viewing {
+        border-color: $colorOlive;
+        font-weight: bold;
+      }
+
+      &.active i {
+        color: rgb(150 30 30);
+      }
+
+      .width {
+        opacity: 0.6;
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+
+  .layout-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    input[name="layoutName"] {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .width {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+
+      input {
+        width: 40px;
+        text-align: center;
+      }
+    }
+
+    button.icon {
+      flex: 0 0 28px;
+    }
+  }
+
+  .marching,
+  .adopt {
+    width: 100%;
+    margin: 6px 0 0;
+  }
+
+  .marching {
+    text-align: center;
+    font-weight: bold;
+
+    i {
+      color: rgb(150 30 30);
+    }
+  }
+
+  .front {
+    margin-top: 8px;
+    text-align: center;
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--files), minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .square {
+    position: relative;
+    min-height: 58px;
+    border: 1px dashed $colorTan;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.filled {
+      border-style: solid;
+      background: rgb(0 0 0 / 4%);
+    }
+
+    &.drop-target {
+      outline: 2px solid $colorOlive;
+    }
+
+    .number {
+      position: absolute;
+      top: 1px;
+      left: 4px;
+      font-size: var(--font-size-11);
+      opacity: 0.6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clear {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      line-height: 16px;
+      border: none;
+      background: none;
+      opacity: 0;
+
+      i {
+        margin: 0;
+      }
+    }
+
+    &:hover .clear {
+      opacity: 0.6;
+    }
+  }
+
+  .person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    min-width: 0;
+    cursor: grab;
+
+    img {
+      width: 32px;
+      height: 32px;
+      border: none;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .name {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: var(--font-size-11);
+    }
+  }
+
+  h3 {
+    margin: 8px 0 2px;
+    border-bottom: 1px solid $colorTan;
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .bench {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+    padding: 2px;
+    border-radius: 4px;
+
+    &.drop-target {
+      outline: 2px dashed $colorTan;
+    }
+
+    .person {
+      width: 64px;
+    }
+  }
+
+  .add {
+    display: flex;
+    gap: 3px;
+    margin-top: 8px;
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    button {
+      flex: 0 0 28px;
+    }
+  }
+}

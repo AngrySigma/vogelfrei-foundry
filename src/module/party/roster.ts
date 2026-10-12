@@ -14,6 +14,8 @@
  * Foundry-free, so the bookkeeping can be checked on its own.
  */
 
+import { defaultFormation, type Formation, normaliseFormation } from "./formation";
+
 /** The roles, in the order the window lists them. */
 export const ROLES = ["player", "henchman", "hireling", "npc", "vehicle"] as const;
 
@@ -50,11 +52,13 @@ export type Party = {
    */
   version: number;
   members: RosterEntry[];
+  /** The marching order: see formation.ts. */
+  formation: Formation;
 };
 
 /** An empty roster. */
 export function defaultParty(): Party {
-  return { version: 0, members: [] };
+  return { version: 0, members: [], formation: defaultFormation() };
 }
 
 /** Whether a string names a role. */
@@ -96,7 +100,19 @@ export function normaliseParty(stored: unknown): Party {
     members.push({ uuid: entry.uuid, role: entry.role, shares: cleanShares(entry.shares) });
   }
 
-  return { version: Number(raw.version) || 0, members };
+  return {
+    version: Number(raw.version) || 0,
+    members,
+    formation: normaliseFormation(raw.formation, inFormation(members)),
+  };
+}
+
+/**
+ * Who may stand in the marching order: everyone on the roster but the
+ * vehicles, which follow the column rather than take a square in it.
+ */
+export function inFormation(members: RosterEntry[]): Set<string> {
+  return new Set(members.filter((entry) => entry.role !== "vehicle").map((entry) => entry.uuid));
 }
 
 /** The members holding one role, in roster order. */

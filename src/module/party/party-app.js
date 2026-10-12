@@ -12,9 +12,17 @@
  *
  * At the top is the party's pace: the slowest member per Turn and per day,
  * named, since "who is holding us back" is the question being asked.
+ *
+ * The second tab is the marching order, which is the players' sandbox: any
+ * number of named layouts, any of them edited by anyone, one of them marked
+ * as the order the party is keeping. Which layout a window is *showing* is
+ * that window's own business, so a player trying out "Corridor" does not
+ * change what everyone else is looking at -- only marking it does.
  */
+
+import { layoutOf, MAX_WIDTH, placed, ranks } from "./formation";
 import { milesPerDay, placeMember, ROLES, removeMember, setShares, slowest } from "./roster";
-import { getParty, refreshOnChange, updateParty } from "./store";
+import { editFormation, getParty, refreshOnChange, updateParty } from "./store";
 import { splitXP } from "./xp-split";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -104,6 +112,95 @@ async function worldActor(uuid) {
 async function onOpenSheet(_event, target) {
   const actor = await fromUuid(target.closest("[data-uuid]").dataset.uuid);
   actor?.sheet.render(true);
+}
+
+/**
+ * What the formation tab shows: the layouts as tabs of their own, the one
+ * being viewed as a grid, and whoever is not yet placed in it.
+ *
+ * @param {import("./roster").Party} party - The roster.
+ * @param {string|null} viewing - The layout this window is showing.
+ * @returns {object} The formation part's context.
+ */
+function describeFormation(party, viewing) {
+  const { formation } = party;
+  const layout = layoutOf(formation, viewing) ?? layoutOf(formation, formation.active);
+  const people = new Map(
+    party.members
+      .filter((entry) => entry.role !== "vehicle")
+      .map((entry) => {
+        const actor = fromUuidSync(entry.uuid);
+        return [
+          entry.uuid,
+          { uuid: entry.uuid, name: actor?.name ?? "?", img: actor?.img ?? "icons/svg/mystery-man.svg" },
+        ];
+      }),
+  );
+  const inLayout = new Set(placed(layout));
+
+  return {
+    layouts: formation.layouts.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      width: entry.width,
+      viewing: entry.id === layout.id,
+      active: entry.id === formation.active,
+    })),
+    layout: {
+      id: layout.id,
+      name: layout.name,
+      width: layout.width,
+      maxWidth: MAX_WIDTH,
+      active: layout.id === formation.active,
+      removable: formation.layouts.length > 1,
+    },
+    ranks: ranks(layout).map((rank) =>
+      rank.map(({ index, uuid }) => ({ index, number: index + 1, person: uuid ? people.get(uuid) : null })),
+    ),
+    bench: [...people.values()].filter((person) => !inLayout.has(person.uuid)),
+    nobody: people.size === 0,
+  };
+}
+
+/** Show another layout in this window, without changing anyone else's. */
+function onViewLayout(_event, target) {
+  this.viewing = target.dataset.layout;
+  this.render({ parts: ["formation"] });
+}
+
+/** Mark the layout on show as the one the party is keeping. */
+async function onActivateLayout(_event, target) {
+  await editFormation({ type: "activate", layout: target.closest("[data-layout]").dataset.layout });
+}
+
+/** Add a layout, starting from the current order, and show it. */
+async function onAddLayout() {
+  const input = this.element.querySelector('input[name="newLayout"]');
+  const id = foundry.utils.randomID();
+  const width = Number(this.element.querySelector('input[name="layoutWidth"]')?.value) || 2;
+  // Set first, so the redraw the new layout causes already shows it.
+  this.viewing = id;
+  await editFormation({ type: "add", id, name: input?.value ?? "", width });
+}
+
+/** Drop the layout on show. */
+async function onRemoveLayout(_event, target) {
+  const { layout } = target.closest("[data-layout]").dataset;
+  const name = getParty().formation.layouts.find((entry) => entry.id === layout)?.name ?? "";
+  const confirmed = await foundry.applications.api.DialogV2.confirm({
+    window: { title: game.i18n.localize("VF.formation.RemoveLayout") },
+    content: `<p>${game.i18n.format("VF.formation.RemoveConfirm", { name: foundry.utils.escapeHTML(name) })}</p>`,
+  });
+  if (!confirmed) return;
+  this.viewing = null;
+  await editFormation({ type: "remove", layout });
+}
+
+/** Step someone off their square, back to the bench. */
+async function onClearSquare(_event, target) {
+  const square = target.closest("[data-index]");
+  const layout = target.closest("[data-layout]").dataset.layout;
+  await editFormation({ type: "clear", layout, index: Number(square.dataset.index) });
 }
 
 /** Strike a member off the roster. */
@@ -197,17 +294,38 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
       icon: "fa-solid fa-users",
       resizable: true,
     },
-    position: { width: 380, height: "auto" },
+    position: { width: 400, height: "auto" },
     actions: {
       openSheet: onOpenSheet,
       removeMember: onRemoveMember,
       splitXP: onSplitXP,
+      viewLayout: onViewLayout,
+      activateLayout: onActivateLayout,
+      addLayout: onAddLayout,
+      removeLayout: onRemoveLayout,
+      clearSquare: onClearSquare,
     },
   };
 
   static PARTS = {
+    tabs: { template: "templates/generic/tab-navigation.hbs" },
     roster: { template: "/systems/vogelfrei/dist/templates/apps/party.hbs" },
+    formation: { template: "/systems/vogelfrei/dist/templates/apps/formation.hbs" },
   };
+
+  static TABS = {
+    primary: {
+      tabs: [
+        { id: "roster", icon: "fa-solid fa-users" },
+        { id: "formation", icon: "fa-solid fa-chess-board" },
+      ],
+      initial: "roster",
+      labelPrefix: "VF.party.tab",
+    },
+  };
+
+  /** The layout this window is showing; null means the active one. */
+  viewing = null;
 
   /** Open the Party window, or bring it forward if it is already up. */
   static show() {
@@ -220,12 +338,13 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 
   /** @inheritDoc */
-  async _prepareContext() {
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
     const party = getParty();
     const isReferee = game.user.isGM;
     const members = party.members.map(describeMember);
 
-    return {
+    return Object.assign(context, {
       isReferee,
       empty: members.length === 0,
       pace: partyPace(members),
@@ -240,14 +359,27 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
           shares: formatShares(total),
         };
       }),
-    };
+      formation: describeFormation(party, this.viewing),
+    });
+  }
+
+  /** @inheritDoc */
+  async _preparePartContext(partId, context, options) {
+    const partContext = await super._preparePartContext(partId, context, options);
+    const tab = partContext.tabs?.[partId];
+    if (tab) partContext.tab = tab;
+    return partContext;
   }
 
   /** @inheritDoc */
   _onRender(context, options) {
     super._onRender(context, options);
-    if (!game.user.isGM) return;
+    this.#bindFormation();
+    if (game.user.isGM) this.#bindRoster();
+  }
 
+  /** The Referee's controls on the roster tab: shares, and dragging Actors between roles. */
+  #bindRoster() {
     for (const input of this.element.querySelectorAll('input[name="shares"]')) {
       input.addEventListener("change", (event) => {
         const { uuid } = event.currentTarget.closest("[data-uuid]").dataset;
@@ -263,16 +395,55 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
     }
 
     for (const list of this.element.querySelectorAll(".role[data-role]")) {
-      list.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        list.classList.add("drop-target");
+      dropZone(list, (event) => this.#onDropOnRole(event, list.dataset.role));
+    }
+  }
+
+  /** Everyone's controls on the formation tab: names, widths, and dragging people onto squares. */
+  #bindFormation() {
+    const root = this.element.querySelector(".vf-formation[data-layout]");
+    if (!root) return;
+    const { layout } = root.dataset;
+
+    root.querySelector('input[name="layoutName"]')?.addEventListener("change", (event) => {
+      editFormation({ type: "rename", layout, name: event.currentTarget.value });
+    });
+    root.querySelector('input[name="layoutWidth"]')?.addEventListener("change", (event) => {
+      editFormation({ type: "width", layout, width: event.currentTarget.value });
+    });
+    root.querySelector('input[name="newLayout"]')?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      onAddLayout.call(this);
+    });
+
+    for (const person of root.querySelectorAll(".person[data-uuid]")) {
+      person.addEventListener("dragstart", (event) => {
+        event.dataTransfer.setData("text/plain", JSON.stringify({ type: "Actor", uuid: person.dataset.uuid }));
+        event.dataTransfer.effectAllowed = "move";
       });
-      list.addEventListener("dragleave", (event) => {
-        if (!list.contains(event.relatedTarget)) list.classList.remove("drop-target");
+    }
+
+    for (const square of root.querySelectorAll(".square[data-index]")) {
+      dropZone(square, async (event) => {
+        const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+        if (data?.type !== "Actor" || !data.uuid) return;
+        // A token's Actor, or the world Actor itself, stands for its roster entry.
+        const actor = await worldActor(data.uuid);
+        if (!actor) return;
+        await editFormation({ type: "place", layout, uuid: actor.uuid, index: Number(square.dataset.index) });
       });
-      list.addEventListener("drop", (event) => {
-        list.classList.remove("drop-target");
-        this.#onDrop(event, list.dataset.role);
+    }
+
+    const bench = root.querySelector(".bench");
+    if (bench) {
+      dropZone(bench, async (event) => {
+        const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+        const index = getParty()
+          .formation.layouts.find((entry) => entry.id === layout)
+          ?.slots.indexOf(data?.uuid);
+        if (index === undefined || index === -1) return;
+        await editFormation({ type: "clear", layout, index });
       });
     }
   }
@@ -283,8 +454,7 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
    * @param {DragEvent} event - The drop.
    * @param {import("./roster").Role} role - The role it landed in.
    */
-  async #onDrop(event, role) {
-    event.preventDefault();
+  async #onDropOnRole(event, role) {
     const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
     const before = event.target.closest(".member[data-uuid]")?.dataset.uuid ?? null;
 
@@ -300,6 +470,28 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
 
     await updateParty((party) => actors.reduce((next, actor) => placeMember(next, actor.uuid, role, before), party));
   }
+}
+
+/**
+ * Make an element accept drops, highlighting it while something hovers.
+ *
+ * @param {HTMLElement} element - The drop target.
+ * @param {(event: DragEvent) => void} onDrop - Called with the drop.
+ */
+function dropZone(element, onDrop) {
+  element.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    element.classList.add("drop-target");
+  });
+  element.addEventListener("dragleave", (event) => {
+    if (!element.contains(event.relatedTarget)) element.classList.remove("drop-target");
+  });
+  element.addEventListener("drop", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    element.classList.remove("drop-target");
+    onDrop(event);
+  });
 }
 
 refreshOnChange(PartyApp);

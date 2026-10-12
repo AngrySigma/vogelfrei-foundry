@@ -141,6 +141,10 @@ import itemSheetTests, {
   key as itemSheetKey,
   options as itemSheetOptions,
 } from "../module/item/__tests__/sheet-item.test";
+import partyFormationTests, {
+  key as partyFormationKey,
+  options as partyFormationOptions,
+} from "../module/party/__tests__/formation.test";
 // PARTY TESTING IMPORTS
 import partyRosterTests, {
   key as partyRosterKey,
@@ -239,6 +243,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
 
   quench.registerBatch(partyRosterKey, partyRosterTests, partyRosterOptions);
   quench.registerBatch(partyXpSplitKey, partyXpSplitTests, partyXpSplitOptions);
+  quench.registerBatch(partyFormationKey, partyFormationTests, partyFormationOptions);
 
   /* ------------------------------------------- */
   /* HELPER TESTING                               */

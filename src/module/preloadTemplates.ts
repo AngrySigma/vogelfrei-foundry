@@ -30,6 +30,7 @@ const preloadHandlebarsTemplates = async () => {
     `${OSE.systemPath()}/templates/apps/delve.hbs`,
     // Party
     `${OSE.systemPath()}/templates/apps/party.hbs`,
+    `${OSE.systemPath()}/templates/apps/formation.hbs`,
   ];
   return foundry.applications.handlebars.loadTemplates(templatePaths);
 };

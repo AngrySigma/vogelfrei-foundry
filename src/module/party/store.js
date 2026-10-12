@@ -5,11 +5,29 @@
  * client and their `onChange` fires everywhere, so the Referee's edits redraw
  * the players' windows without a socket of our own. Only the Referee writes
  * the roster -- the players' copy is a readout.
+ *
+ * The marching order is the exception: it is the players' to arrange. They
+ * cannot write a world setting, so a player's change is sent to the active
+ * Referee's client as a `User#query`, which applies it. Only formation
+ * operations travel that way, so a player still cannot touch the roster.
+ * With no Referee connected there is nobody to apply it, and the player is
+ * told so.
  */
-import { defaultParty, normaliseParty, placeMember, removeMember } from "./roster";
+import { applyFormationOp } from "./formation";
+import { defaultParty, inFormation, normaliseParty, placeMember, removeMember } from "./roster";
 
 /** The setting key, under the system's namespace. */
 export const SETTING = "party";
+
+/** The query a player's formation change travels as. */
+export const FORMATION_QUERY = "vogelfrei.formation";
+
+/**
+ * Writes in flight, one after another. Two players dragging at once would
+ * otherwise both read the same roster and the second write would undo the
+ * first.
+ */
+let writes = Promise.resolve();
 
 /** Applications that should redraw when the roster, or one of its Actors, changes. */
 const listeners = new Set();
@@ -32,6 +50,7 @@ export function refresh() {
 
 /** Register the setting. Called from `init`. */
 export function registerPartySetting() {
+  CONFIG.queries[FORMATION_QUERY] = onFormationQuery;
   game.settings.register(game.system.id, SETTING, {
     scope: "world",
     config: false,
@@ -62,9 +81,66 @@ export async function updateParty(mutate) {
     ui.notifications?.warn(game.i18n.localize("VF.party.RefereeOnly"));
     return;
   }
-  const next = mutate(foundry.utils.deepClone(getParty()));
-  if (!next) return;
-  await game.settings.set(game.system.id, SETTING, next);
+  writes = writes
+    .then(async () => {
+      const next = mutate(foundry.utils.deepClone(getParty()));
+      if (next) await game.settings.set(game.system.id, SETTING, next);
+    })
+    .catch((error) => console.error("Vogelfrei | Could not save the party.", error));
+  await writes;
+}
+
+/**
+ * Apply a formation change to the roster.
+ *
+ * @param {import("./roster").Party} party - The roster.
+ * @param {import("./formation").FormationOp} op - The change.
+ * @returns {import("./roster").Party} The roster with the new formation.
+ */
+function withFormationOp(party, op) {
+  return { ...party, formation: applyFormationOp(party.formation, op, inFormation(party.members)) };
+}
+
+/**
+ * Change the marching order, from anyone.
+ *
+ * The Referee writes directly. A player's change goes to the active Referee,
+ * who applies it; the setting's change then redraws everyone's window,
+ * including the sender's.
+ *
+ * @param {import("./formation").FormationOp} op - The change.
+ * @returns {Promise<void>} Once it is applied, or refused.
+ */
+export async function editFormation(op) {
+  if (game.user.isGM) {
+    await updateParty((party) => withFormationOp(party, op));
+    return;
+  }
+
+  const referee = game.users.activeGM;
+  if (!referee) {
+    ui.notifications?.warn(game.i18n.localize("VF.formation.NeedsReferee"));
+    return;
+  }
+  try {
+    await referee.query(FORMATION_QUERY, op, { timeout: 10_000 });
+  } catch (error) {
+    console.error("Vogelfrei | The Referee did not apply a formation change.", error);
+    ui.notifications?.warn(game.i18n.localize("VF.formation.NotApplied"));
+  }
+}
+
+/**
+ * Receive a player's formation change. Registered on every client, but only
+ * the active Referee is ever asked, and anyone else refuses.
+ *
+ * @param {import("./formation").FormationOp} op - The change.
+ * @returns {Promise<boolean>} True once applied.
+ */
+async function onFormationQuery(op) {
+  if (!game.user.isGM) throw new Error("Only a Referee applies formation changes");
+  await updateParty((party) => withFormationOp(party, op));
+  return true;
 }
 
 /**

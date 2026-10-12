@@ -107,9 +107,13 @@ and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relab
   runtime dependency.
 - `chronicle/`: Vogelfrei-specific calendar, watch/turn clocks, encounters and upkeep. It has
   no OSE counterpart.
-- `party/`: the Party window. `roster.ts` is the pure roster (roles, shares, slowest-member pace).
-  `store.js` keeps it in one world setting that only the Referee writes. It replaced OSE's
-  Party Sheet and its per-actor `party` flag, which is read in once by `adoptLegacyParty`.
+- `party/`: the Party window, with Roster and Formation tabs. The pure parts are `roster.ts`
+  (roles, shares, slowest-member pace), `xp-split.ts` (an XP award by shares, posted to chat
+  and never written to sheets) and `formation.ts` (named marching-order layouts). `store.js`
+  keeps all of it in one world setting. Only the Referee writes it. Players edit the formation
+  by sending a `FormationOp` to the active GM via `User#query` (`CONFIG.queries`), so no system
+  socket is needed. This replaced OSE's Party Sheet and its per-actor `party` flag, which
+  `adoptLegacyParty` reads in once.
 - `upload-guard.ts` keeps player uploads in one folder.
 
 **Compendia.** `src/packs/<pack>/*.yml` holds the reviewable sources, one document per file,
