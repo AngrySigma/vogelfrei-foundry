@@ -1,245 +1,123 @@
-# CLAUDE.md — Vogelfrei for Foundry VTT
+# CLAUDE.md
 
-Guidance for Claude Code working in this directory.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## The task
+## What this is
 
-Build **Vogelfrei** — the OSR game whose rulebook lives at `~/tabletop/vogelfrei` — as a
-**Foundry VTT game system**, derived from the installed **Old-School Essentials (OSE)**
-system as its foundation.
+**Vogelfrei** is a Foundry VTT game system (id `vogelfrei`, Foundry **v14**), hard-forked from
+Old-School Essentials 2.3.0 (`7d720d6` is the fork point). It implements the OSR game whose
+rulebook lives at `~/tabletop/vogelfrei`. Published as GitHub releases from
+`AngrySigma/vogelfrei-foundry`. README.md, CONTRIBUTING.md and CHANGELOG.md are still OSE's
+upstream text and do not describe this project.
 
-The deliverable is a self-contained, installable system package that can be dropped onto
-*any* remote Linux box running Foundry: either by manifest URL from a GitHub release, or
-by copying a directory into `Data/systems/`. Nothing is built yet — this file is the
-starting brief.
+## Machine layout and hard constraints
 
-**Status: greenfield.** No code exists in this directory yet.
-
-## Layout of the machine
-
-| Path | What it is | May Claude write to it? |
+| Path | What it is | Write? |
 | --- | --- | --- |
-| `~/foundry/` | Foundry VTT **application install** (Electron bundle + `resources/app` server). Version **14.365**. | **No.** Read only. See constraints. |
-| `~/foundrydata/` | **PROD** Foundry data dir. The `foundry.service` systemd unit runs it on **port 30000**. Holds the live campaign world *In Profundum* (`worlds/better-than-any-man`) and its player images. vogelfrei here is a normal install from the GitHub release manifest, updated through Foundry like on any other server. | **No. Never.** Not for tests, not for "just a look" writes. Read only, and only when asked. |
-| `~/foundrydata-dev/` | **DEV** Foundry data dir, **port 30001**, run by the `foundry-dev` systemd service. `Data/systems/vogelfrei` is a symlink to this repo, so builds show up on reload. Holds the throwaway test worlds (`newworld`, `otherworld`). Must never contain *In Profundum*. | Yes — worlds, actors and settings here are expendable. |
-| `~/foundrydata-dev/Data/systems/ose/` | **OSE 2.3.0**, the baseline to fork. A *build artifact* — see below. | **No.** Treat as an upstream reference copy. |
-| `~/foundrydata-dev/Data/modules/classicfantasycompendium/` | Classic Fantasy Compendium 2.0.0 — OSE SRD content in LevelDB packs. Useful as a worked example of pack structure. | No. |
-| `~/tabletop/vogelfrei/` | The **rulebook source** (Zensical static site, 158 Markdown pages under `docs/`). The rules authority. Its own git repo, its own `CLAUDE.md`. | Read. Don't edit rules from here — that's a separate repo and a separate decision. |
-| `~/foundry-dev/` | This directory. Workspace for the Vogelfrei system. | Yes. |
+| `~/foundry/` | Foundry **14.365** app install, shared by both instances. `./foundry/` here symlinks into it for types. | **Never.** Read to learn the API. |
+| `~/foundrydata/` | **PROD** data dir, port 30000, `foundry.service`. Live campaign *In Profundum*, players connected. Gets vogelfrei only via the published release manifest. | **Never.** Not for tests, not "just a look" writes. Read only when asked. |
+| `~/foundrydata-dev/` | **DEV** data dir, port 30001, `foundry-dev` service. `Data/systems/vogelfrei` symlinks to this repo. Test worlds `newworld`, `otherworld` are expendable. Must never contain *In Profundum*. | Yes. |
+| `~/foundrydata-dev/Data/systems/ose/` | Installed OSE 2.3.0, the untouched control. `dist/ose.js.map` holds full upstream source in `sourcesContent`. | No. |
+| `~/tabletop/vogelfrei/` | Rulebook source (Markdown under `docs/`), its own repo. | Read only. |
 
-Both instances share the one app install. Prod: `foundry.service` →
-`node ~/foundry/resources/app/main.js --dataPath=/home/iiov/foundrydata`, port 30000, always on,
-players connected. Dev: `foundry-dev.service`, same command with `--dataPath=/home/iiov/foundrydata-dev`,
-port 30001. Both services, the dev data dir and the firewall rules are managed in the
-`AngrySigma/vogelfrei-infra` Ansible repo (`roles/foundry`), not here. The local
-`foundryconfig.json` (used by `npm run link`) must list **only** `~/foundrydata-dev`. Node v24.19.0, npm 11.17.0, git 2.34.1 available. GitHub is
-reachable (`git ls-remote` to `NecroticGnome/ose-foundry-core` succeeds).
+- `foundryconfig.json` (used by `npm run link`) must list **only** `~/foundrydata-dev`.
+- Services, dev data dir and firewall are managed in the `AngrySigma/vogelfrei-infra` Ansible repo (`roles/foundry`), not here.
+- **The rulebook is the authority.** If code and book disagree, the book wins, or report the
+  discrepancy. Don't silently patch either side. The user wrote the rulebook, so their word
+  overrides the docs.
+- Licensing: the code is GPL (inherited). Keep `LICENSE.*`, `AUTHORS`, `NOTICE` and attribution
+  intact. Don't import Necrotic Gnome's proprietary content.
 
-## Constraints
+## Commands
 
-1. **Never modify the Foundry core install** (`~/foundry/**`). Reading it to understand the
-   API is encouraged; patching it is forbidden. No exceptions, no "just this one line".
-2. **Never modify the installed OSE system** in place. It is the reference baseline and the
-   control group. Vogelfrei gets its **own system id** and its own directory.
-3. **Prod (`~/foundrydata`, port 30000) is off limits** — it runs a live campaign. All testing
-   happens in the **dev instance** (`~/foundrydata-dev`, port 30001), whose worlds, actors and
-   settings are expendable, so destructive experiments *inside a dev test world* are fine. The
-   install and the OSE copy are not. Prod only ever receives vogelfrei as a published GitHub
-   release.
-4. `~/tabletop/vogelfrei` is the source of truth for rules. If the implementation and the
-   book disagree, the book wins — or the discrepancy gets reported, not silently patched.
-
-## Rules delta: OSE → Vogelfrei
-
-This is the actual work, roughly in order of increasing difficulty.
-
-### 1. Renaming (surface — i18n only)
-
-OSE's data model keys stay; only labels change. All strings live in
-`systems/ose/dist/lang/en.json` under stable key paths:
-
-- `OSE.scores.{str,int,wis,dex,con,cha}.{long,short}` → Vogelfrei's six abilities:
-  **Strength, Toughness, Agility, Intelligence, Willpower, Leadership**.
-  Mapping to OSE slots: `str`→Strength, `con`→Toughness, `dex`→Agility, `int`→Intelligence,
-  `wis`→Willpower, `cha`→Leadership.
-- `OSE.saves.{death,wand,paralysis,breath,spell}.{long,short}` → Vogelfrei's five:
-  **Poison, Magical Device, Paralyzation, Breath Weapon, Magic**.
-  (`death`→Poison, `wand`→Magical Device, `paralysis`→Paralyzation, `breath`→Breath Weapon,
-  `spell`→Magic.)
-- HP → **Wounds**; the `OSE.items.*`, `OSE.Attack*`, `OSE.dialog.*` families cover the rest.
-
-A previous attempt got this far in minutes and it was pure renaming. Expect the same. Note the
-modifier scale differs from B/X: Vogelfrei is 3 → −3, 4-5 → −2, 6-8 → −1, 9-12 → 0, 13-15 → +1,
-16-17 → +2, 18 → +3.
-
-### 2. Wounds / Stamina (data model + sheet + damage application)
-
-OSE has a single `hp {hd, value, max}` pool. Vogelfrei splits it:
-
-- **Wounds** — OSE's `hp`, essentially. Class minimum at level 1 (Warrior 7, Dwarf/Ranger 6,
-  Halfling/Rogue/Townsman/Peasant/Cleric/Elf 4, Academic/Magic-User 3), plus Toughness bonus
-  applied **once** at level 1.
-- **Stamina** — a second pool, rolled from a class die at level 1 and again each level
-  (Martial 1d4, Semi-martial 1d3, Non-martial 1d2). Toughness never applies.
-- **Damage order**: all damage hits Stamina first; overflow goes to Wounds.
-- **Coupling**: whenever Wounds are lost, an *equal* amount of Stamina is lost too (min 0).
-- **Bypass**: unaware/helpless targets, critical hits (nat 20), poison and falling go straight
-  to Wounds. Area effects do *not* bypass, unless the target is helpless.
-- **Monsters and unintelligent creatures have no Stamina at all.**
-- 0 Wounds or fewer → critical injury roll `1d4 + (Wounds below zero)`, table at
-  `docs/Adventuring/Hazards/Damage.md`, plus a d6 hit-location roll.
-
-Touches `template.json`, the character/monster data models, `applyDamage()` in the actor
-entity, and the sheet templates.
-
-### 3. Attack and AC (roll logic)
-
-Vogelfrei is **ascending-AC only**, with a different base and an extra term — OSE's
-`ascendingAC` setting and its THAC0/descending path should both be dropped rather than
-configured around.
-
-- **Melee AC** = 8 + Agility bonus + Weapon Skill + Armour Rating + shield/off-hand.
-- **Ranged AC** = 11 + Agility bonus + Armour Rating.
-  So a character carries **two static AC numbers**, not one — OSE carries `ac` (descending)
-  and `aac` (ascending) as parallel values, and that pair of fields is the natural place to
-  repurpose, but the semantics change completely.
-- **Attack roll** = d20 + Weapon Skill (melee) or Ballistic Skill (ranged) + Strength bonus
-  (melee) or Agility bonus (ranged) + weapon-length modifier; **hits on ≥ AC**.
-- Nat 20 always hits and is a critical (damage direct to Wounds); nat 1 always misses.
-- **Armour Rating** (0–6) adds to AC, it is not damage reduction. Shields: +2 melee AC;
-  shield +3 ranged AC; pavise +5 ranged; buckler +2 melee only.
-- WS/BS are new character stats with no OSE equivalent — closest is `thac0.bba`/`thac0.mod`,
-  but they should be modelled properly.
-
-Full procedure: `docs/Encounters/Combat Actions.md`.
-
-### 4. Skills (x-in-6)
-
-Every character has a base **1 in 6** on any skill; class/career advances raise it; some
-skills are **Special** and unusable at 0. OSE already has exactly this shape in its
-`exploration` block (`ld/od/sd/ft/fg/hn`, rolled `1d6 <= value`), so the mechanism exists —
-it needs a larger, extensible skill list rather than six fixed keys.
-See `docs/Adventuring/Skills.md`.
-
-### 5. Classes, careers, compendia (content)
-
-12 classes × ~6 careers each, 66 career pages, spells and miracles by level, full equipment
-tables. All of it already lives as structured Markdown in `~/tabletop/vogelfrei/docs/` — this
-should be **generated**, not hand-entered, into Foundry compendium packs.
-
-### 6. Character generation (stretch)
-
-`~/tabletop/vogelfrei/.claude/skills/character-generation/` contains working Python that
-rolls stats, ranks classes for an array, applies class/career/alignment/money, rolls bio and
-name, buys equipment against parsed price tables, and computes AC and encumbrance — parsing
-the rulebook Markdown directly.
-
-**The Foundry system must not call that skill.** The wanted outcome is an in-Foundry
-generator dialog producing a complete level-1 character with all stats — OSE already ships
-one (`dist/templates/actors/dialogs/character-creation.html`, `OSE.dialog.generator`) as the
-starting point. The Python scripts are a **specification of the algorithm**, worth reading for
-the rules logic; they are not a runtime dependency.
-
-## How OSE is put together (and how to get its source)
-
-The installed system is a **build artifact**: `dist/ose.js` is a 692 KB bundle. But
-`dist/ose.js.map` ships with **full `sourcesContent` for all 89 original source files**, so
-the entire upstream TypeScript/JS source is recoverable offline:
-
-```python
-import json
-m = json.load(open('/home/iiov/foundrydata-dev/Data/systems/ose/dist/ose.js.map'))
-src = dict(zip(m['sources'], m['sourcesContent']))   # keys like '../src/module/actor/entity.js'
+```sh
+npm run build            # clean → rollup (src/vogelfrei.js → dist/vogelfrei.js) → sass → compile packs
+npm run watch            # rollup + sass in watch mode (does not rebuild packs)
+npm run lint             # biome check src   (fix: npm run fix, format: npm run format)
+npm run typecheck        # tsc --noEmit
+npm run build:packs      # src/packs/**/*.yml → dist/packs/* LevelDB (tools/build-packs/compile.mjs)
+npm run build:packs:sources   # regenerate src/packs YAML from the rulebook (tools/build-packs/generate.py)
 ```
 
-Useful entries:
+Because the dev instance symlinks this repo, a build shows up after reloading the browser on
+port 30001. Template, `system.json`, `template.json` or pack changes may need a world relaunch
+or a dev service restart.
 
-- `src/module/actor/entity.js` — `rollAttack`, `rollDamage`, `applyDamage`, `rollSave`,
-  `rollCheck`, `rollExploration`, `rollHP`, `generateSave`, `getExperience`
-- `src/module/actor/data-model-character.js`, `data-model-monster.js`
-- `src/module/actor/data-model-classes/data-model-character-ac.ts` — AC assembly; hardcodes
-  `baseAscending = 10` / `baseDescending = 9` and picks the `aac`/`ac` property accordingly
-- `src/module/actor/data-model-classes/data-model-character-scores.ts` — ability modifiers
-- `src/module/actor/data-model-classes/data-model-character-encumbrance*.ts` — five strategies
-- `src/module/settings.ts` — registered settings: `ascendingAC`, `applyDamageOption`,
-  `initiative`, `morale`, `encumbranceOption`, `languages`, `significantTreasure`, …
-- `src/module/combat/*.ts`, `src/module/item/data-model-*.js`, `src/module/dialog/*.js`
+### Tests
 
-The map is for **reading**. For actually forking, clone upstream —
-`https://github.com/NecroticGnome/ose-foundry-core` (the map has no `package.json` or build
-config; the real repo is Vite + TypeScript + Handlebars templates and has a test suite).
+There is no Node test runner. Tests are **Quench** batches (mocha/chai inside Foundry). The
+Quench module is installed in the dev instance.
 
-Other structure worth knowing:
+- Test files sit beside the code in `src/**/__tests__/*.test.ts`. Each exports `key`, `options`
+  and a default batch function.
+- **Every batch must be registered** in `src/e2e/index.ts` (`quench.registerBatch(...)`), and
+  that file is imported by `src/vogelfrei.js`. A new test file that isn't registered there
+  never runs.
+- To run them: build, open a dev world on port 30001 with Quench enabled, and run the batches
+  from the Quench UI. A single batch can be run by itself from that UI. They cannot run from the
+  shell, so say so plainly instead of claiming tests passed.
 
-- `system.json` — `id` **must** match the directory name. Declares `esmodules`, `styles`,
-  `languages`, `grid`, `packs`, `compatibility`, and the `manifest`/`download` URL pair used
-  for installs and updates.
-- `template.json` — the raw data model: Actor types `character`/`monster` with `common` and
-  `spellcaster` templates; Item types `item, weapon, armor, spell, ability, container`.
-  Read this first; it is the shortest complete description of what a character *is* in OSE.
-- `dist/templates/` — Handlebars: `actors/`, `actors/partials/`, `actors/dialogs/`, `items/`,
-  `chat/`, `apps/`, `sidebar/`.
-- Compendium packs on modern Foundry are **LevelDB directories**, not NeDB `.db` files — see
-  `modules/classicfantasycompendium/packs/*/` for the real shape. OSE still carries a legacy
-  `dist/packs/macros.db` and declares `"packs": []`.
+### Releasing
 
-**Version note:** OSE 2.3.0 declares `compatibility: {minimum: "13", verified: "13"}` while
-the installed Foundry is **14.365**. It loads unverified. Anything odd during testing should
-be checked against that gap before being blamed on our code. A Vogelfrei system should
-declare v14 honestly.
+Bump `version` in **both** `package.json` and `system.json`, and the tag inside
+`system.json`'s `download` URL. Commit as `Release X.Y.Z`, then push tag `X.Y.Z`.
+`.github/workflows/release.yml` triggers on the tag push. It builds, substitutes the
+manifest/download URLs, zips (`system.json` at the zip root), and creates the GitHub Release
+with `system.json` and `system.zip`. Prod then updates through Foundry's own updater.
 
-There is a precedent worth knowing about and *not* copying: a Lamentations of the Flame
-Princess system was derived from OSE around Foundry 0.8.8. It proves the approach works;
-its code is six major versions stale and is not a reference.
+## Architecture
 
-## Distribution — the answer to "how do I get this onto another server"
+Entry point: `src/vogelfrei.js` registers settings, document classes, data models, sheets and
+hooks. Internal names still say OSE (`OseActor`, `OseItem`, `CONFIG.OSE`, `OseDataModel*`),
+which is a leftover of the fork and not a sign of untouched code. User-facing strings live in
+`src/lang/en.json` under the **`VF.*`** namespace.
 
-Both routes work; do both.
+**Data model.** `template.json` plus the TypeDataModels in `src/module/actor/data-model-*.js`
+and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relabelled:
+- scores: `strength, toughness, agility, intelligence, willpower, leadership`
+- saves, in the book's order: `paralysis, poison, breath, device, magic`
+- `wounds` (was `hp`) and `stamina` pools, plus `ws` / `bs` (Weapon / Ballistic Skill)
+- `exploration` holds the nine x-in-6 skills listed in `CONFIG.OSE.exploration_skills`
+  (`src/module/config.ts`). Their sheet view is in `actor/exploration-skills.ts`.
+- `ac`/`aac`/`thac0` remain in `template.json` as legacy fields. Vogelfrei AC does not come from them.
 
-1. **Git + GitHub release (primary).** This directory becomes a git repo. A release publishes
-   two assets: `system.json` and `system.zip` (the zip's **root** must contain `system.json`).
-   `system.json` carries:
-   ```json
-   "manifest": "https://github.com/<user>/<repo>/releases/latest/download/system.json",
-   "download": "https://github.com/<user>/<repo>/releases/download/<version>/system.zip"
-   ```
-   Then on any Foundry instance: *Game Systems → Install System → Manifest URL*. **The
-   official package registry is not involved** — arbitrary manifest URLs are supported
-   first-class, and this is how every unlisted system is distributed. A CI workflow can build
-   and attach both assets on tag push.
-2. **Plain copy (fallback, always works).** `scp -r` / `rsync` the built system directory into
-   `<dataPath>/Data/systems/vogelfrei/` and restart Foundry. Manifest updates won't work, but
-   installation will.
+**Rules modules.** These are pure and Foundry-free where possible, so they can be tested:
+- `actor/damage.ts`: the Wounds/Stamina pipeline (Stamina first, coupled loss, crits/bypass
+  straight to Wounds, no Stamina for monsters). `OseActor#applyDamage` in `actor/entity.js` is
+  a thin wrapper around it.
+- `actor/data-model-classes/data-model-character-ac.ts`: `ARMOUR_CLASS_VARIANTS` is the single
+  table of AC formulas (melee, meleeMonster, ranged, firearm, surprised), all from
+  `BASE_AC = 10`, with armour **Proof** for firearms. To change AC, edit that table only.
+- `actor/entity.js`: attack/save/check/skill rolls. `helpers-dice.js` digests attack results:
+  hit on ≥ the chosen AC variant, nat 20 is a critical routed into damage, nat 1 misses.
+- `actor/data-model-classes/data-model-character-scores.ts`: ability modifiers on the Vogelfrei
+  scale (3→−3 … 18→+3).
+- Encumbrance uses the points scheme (`encumbrance-points.ts`,
+  `data-model-character-encumbrance-vogelfrei.ts`). The OSE strategies remain as alternatives.
+- Money is `money.ts`: 1 gp = 50 sp = 600 bp, with no copper. Coins are three counts on the
+  character (`purse.ts`), not Items.
+- `dialog/character-creation.js`: the in-Foundry level-1 generator. The Python skill in the
+  rulebook repo (`.claude/skills/character-generation/`) is its **specification**, never a
+  runtime dependency.
+- `chronicle/`: Vogelfrei-specific calendar, watch/turn clocks, encounters and upkeep. It has
+  no OSE counterpart.
+- `upload-guard.ts` keeps player uploads in one folder.
 
-For local testing, symlink instead of copying:
-`ln -s ~/foundry-dev ~/foundrydata-dev/Data/systems/vogelfrei` (already in place) — never into prod.
+**Compendia.** `src/packs/<pack>/*.yml` holds the reviewable sources, one document per file,
+and they are committed. `tools/build-packs/generate.py` writes them from the rulebook's
+equipment tables. Ids are deterministic (hashed from pack + name), so never hand-randomise
+them. `compile.mjs` builds them into `dist/packs/` LevelDB, which is declared in `system.json`
+`packs`. The build does not need the rulebook checked out. Only equipment packs exist so far:
+weapons, armour, gear, containers, mounts.
 
-## Recommended approach
+Templates are in `src/templates/` (Handlebars, preloaded by `preloadTemplates.ts`) and styles
+in `src/scss/` → `dist/vogelfrei.css`. Rollup copies `lang` and `templates` into `dist/`.
 
-**Fork OSE into a new system with id `vogelfrei`.** Not a module overlay: a module could do
-the renaming (a module's `languages` entry overrides system keys) but cannot cleanly change
-the data model, the damage pipeline, or the attack formula — and items 2–4 above are exactly
-those. A fork also keeps the OSE install untouched as a working control.
+## Not done yet / open questions
 
-Licensing is a real constraint, not a footnote: OSE ships `LICENSE.GPL` alongside
-`LICENSE.OGL` and `LICENSE.OTHER.OSE_THIRD_PARTY_V1_5`. The **code** is GPL, so a derived
-system inherits it. Keep the licence files, the `AUTHORS` file, and attribution intact, and
-do not carry over Necrotic Gnome's proprietary *content* (the SRD-derived compendia are a
-separate module for a reason).
-
-Suggested order of work: fork and rebuild unchanged → rename (i18n) → Wounds/Stamina →
-attack/AC → skills → generated compendia → character generator.
-
-## Open questions
-
-- Where the GitHub repo lives (account, repo name, public or private) — decides the manifest
-  URLs baked into `system.json`.
-- Whether to track upstream OSE as a git remote for future merges, or hard-fork and diverge.
-  (Hard fork is simpler and probably right, given how deep the combat changes go.)
-- Whether the rulebook repo becomes a build-time dependency for generating compendia (a
-  submodule or a vendored export), or whether generated packs are committed as artifacts.
-- How WS/BS and the skill list should be modelled — first-class data-model fields vs. Items
-  of type `ability` (OSE's existing escape hatch).
-- Wood Elf class is referenced from the class/career tables but has no `docs/Character/Classes/Wood Elf/`
-  pages yet; NOTES.md in the rulebook repo lists other unresolved rules questions (career
-  Status unset on 49 of 66 career pages, which blocks starting-money generation).
+- Class and career compendia, and spells and miracles, are not generated yet.
+- Wood Elf is referenced by the class tables but has no class pages in the rulebook. The
+  rulebook's `NOTES.md` lists other unresolved rules, including career Status being unset on
+  most career pages, which blocks starting-money generation.
+- WS/BS and skills are first-class data-model fields. The skill list is a fixed config table,
+  not Items.
