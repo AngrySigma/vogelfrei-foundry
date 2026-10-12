@@ -36,7 +36,7 @@
     <ol class="unlist members">
       {{#each members}}
       <li class="member {{#if missing}}missing{{/if}}" data-uuid="{{uuid}}" {{#if @root.isReferee}}draggable="true"{{/if}}>
-        <img class="portrait" src="{{img}}" alt="" />
+        <img class="portrait" src="{{img}}" alt="" draggable="false" />
         <span class="name">
           {{#if canOpen}}<a data-action="openSheet">{{name}}</a>{{else}}{{name}}{{/if}}
           {{#if encumbrance}}<span class="load">{{encumbrance}}</span>{{/if}}

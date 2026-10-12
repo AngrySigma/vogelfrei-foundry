@@ -43,7 +43,7 @@
       <span class="number">{{number}}</span>
       {{#if person}}
       <div class="person" data-uuid="{{person.uuid}}" draggable="true" data-tooltip="{{person.name}}">
-        <img src="{{person.img}}" alt="" />
+        <img src="{{person.img}}" alt="" draggable="false" />
         <span class="name">{{person.name}}</span>
       </div>
       <button type="button" class="clear" data-action="clearSquare" data-tooltip="{{localize 'VF.formation.Clear'}}">
@@ -59,7 +59,7 @@
   <div class="bench">
     {{#each formation.bench}}
     <div class="person" data-uuid="{{uuid}}" draggable="true">
-      <img src="{{img}}" alt="" />
+      <img src="{{img}}" alt="" draggable="false" />
       <span class="name">{{name}}</span>
     </div>
     {{else}}
