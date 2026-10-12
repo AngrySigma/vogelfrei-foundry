@@ -43,6 +43,12 @@ Because the dev instance symlinks this repo, a build shows up after reloading th
 port 30001. Template, `system.json`, `template.json` or pack changes may need a world relaunch
 or a dev service restart.
 
+`npm run build` starts with `rm -rf dist`, so it deletes and rebuilds `dist/packs` under the
+running dev server. A world launch right after one such build hung on "migrating" (cause not
+confirmed). When only code, templates or styles changed, run `npm run build:js && npm run
+build:css`, which leave the packs alone. The dev server caches `system.json` from when it
+started, so `/api/status` can report an older system version than the file.
+
 ### Tests
 
 There is no Node test runner. Tests are **Quench** batches (mocha/chai inside Foundry). The

@@ -17,6 +17,12 @@
     {{/if}}
   </header>
 
+  {{#if isReferee}}
+  <button type="button" class="split-xp" data-action="splitXP" {{#if empty}}disabled{{/if}}>
+    <i class="fa-solid fa-scale-balanced"></i> {{localize "VF.party.xp.Title"}}
+  </button>
+  {{/if}}
+
   {{#if (and isReferee empty)}}
   <p class="hint">{{localize "VF.party.DropHint"}}</p>
   {{/if}}

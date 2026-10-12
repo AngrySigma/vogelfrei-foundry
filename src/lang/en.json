@@ -589,5 +589,13 @@
   "VF.party.PerTurnHint": "Exploration movement of the slowest member. The party moves at the speed of its slowest member; vehicles are not counted.",
   "VF.party.PerDayHint": "Overland travel on foot of the slowest member, including each character's Toughness modifier.",
   "VF.party.MemberPace": "Movement per Turn",
-  "VF.party.NoPace": "Nobody on the roster has a movement rate yet."
+  "VF.party.NoPace": "Nobody on the roster has a movement rate yet.",
+  "VF.party.xp.Title": "Split XP",
+  "VF.party.xp.Total": "XP to divide",
+  "VF.party.xp.Split": "Split",
+  "VF.party.xp.Flavor": "XP split: {total} XP over {shares} shares ({perShare} per share)",
+  "VF.party.xp.Line": "<strong>{shares} share:</strong> {each} XP each — {names}",
+  "VF.party.xp.Leftover": "{leftover} XP left over after rounding down.",
+  "VF.party.xp.Unshared": "No share: {names}",
+  "VF.party.xp.NobodyShares": "Nobody on the roster holds a share, so there is nothing to divide."
 }

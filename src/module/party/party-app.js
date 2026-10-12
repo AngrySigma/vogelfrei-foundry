@@ -15,6 +15,7 @@
  */
 import { milesPerDay, placeMember, ROLES, removeMember, setShares, slowest } from "./roster";
 import { getParty, refreshOnChange, updateParty } from "./store";
+import { splitXP } from "./xp-split";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -128,6 +129,65 @@ export function partyPace(members = getParty().members.map(describeMember)) {
   return { perTurn: pace("perTurn"), perDay: pace("perDay") };
 }
 
+/**
+ * Ask for an award, divide it by the roster's shares, and post the result.
+ *
+ * Nothing is written to any sheet: the message says what each share is worth
+ * and who holds it, and the players add it themselves. A deleted Actor still
+ * on the roster is left out, since there is nobody to name.
+ */
+async function onSplitXP() {
+  const total = await foundry.applications.api.DialogV2.prompt({
+    window: { title: game.i18n.localize("VF.party.xp.Title") },
+    content: `<div class="form-group">
+        <label>${game.i18n.localize("VF.party.xp.Total")}</label>
+        <input type="number" name="total" min="0" step="1" autofocus />
+      </div>`,
+    ok: {
+      label: game.i18n.localize("VF.party.xp.Split"),
+      icon: "fa-solid fa-scale-balanced",
+      callback: (_event, button) => button.form.elements.total.valueAsNumber,
+    },
+    rejectClose: false,
+  });
+  if (!(total > 0)) return;
+
+  const shareholders = getParty()
+    .members.map((entry) => ({ actor: fromUuidSync(entry.uuid), shares: entry.shares }))
+    .filter(({ actor }) => actor)
+    .map(({ actor, shares }) => ({ name: actor.name, shares }));
+  const split = splitXP(total, shareholders);
+
+  const number = (value) => value.toLocaleString(game.i18n.lang, { maximumFractionDigits: 1 });
+  const names = (list) => list.map((name) => foundry.utils.escapeHTML(name)).join(", ");
+  const lines = split.lines.map(
+    (line) =>
+      `<li>${game.i18n.format("VF.party.xp.Line", {
+        shares: formatShares(line.shares),
+        each: number(line.each),
+        names: names(line.names),
+      })}</li>`,
+  );
+
+  let content = `<ul class="vf-xp-split">${lines.join("")}</ul>`;
+  if (split.lines.length === 0) content = `<p>${game.i18n.localize("VF.party.xp.NobodyShares")}</p>`;
+  if (split.leftover > 0 && split.lines.length > 0) {
+    content += `<p class="vf-xp-note">${game.i18n.format("VF.party.xp.Leftover", { leftover: number(split.leftover) })}</p>`;
+  }
+  if (split.unshared.length > 0) {
+    content += `<p class="vf-xp-note">${game.i18n.format("VF.party.xp.Unshared", { names: names(split.unshared) })}</p>`;
+  }
+
+  await ChatMessage.create({
+    flavor: game.i18n.format("VF.party.xp.Flavor", {
+      total: number(split.total),
+      shares: formatShares(split.totalShares),
+      perShare: number(split.perShare),
+    }),
+    content,
+  });
+}
+
 export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: "vf-party",
@@ -141,6 +201,7 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
     actions: {
       openSheet: onOpenSheet,
       removeMember: onRemoveMember,
+      splitXP: onSplitXP,
     },
   };
 

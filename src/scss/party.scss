@@ -176,3 +176,24 @@
     opacity: 0.8;
   }
 }
+
+.vf-party .split-xp {
+  width: 100%;
+  margin-top: 6px;
+}
+
+// The XP split as posted to chat.
+.vf-xp-split {
+  margin: 0;
+  padding-left: 1.2em;
+
+  li {
+    margin: 2px 0;
+  }
+}
+
+.vf-xp-note {
+  margin: 4px 0 0;
+  font-size: var(--font-size-12);
+  opacity: 0.75;
+}
