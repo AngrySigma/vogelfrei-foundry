@@ -1,11 +1,11 @@
-_id: "0MuMbmjthVEWulhY"
-_key: "!items!0MuMbmjthVEWulhY"
-name: "Full plate"
+_id: "fdxbjuuYGyWASQ9R"
+_key: "!items!fdxbjuuYGyWASQ9R"
+name: "Padded doublet"
 type: "armor"
 img: "icons/svg/shield.svg"
 system:
-  cost: 24000
-  costRural: null
+  cost: 180
+  costRural: 240
   costMinimum: false
   encumbrance: "normal"
   stackSize: 0
@@ -16,11 +16,11 @@ system:
   containerId: ""
   equipped: false
   tags: []
-  type: "heavy"
-  acMelee: 6
-  acRanged: 6
-  proof: "none"
-  encumbrancePoints: 2
+  type: "light"
+  acMelee: 1
+  acRanged: 1
+  acFirearm: 0
+  encumbrancePoints: 0
 effects: []
 folder: null
 sort: 0

@@ -85,18 +85,14 @@ def parse_money_pair(text: str) -> tuple[tuple[int | None, bool], tuple[int | No
 # --------------------------------------------------------------------------
 
 # Armor.md gives each harness its own Enc figure -- the points it costs while
-# worn -- and a Proof grade that only a firearm looks at. The data model's
+# worn -- and a separate rating against firearms. The data model's
 # light / medium / heavy category is read off Enc: free, one point, or more.
-PROOF = {"": "none", "partial": "partial", "full": "full"}
 
 
 def armour_category(points: int) -> str:
     if points <= 0:
         return "light"
     return "medium" if points == 1 else "heavy"
-
-
-SHIELD_BONUS = re.compile(r"\+(\d+)\s+(Melee|Ranged)\s+AC", re.IGNORECASE)
 
 
 # --------------------------------------------------------------------------
@@ -190,18 +186,48 @@ def physical(cell: tables.Cell, city: str, rural: str, *, combined: bool = False
 # Reading each table
 # --------------------------------------------------------------------------
 
-DAMAGE = re.compile(r"^d(\d+)$", re.IGNORECASE)
+def minus(text: str) -> str:
+    """The book writes a typographic minus; Python and Foundry want a hyphen."""
+    return (text or "").replace("\u2212", "-").replace("\u2013", "-")
+
+
+# Every weapon deals d8 (Melee Weapons.md, "Damage"): "d8 low" rolls 2d8 and
+# keeps the lower, "d8 high" the higher, and "d8-3" is the improvised blow,
+# never below 1. Plain "dN" is still read, for any table that keeps one.
+DAMAGE_FORMS = {
+    "low": "2d{die}kl",
+    "high": "2d{die}kh",
+}
+DAMAGE = re.compile(r"^d(\d+)(?:\s*(low|high)|\s*-\s*(\d+))?$", re.IGNORECASE)
 
 
 def damage_die(text: str) -> str:
-    """The book writes "d6"; Foundry rolls want "1d6"."""
-    cleaned = (text or "").strip()
+    """The book's damage notation as a Foundry roll formula."""
+    cleaned = minus(text).strip()
     if cleaned in DASHES:
         return ""
     match = DAMAGE.match(cleaned)
     if not match:
         raise RuleError(f"unreadable damage {text!r}")
-    return f"1d{match.group(1)}"
+    die, keep, penalty = match.groups()
+    if keep:
+        return DAMAGE_FORMS[keep.lower()].format(die=die)
+    if penalty:
+        return f"max(1d{die}-{penalty}, 1)"
+    return f"1d{die}"
+
+
+SIGNED = re.compile(r"^[+-]?\d+$")
+
+
+def armour_modifier(text: str) -> int:
+    """A weapon's Armour column: "-2", "0", "+3". A dash is no modifier."""
+    cleaned = minus(text).strip()
+    if cleaned in DASHES:
+        return 0
+    if not SIGNED.match(cleaned):
+        raise RuleError(f"unreadable armour modifier {text!r}")
+    return int(cleaned)
 
 
 LENGTH = re.compile(r"^(\d+)(?:\s*/\s*(\d+))?$")
@@ -334,6 +360,9 @@ def weapon_system(
     system.update(
         {
             "damage": damage_die(damage),
+            # Firearms have no Armour column: the armour's firearm rating
+            # already says what it is worth against a ball.
+            "armourModifier": armour_modifier(row.get("Armour", "")),
             "length": 0,
             "lengthTwoHanded": None,
             "melee": melee,
@@ -478,44 +507,61 @@ def curious_firearms(path: Path) -> list[Item]:
     return items
 
 
+def rating(text: str, name: str, *, signed: bool = False) -> int:
+    """One Armour Rating cell: "4", or "+2" for a shield. A dash is nothing."""
+    cleaned = minus(text).strip()
+    if cleaned in DASHES:
+        return 0
+    if not re.match(r"^\+\d+$" if signed else r"^\d+$", cleaned):
+        raise RuleError(f"unreadable Armour Rating {text!r} for {name!r}")
+    return int(cleaned)
+
+
 def armour(path: Path) -> list[Item]:
+    """Armor.md: an HTML table whose Armour Rating spans Melee, Ranged and
+    Firearm. Every harness gives Melee and Ranged as one merged cell; only the
+    shields -- written "+2" -- split them."""
+    table = next((t for t in tables.read(path) if "Armour" in t.columns), None)
+    if table is None:
+        raise RuleError(f"no armour table in {path}")
+
     items = []
-    for row in tables.read_pipe_tables(path)[0]:
-        cell = tables.pipe_cell(row["Armor"])
+    for row in table.rows():
+        cell = row.get("Armour", [tables.Cell()])[0]
         name = cell.clean
         if not name:
             continue
 
-        system = physical(cell, row.get("Cost City", ""), row.get("Rural", ""))
-        proof_text = row.get("Proof", "").strip().lower()
-        proof = PROOF.get("" if proof_text in DASHES else proof_text)
-        if proof is None:
-            raise RuleError(f"unreadable Proof {row.get('Proof')!r} for {name!r}")
-        points = enc_points(row.get("Enc", ""))
-        rating = row.get("Armor Rating", "").strip()
+        def column(key: str) -> str:
+            return row.get(key, [tables.Cell()])[0].clean
 
-        if rating.startswith("+"):
-            bonuses = {kind.lower(): int(value) for value, kind in SHIELD_BONUS.findall(rating)}
-            if not bonuses:
-                raise RuleError(f"unreadable shield bonus {rating!r} for {name!r}")
+        system = physical(cell, column("Cost City"), column("Cost Rural"))
+        points = enc_points(column("Enc"))
+        melee, ranged, firearm = (
+            column(f"Armour Rating {kind}") for kind in ("Melee", "Ranged", "Firearm")
+        )
+
+        if minus(melee).strip().startswith("+"):
             system.update(
                 {
                     "type": "shield",
-                    "acMelee": bonuses.get("melee", 0),
-                    "acRanged": bonuses.get("ranged", 0),
+                    "acMelee": rating(melee, name, signed=True),
+                    "acRanged": rating(ranged, name, signed=True),
+                    "acFirearm": rating(firearm, name, signed=True),
                 }
             )
         else:
-            match = re.match(r"^(\d+)$", rating)
-            if not match:
-                raise RuleError(f"unreadable Armour Rating {rating!r} for {name!r}")
-            value = int(match.group(1))
             points = points or 0
             system.update(
-                {"type": armour_category(points), "acMelee": value, "acRanged": value}
+                {
+                    "type": armour_category(points),
+                    "acMelee": rating(melee, name),
+                    "acRanged": rating(ranged, name),
+                    "acFirearm": rating(firearm, name),
+                }
             )
 
-        system.update({"proof": proof, "encumbrancePoints": points})
+        system["encumbrancePoints"] = points
         items.append(Item(name, "armor", "armour", system, "icons/svg/shield.svg"))
     return items
 

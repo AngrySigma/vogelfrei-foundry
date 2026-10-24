@@ -1,12 +1,15 @@
 /**
  * @file The data model for Actors of type Character.
  */
+
+import { purseValue } from "../purse";
 import { normaliseAlignment } from "./alignment";
 import OseDataModelCharacterAC from "./data-model-classes/data-model-character-ac";
 import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
 import OseDataModelCharacterScores from "./data-model-classes/data-model-character-scores";
 import OseDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
-import { purseValue } from "../purse";
+import { stanceAc } from "./stance";
+import { currentStance } from "./stance-store";
 
 const getItemsOfActorOfType = (actor, filterType, filterFn = null) =>
   actor.items.filter(({ type }) => type === filterType).filter(filterFn || (() => true));
@@ -33,11 +36,17 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
     //       we shouldn't need to list both AC schemes
     // Vogelfrei is ascending-only, so there is one AC object holding several
     // values rather than a descending/ascending pair.
+    const equippedArmour = getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped);
+    // Guard's +4 wants "a weapon or shield at hand" (Combat Actions.md#guard).
+    const armed =
+      equippedArmour.some(({ system }) => system.type === "shield") ||
+      getItemsOfActorOfType(this.parent, "weapon", (w) => w.system.equipped).length > 0;
     this.ac = new OseDataModelCharacterAC(
-      getItemsOfActorOfType(this.parent, "armor", (a) => a.system.equipped),
+      equippedArmour,
       this.scores.agility.mod,
       this.ws,
       this.ac.mod,
+      stanceAc(currentStance(this.parent), { weaponSkill: this.ws ?? 0, armed }),
     );
 
     this.spells = new OseDataModelCharacterSpells(this.spells, this.#spellList);
@@ -91,15 +100,15 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
         magic: new SchemaField({ value: new NumberField({ integer: true }) }),
       }),
       exploration: new SchemaField({
-        architecture: new NumberField({ integer: true, positive: true, initial: 1 }),
-        bushcraft: new NumberField({ integer: true, positive: true, initial: 1 }),
-        climbing: new NumberField({ integer: true, positive: true, initial: 1 }),
-        languages: new NumberField({ integer: true, positive: true, initial: 1 }),
-        search: new NumberField({ integer: true, positive: true, initial: 1 }),
-        sleightOfHand: new NumberField({ integer: true, positive: true, initial: 1 }),
-        stealth: new NumberField({ integer: true, positive: true, initial: 1 }),
-        tinkering: new NumberField({ integer: true, positive: true, initial: 1 }),
-        doors: new NumberField({ integer: true, positive: true, initial: 1 }),
+        architecture: new NumberField({ integer: true, min: 0, initial: 1 }),
+        bushcraft: new NumberField({ integer: true, min: 0, initial: 1 }),
+        climbing: new NumberField({ integer: true, min: 0, initial: 1 }),
+        languages: new NumberField({ integer: true, min: 0, initial: 1 }),
+        search: new NumberField({ integer: true, min: 0, initial: 1 }),
+        sleightOfHand: new NumberField({ integer: true, min: 0, initial: 1 }),
+        stealth: new NumberField({ integer: true, min: 0, initial: 1 }),
+        tinkering: new NumberField({ integer: true, min: 0, initial: 1 }),
+        doors: new NumberField({ integer: true, min: 0, initial: 1 }),
       }),
       retainer: new SchemaField({
         enabled: new BooleanField(),
@@ -163,12 +172,13 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
 
   get meleeMod() {
     const ascendingAcMod = this.usesAscendingAC ? this.thac0.bba || 0 : 0;
-    return (this.scores.strength?.mod || 0) + (this.thac0?.mod?.melee || 0) + ascendingAcMod;
+    // Combat Actions.md: no ability modifier adds to an attack roll.
+    return (this.thac0?.mod?.melee || 0) + ascendingAcMod;
   }
 
   get rangedMod() {
     const ascendingAcMod = this.usesAscendingAC ? this.thac0.bba || 0 : 0;
-    return (this.scores.agility?.mod || 0) + (this.thac0?.mod?.missile || 0) + ascendingAcMod;
+    return (this.thac0?.mod?.missile || 0) + ascendingAcMod;
   }
 
   get isNew() {

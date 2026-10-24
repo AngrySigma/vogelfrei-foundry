@@ -15,6 +15,7 @@ import {
   openWindows,
   trashChat,
   waitForInput,
+  waitUntil,
 } from "../../../e2e/testUtils";
 import type OseActorSheetCharacter from "../character-sheet";
 
@@ -231,10 +232,13 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const actor = await createMockActorKey("character", {}, key);
       // eslint-disable-next-line no-underscore-dangle
       actor?.sheet?._pushLang(table);
-      await delay(220);
+      // The previous test's dialog may still be closing; wait for this one alone.
+      await waitUntil(() => openV2Dialogs().length === 1, { timeout: 1000 });
 
       $(`button[data-action="ok"]`).trigger("click");
-      await delay(500);
+      await waitUntil(() => openV2Dialogs().length === 0 && actor?.system.languages.value.length === 1, {
+        timeout: 1000,
+      });
 
       const dialogs = openV2Dialogs();
       expect(dialogs.length).equal(0);

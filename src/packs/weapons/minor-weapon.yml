@@ -16,7 +16,8 @@ system:
   containerId: ""
   equipped: false
   tags: []
-  damage: "1d4"
+  damage: "2d8kl"
+  armourModifier: -2
   length: 1
   lengthTwoHanded: null
   melee: true
@@ -31,7 +32,7 @@ system:
   counter:
     value: 0
     max: 0
-  description: "<p>A Minor weapon used inside an opponent's reach, or while wrestling that opponent, ignores 2 points of the target's Armour Rating. It does nothing to a firearm's shot, which the Proof rules govern instead.</p>"
+  description: ""
 effects: []
 folder: null
 sort: 0

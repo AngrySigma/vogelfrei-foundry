@@ -8,7 +8,8 @@
  * components, so they live in one table: to add, remove or change a variant,
  * edit ARMOUR_CLASS_VARIANTS and nothing else.
  *
- * Rules: docs/Encounters/Combat Actions.md#attack, docs/Equipment/Armor.md#proof
+ * Rules: docs/Encounters/Combat Actions.md#attack,
+ *        docs/Equipment/Armor.md#against-a-firearm
  */
 
 /** The parts every AC formula draws on. */
@@ -25,17 +26,23 @@ export type ArmourClassComponents = {
   /** Armour Rating of worn armour, as it applies at range. */
   armourRanged: number;
 
-  /** Melee bonus from an equipped shield, buckler or pavise. */
+  /** Melee bonus from an equipped shield or buckler. */
   shieldMelee: number;
 
-  /** Ranged bonus from an equipped shield, buckler or pavise. */
+  /** Ranged bonus from an equipped shield or buckler. */
   shieldRanged: number;
 
-  /** Armour Rating of worn armour as far as its Proof carries it against a shot. */
+  /** Firearm rating of worn armour: what it is worth against a ball. */
   armourFirearm: number;
 
-  /** Ranged bonus of an equipped shield as far as its Proof carries it against a shot. */
+  /** Firearm rating of an equipped shield. Only a target of proof has one. */
   shieldFirearm: number;
+
+  /**
+   * Guard, Press or Defensive Fighting, as a change to melee and ranged AC.
+   * See stance.ts. Never applies against a firearm.
+   */
+  stance: number;
 
   /** Free-form modifier for anything the rules do not model: grown scales, a lost leg. */
   mod: number;
@@ -66,19 +73,6 @@ export type ArmourClassVariant = {
 export const BASE_AC = 10;
 
 /**
- * How much of an armour's rating stands up to a firearm, by its Proof.
- * Armor.md#proof: none is ignored entirely, partial counts half rounded down,
- * full counts in full. Nothing but a shot looks at Proof.
- */
-export const PROOF = {
-  none: (_rating: number) => 0,
-  partial: (rating: number) => Math.floor(rating / 2),
-  full: (rating: number) => rating,
-} as const;
-
-export type Proof = keyof typeof PROOF;
-
-/**
  * Every AC a character carries. Order is the order they appear on the sheet and
  * in the attack dialog.
  */
@@ -88,7 +82,7 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     label: "VF.ac.melee",
     ranged: false,
     onSheet: true,
-    formula: (c) => BASE_AC + c.agility + c.weaponSkill + c.armourMelee + c.shieldMelee + c.mod,
+    formula: (c) => BASE_AC + c.agility + c.weaponSkill + c.armourMelee + c.shieldMelee + c.stance + c.mod,
   },
   {
     // A dragon is not put off by a skilled blade, so Weapon Skill does not
@@ -97,21 +91,21 @@ export const ARMOUR_CLASS_VARIANTS: readonly ArmourClassVariant[] = [
     label: "VF.ac.meleeMonster",
     ranged: false,
     onSheet: false,
-    formula: (c) => BASE_AC + c.agility + c.armourMelee + c.shieldMelee + c.mod,
+    formula: (c) => BASE_AC + c.agility + c.armourMelee + c.shieldMelee + c.stance + c.mod,
   },
   {
     key: "ranged",
     label: "VF.ac.ranged",
     ranged: true,
     onSheet: true,
-    formula: (c) => BASE_AC + c.agility + c.armourRanged + c.shieldRanged + c.mod,
+    formula: (c) => BASE_AC + c.agility + c.armourRanged + c.shieldRanged + c.stance + c.mod,
   },
   {
     // Against a shot nobody dodges and no swordsmanship parries: the target
-    // keeps the base, what its Proof lets its armour and shield keep, and the
-    // free-form modifier. Not even a negative Agility applies -- the rule is
-    // "10 + Proof-allowed Armour Rating, and nothing else".
-    // Combat Actions.md#ranged, Firearms.md#firearm-traits.
+    // keeps the base, its armour's firearm rating, a target of proof's, and
+    // the free-form modifier. Not even a negative Agility applies, and no
+    // stance -- the rule is "10 + the armour's firearm rating, and nothing
+    // else". Combat Actions.md#ranged, Firearms.md#firearm-traits.
     key: "firearm",
     label: "VF.ac.firearm",
     ranged: true,
@@ -138,15 +132,9 @@ type ArmourItem = {
     type: string;
     acMelee?: number;
     acRanged?: number;
-    proof?: string;
+    acFirearm?: number;
   };
 };
-
-/** What an armour's ranged rating is worth against a firearm. */
-function againstFirearm({ acRanged = 0, proof }: ArmourItem["system"]): number {
-  const grade = PROOF[(proof ?? "none") as Proof] ?? PROOF.none;
-  return grade(acRanged);
-}
 
 /**
  * Assembles a character's AC numbers from their equipped armour, Agility,
@@ -161,18 +149,22 @@ export default class OseDataModelCharacterAC {
 
   #mod: number;
 
+  #stance: number;
+
   /**
    * @param armour - Equipped Items of type armor. At most one body armour and
    *   one shield are expected; equipping enforces that.
    * @param agility - The Agility modifier.
    * @param weaponSkill - The character's Weapon Skill.
    * @param mod - Free-form AC modifier.
+   * @param stance - The current stance's AC change, from stanceAc().
    */
-  constructor(armour: ArmourItem[] = [], agility = 0, weaponSkill = 0, mod = 0) {
+  constructor(armour: ArmourItem[] = [], agility = 0, weaponSkill = 0, mod = 0, stance = 0) {
     this.#armour = armour;
     this.#agility = agility;
     this.#weaponSkill = weaponSkill;
     this.#mod = mod;
+    this.#stance = stance;
   }
 
   #sum(isShield: boolean, value: (system: ArmourItem["system"]) => number): number {
@@ -189,10 +181,26 @@ export default class OseDataModelCharacterAC {
       armourRanged: this.#sum(false, ({ acRanged }) => acRanged ?? 0),
       shieldMelee: this.#sum(true, ({ acMelee }) => acMelee ?? 0),
       shieldRanged: this.#sum(true, ({ acRanged }) => acRanged ?? 0),
-      armourFirearm: this.#sum(false, againstFirearm),
-      shieldFirearm: this.#sum(true, againstFirearm),
+      armourFirearm: this.#sum(false, ({ acFirearm }) => acFirearm ?? 0),
+      shieldFirearm: this.#sum(true, ({ acFirearm }) => acFirearm ?? 0),
+      stance: this.#stance,
       mod: this.#mod,
     };
+  }
+
+  /**
+   * The Armour Rating a weapon's armour modifier is capped by, in melee: the
+   * worn armour and the shield together. See armour-modifier.ts.
+   */
+  get armourRatingMelee(): number {
+    const { armourMelee, shieldMelee } = this.components;
+    return armourMelee + shieldMelee;
+  }
+
+  /** As armourRatingMelee, against a bow or crossbow. */
+  get armourRatingRanged(): number {
+    const { armourRanged, shieldRanged } = this.components;
+    return armourRanged + shieldRanged;
   }
 
   /** Every AC value, keyed by variant. */

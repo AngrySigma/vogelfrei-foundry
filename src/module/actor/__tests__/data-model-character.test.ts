@@ -82,7 +82,8 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       expect(actor?.system.ac.values).not.undefined;
       expect(actor?.system.ac.values.melee).not.undefined;
       expect(actor?.system.ac.values.ranged).not.undefined;
-      expect(actor?.system.ac.list.length).equal(4);
+      // melee, meleeMonster, ranged, firearm, surprised
+      expect(actor?.system.ac.list.length).equal(5);
     });
 
     it("has weapon and ballistic skill", async () => {
@@ -208,9 +209,10 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       });
     });
 
-    it("adds str modifier", () => {
+    it("adds no Strength modifier", () => {
+      // Combat Actions.md: no ability modifier reaches an attack roll.
       dataModel.scores.strength = { mod: 10 };
-      expect(dataModel.meleeMod).equal(10);
+      expect(dataModel.meleeMod).equal(0);
       dataModel.scores.strength.mod = 0;
       expect(dataModel.scores.strength.mod).equal(0);
     });
@@ -251,9 +253,9 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       });
     });
 
-    it("adds dex modifier", () => {
+    it("adds no Agility modifier", () => {
       dataModel.scores.agility = { mod: 10 };
-      expect(dataModel.rangedMod).equal(10);
+      expect(dataModel.rangedMod).equal(0);
       dataModel.scores.agility.mod = 0;
       expect(dataModel.scores.agility.mod).equal(0);
     });

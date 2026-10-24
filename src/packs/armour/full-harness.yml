@@ -1,11 +1,11 @@
-_id: "me5hnjIfGmCFGkPd"
-_key: "!items!me5hnjIfGmCFGkPd"
-name: "Wams"
+_id: "yacfTlk4bjgDbMTC"
+_key: "!items!yacfTlk4bjgDbMTC"
+name: "Full harness"
 type: "armor"
 img: "icons/svg/shield.svg"
 system:
-  cost: 180
-  costRural: 240
+  cost: 24000
+  costRural: null
   costMinimum: false
   encumbrance: "normal"
   stackSize: 0
@@ -16,11 +16,11 @@ system:
   containerId: ""
   equipped: false
   tags: []
-  type: "light"
-  acMelee: 1
-  acRanged: 1
-  proof: "none"
-  encumbrancePoints: 0
+  type: "heavy"
+  acMelee: 6
+  acRanged: 6
+  acFirearm: 0
+  encumbrancePoints: 2
 effects: []
 folder: null
 sort: 0

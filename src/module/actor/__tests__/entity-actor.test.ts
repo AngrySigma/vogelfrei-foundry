@@ -478,43 +478,24 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
   });
 
   describe("rollHitDice(options)", () => {
-    const conScoreSpread = Array.from({ length: 20 }, (_el, idx) => idx + 1);
-    const conBonusSpread = [-3, -3, -3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3];
-    const levelSpread = Array.from({ length: 9 }, (_el, idx) => idx + 1);
-
-    conScoreSpread.forEach((con, idx) => {
-      const conMod = conBonusSpread[idx] || 0;
-      const expectedTerms = 3;
-      const modSign = conMod < 0 ? "-" : "+";
-      const modUnsigned = modSign === "-" ? conMod * -1 : conMod;
-      levelSpread.forEach((level) => {
-        it(`constructs the roll terms correctly with level ${level} and con ${con}`, async () => {
-          const actor = (await createMockActor("character")) as OseActor;
-          await actor?.update({
-            system: {
-              details: { level },
-              wounds: { hd: `${level}d8` },
-              scores: { toughness: { value: con } },
-            },
-          });
-          const roll = await actor.rollHitDice();
-
-          expect(roll.terms.length).equal(1); // FunctionTerm: max(1d8 + 0, 1)
-          expect(roll.terms[0].rolls.length).equal(2); // 1d8 + 0, 1
-          expect(roll.terms[0].rolls[0].terms.length).equal(expectedTerms); // 1d8, +, 0
-          expect(roll.terms[0].rolls[0].terms[0].expression).equal(
-            actor?.system.wounds.hd, // 1d8
-          );
-          expect(roll.terms[0].rolls[0].terms[1].operator).equal(modSign);
-          expect(roll.terms[0].rolls[0].terms[2].expression).equal((modUnsigned * level).toString());
-          expect(actor?.system.scores.toughness.mod).equal(conMod);
-          await actor?.delete();
-        });
-      });
+    afterEach(async () => {
+      await trashChat();
     });
 
-    after(async () => {
-      await trashChat();
+    it("Rolls nothing for a character, whose Wounds are not rolled", async () => {
+      // Class and Career.md: 6 + Toughness (a Warrior 7), no die.
+      const actor = (await createMockActor("character")) as OseActor;
+      await actor.update({ system: { wounds: { hd: "1d8" } } });
+      expect(await actor.rollHitDice()).equal(undefined);
+      await actor.delete();
+    });
+
+    it("Rolls a monster's Hit Dice as they are", async () => {
+      const actor = (await createMockActor("monster")) as OseActor;
+      await actor.update({ system: { wounds: { hd: "3d8" } } });
+      const roll = await actor.rollHitDice();
+      expect(roll.formula).equal("3d8");
+      await actor.delete();
     });
   });
 
@@ -815,25 +796,53 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       item?.delete();
     });
 
-    it("If missile attack, add dex mod to attack roll", async () => {
+    it("Adds no Agility to a missile attack", async () => {
+      // Combat Actions.md: ranged is d20 + Ballistic Skill, nothing more.
       const actor = (await createMockActor("character")) as OseActor;
+      await actor.update({ system: { scores: { agility: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "missile", skipDialog: true });
-      expect(rolldata.formula).equal("1d20 - 3");
+      expect(rolldata.formula).equal("1d20");
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       await actor.delete();
     });
 
-    it("If melee attack, add str mod to attack roll", async () => {
+    it("Adds no Strength to a melee attack", async () => {
       const actor = (await createMockActor("character")) as OseActor;
       await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
-      expect(rolldata.formula).equal("1d20 + 3");
+      expect(rolldata.formula).equal("1d20");
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       await actor.delete();
+    });
+
+    it("Adds Weapon Skill in melee and Ballistic Skill at range", async () => {
+      const actor = (await createMockActor("character")) as OseActor;
+      await actor.update({ system: { ws: 2, bs: 3 } });
+      const melee = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
+      expect(melee.formula).equal("1d20 + 2");
+      const missile = await actor.rollAttack({ roll: {} }, { type: "missile", skipDialog: true });
+      expect(missile.formula).equal("1d20 + 3");
+      await waitUntil(() => game.messages?.size === 2);
+      await actor.delete();
+    });
+
+    it("Adds no Ballistic Skill to a firearm", async () => {
+      // Anyone can point a gun.
+      const actor = (await createMockActor("character")) as OseActor;
+      await actor.update({ system: { bs: 3 } });
+      const item = await createWorldTestItem("weapon");
+      await item?.update({
+        system: { missile: true, melee: false, damage: "1d8", tags: [{ title: "Firearm", value: "Firearm" }] },
+      });
+      const rolldata = await actor.rollAttack({ roll: {}, item }, { type: "missile", skipDialog: true });
+      expect(rolldata.formula).equal("1d20");
+      await waitUntil(() => game.messages?.size === 1);
+      await actor.delete();
+      await item?.delete();
     });
 
     // @todo: How to verify if possible to miss, thus obfuscating dmg roll?
@@ -846,13 +855,13 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
-      expect(rolldata.formula).equal("1d20 + 3");
+      expect(rolldata.formula).equal("1d20");
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
       expect(game.messages?.contents[0].content).contain(game.i18n.localize("VF.messages.InflictsDamage"));
-      // Strength reaches the attack roll but not the damage.
-      expect(game.messages?.contents[0].content).contain("1d6");
-      expect(game.messages?.contents[0].content).not.contain("1d6 + 3");
+      // An improvised blow: d8-3, at least 1, and no Strength on top.
+      expect(game.messages?.contents[0].content).contain("1d8");
+      expect(game.messages?.contents[0].content).not.contain("+ 3");
       await actor.delete();
 
       // Restore the original random function

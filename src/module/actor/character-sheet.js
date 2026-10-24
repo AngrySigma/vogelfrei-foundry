@@ -9,6 +9,8 @@ import { coinCount, coinItems } from "../purse";
 import OseActorSheet from "./actor-sheet";
 import { prepareExplorationSkills } from "./exploration-skills";
 import pickCharacterIcon from "./icon-picker";
+import { STANCE_KINDS, stanceAllowed } from "./stance";
+import { clearStance, currentStance, setStance } from "./stance-store";
 
 /**
  * The options for a die dropdown. A die typed before the dropdown existed --
@@ -117,8 +119,16 @@ export default class OseActorSheetCharacter extends OseActorSheet {
     // Prepare owned items
     this._prepareItems(data);
 
-    data.woundsDice = dieChoices(this.actor.system.wounds.hd);
     data.staminaDice = dieChoices(this.actor.system.stamina.die);
+
+    const stance = currentStance(this.actor);
+    data.stances = STANCE_KINDS.map((kind) => ({
+      kind,
+      label: `VF.stance.${kind}.label`,
+      hint: `VF.stance.${kind}.hint`,
+      active: stance === kind,
+      allowed: stanceAllowed(kind, this.actor.system.ws ?? 0),
+    }));
 
     data.explorationSkills = prepareExplorationSkills(
       this.actor.system.exploration,
@@ -309,6 +319,16 @@ export default class OseActorSheetCharacter extends OseActorSheet {
 
     html.find("a[data-action='generate-scores']").click((ev) => {
       this.generateScores(ev);
+    });
+
+    // Guard, Press, Defensive Fighting: one at a time, for the rest of the
+    // Round. Clicking the one already taken drops it.
+    html.find(".stance-toggle").click(async (ev) => {
+      ev.preventDefault();
+      const { stance } = ev.currentTarget.dataset;
+      if (!stanceAllowed(stance, this.actor.system.ws ?? 0)) return;
+      if (currentStance(this.actor) === stance) await clearStance(this.actor);
+      else await setStance(this.actor, stance);
     });
   }
 }

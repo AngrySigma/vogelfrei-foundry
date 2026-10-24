@@ -703,8 +703,13 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
       });
       expect(actor?.items.size).equal(1);
       actor?.sheet?.render(true);
-      await waitForInput();
+      await waitUntil(() => !!document.querySelector('.tab[data-tab="attributes"] .item-image'), { timeout: 1000 });
       await mockClickItem("attributes");
+      // The roll posts a message, then spends the counter: wait for both
+      // rather than a fixed delay, which a slow server outruns.
+      await waitUntil(() => game.messages?.size === 1 && actor?.items.contents[0].system.counter.value === 2, {
+        timeout: 1000,
+      });
 
       // Verification
       expect(game.messages?.size).equal(1);
@@ -901,7 +906,10 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         expect(game.messages?.size).equal(0);
         await clickAttack(attackClass);
         expect(game.messages?.size).equal(1);
-        expect(game.messages?.contents[0].content).contain(game.i18n.format("VF.roll.attacks", { name: actor?.name }));
+        // The mock character carries no weapon, so the blow is improvised.
+        expect(game.messages?.contents[0].content).contain(
+          game.i18n.format("VF.roll.attacksImprovised", { name: actor?.name }),
+        );
         await trashChat();
       });
     });

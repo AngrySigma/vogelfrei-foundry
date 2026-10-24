@@ -184,6 +184,32 @@
         font-weight: bolder;
       }
     }
+    // Stance toggles under the ACs. Active is filled; one the character's
+    // Weapon Skill does not allow is greyed out and does nothing.
+    .stances {
+      gap: 4px;
+      margin: 2px 0 4px;
+      .stance-toggle {
+        flex: 1;
+        text-align: center;
+        font-size: var(--font-size-11);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: 1px solid currentColor;
+        border-radius: 3px;
+        padding: 1px 0;
+        opacity: 0.6;
+        &.active {
+          opacity: 1;
+          font-weight: bold;
+          background: rgba(0, 0, 0, 0.12);
+        }
+        &.disabled {
+          opacity: 0.25;
+          cursor: not-allowed;
+        }
+      }
+    }
     .resource-labels {
       div {
         flex: 1;

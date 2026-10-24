@@ -19,7 +19,7 @@ system:
   type: "light"
   acMelee: 2
   acRanged: 2
-  proof: "none"
+  acFirearm: 0
   encumbrancePoints: 0
 effects: []
 folder: null

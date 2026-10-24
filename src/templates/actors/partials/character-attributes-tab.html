@@ -105,9 +105,10 @@
                     <div class="health-empty" style="height:{{counter false system.stamina.value system.stamina.max}}%"></div>
                     <div class="health-full" style="height:{{counter true system.stamina.value system.stamina.max}}%"></div>
                 </div>
-                {{!-- Two dice. The Stamina die is rolled at every level, so it
-                      comes first; the Wounds die only at first level, after
-                      which Wounds rise by a flat amount. Class and Career.md --}}
+                {{!-- The Stamina die, rolled at first level and every level
+                      after. Wounds are not rolled: 6 + Toughness (a Warrior 7),
+                      then +1 at the levels the class table marks.
+                      Class and Career.md --}}
                 <div class="health hit-dice">
                     <div class="die-row" title="{{localize 'VF.StaminaDie'}}">
                         <span class="die-label">{{localize 'VF.StaminaShort'}}</span>
@@ -115,13 +116,6 @@
                             {{selectOptions staminaDice selected=system.stamina.die}}
                         </select>
                         <a class="hit-dice-roll stamina-die-roll" title="{{localize 'VF.roll.staminaDie'}}"><i class="fas fa-dice-d20"></i></a>
-                    </div>
-                    <div class="die-row" title="{{localize 'VF.WoundsDie'}}">
-                        <span class="die-label">{{localize 'VF.WoundsShort'}}</span>
-                        <select name="system.wounds.hd" data-dtype="String">
-                            {{selectOptions woundsDice selected=system.wounds.hd}}
-                        </select>
-                        <a class="hit-dice-roll" title="{{localize 'VF.roll.woundsDie'}}"><i class="fas fa-dice-d20"></i></a>
                     </div>
                 </div>
             </div>
@@ -145,6 +139,15 @@
                 </li>
                 {{/each}}
             </ul>
+        </div>
+        {{!-- Guard, Press, Defensive Fighting: taken for the rest of the
+              Round, already counted in the ACs above (never the firearm one).
+              The Referee's client drops them when the Round moves on. --}}
+        <div class="flexrow stances">
+            {{#each stances}}
+            <a class="stance-toggle{{#if this.active}} active{{/if}}{{#unless this.allowed}} disabled{{/unless}}"
+                data-stance="{{this.kind}}" data-tooltip="{{localize this.hint}}">{{localize this.label}}</a>
+            {{/each}}
         </div>
         <div class="flexrow">
             <ul class="attributes flexrow">

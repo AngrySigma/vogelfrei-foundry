@@ -18,15 +18,16 @@ system:
   tags:
     - title: "Training"
       value: "Training"
-  damage: "1d4"
+  damage: "2d8kl"
+  armourModifier: -2
   length: 0
   lengthTwoHanded: null
   melee: false
   missile: true
   range:
-    short: 50
-    medium: 300
-    long: 450
+    short: 30
+    medium: 90
+    long: 180
   bonus: 0
   pattern: "transparent"
   slow: false

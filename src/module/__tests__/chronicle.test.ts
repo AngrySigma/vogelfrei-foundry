@@ -157,6 +157,8 @@ export default ({ describe, it, expect }: QuenchMethods) => {
         day: 1,
         watch: 0,
         watchesPerDay: 6,
+        epoch: { ...DEFAULT_EPOCH },
+        feasts: [],
         delves: [],
         travel: { everyWatches: 6, chanceIn6: 1, terrain: "clear", distance: "6d6 * 40" },
       });

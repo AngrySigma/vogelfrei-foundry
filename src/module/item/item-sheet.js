@@ -3,6 +3,7 @@
  */
 import OSE from "../config";
 import { formatMoney, parseMoney } from "../money";
+import { WEAPON_DAMAGE, weaponDamageGrade } from "./weapon-damage";
 
 /**
  * Price fields, which are stored as whole brass pieces but written and read as
@@ -69,6 +70,16 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
       cost: formatMoney({ bp: cost ?? 0, minimum: Boolean(costMinimum) }),
       costRural: formatMoney({ bp: costRural ?? null, minimum: Boolean(costMinimum) }),
     };
+    if (this.item.type === "weapon") {
+      // A grade to pick, so nobody has to know that d8 low is 2d8kl. The
+      // formula box shows only for a custom one.
+      const grade = weaponDamageGrade(this.item.system.damage);
+      data.damageGrade = grade;
+      data.damageGrades = [...Object.keys(WEAPON_DAMAGE), "custom"].map((value) => ({
+        value,
+        label: `VF.weaponDamage.${value}.label`,
+      }));
+    }
     return data;
   }
 
@@ -133,6 +144,20 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
 
     html.find("a.missile-toggle").click(() => {
       this.object.update({ "system.missile": !this.object.system.missile });
+    });
+
+    // A grade writes its formula into the (hidden) formula box, and the sheet's
+    // own submit-on-change saves it. Custom only opens the box, keeping what is
+    // there until something else is typed.
+    html.find("select.damage-grade").change((ev) => {
+      const grade = ev.currentTarget.value;
+      const formula = html.find(".damage-formula");
+      if (grade in WEAPON_DAMAGE) {
+        formula.find("input").val(WEAPON_DAMAGE[grade]);
+        return;
+      }
+      formula.removeClass("hidden");
+      formula.find("input").trigger("focus");
     });
 
     super.activateListeners(html);

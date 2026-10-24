@@ -1,9 +1,23 @@
 /**
  * @file Helpful methods for dealing with OSE-specific dice logic
  */
+import { cappedArmourModifier, targetArmourRating } from "./actor/armour-modifier";
 import { ARMOUR_CLASS_VARIANTS } from "./actor/data-model-classes/data-model-character-ac";
+import { skillDice, skillRollMode, skillSucceeds } from "./actor/exploration-skills";
+import { stanceAttack } from "./actor/stance";
+import { clearStance, currentStance, setStance } from "./actor/stance-store";
 import OSE from "./config";
 import { getRollMode, getRollModes } from "./helpers-message-mode";
+
+/**
+ * Damage of a weapon two or more length grades longer, used inside the
+ * opponent's reach: whatever it normally rolls, it keeps the lower of 2d8 and
+ * gains nothing from its length (Measure and Reach.md).
+ */
+const INSIDE_REACH_DAMAGE = "2d8kl";
+
+/** The stances an attack can be made in. Guard makes no attack. */
+const ATTACK_STANCES = ["press", "defensive"];
 
 const OseDice = {
   async sendRoll({
@@ -29,8 +43,16 @@ const OseDice = {
       config: CONFIG.OSE,
     };
 
-    // Optionally include a situational bonus
-    if (form?.bonus.value) {
+    if (data.roll?.type === "skill") {
+      // A situational modifier moves the x in 6, not the die: -1 on a 1-in-6
+      // makes it 0 in 6, which is a long shot on 2d6 (Skills.md).
+      const shift = Number(form?.bonus.value || 0);
+      if (!Number.isFinite(shift)) ui.notifications.warn(game.i18n.localize("VF.roll.skillModifierNumber"));
+      data.roll.target += Number.isFinite(shift) ? Math.trunc(shift) : 0;
+      data.roll.mode = skillRollMode(data.roll.target);
+      parts.splice(0, parts.length, skillDice(data.roll.mode));
+    } else if (form?.bonus.value) {
+      // Optionally include a situational bonus
       parts.push(form.bonus.value);
     }
 
@@ -116,8 +138,18 @@ const OseDice = {
         break;
       }
 
+      case "skill": {
+        // EXPLORATION: x in 6, or 2d6 at the extremes. The faces decide, not
+        // the total, so a situational bonus typed into the dialog cannot turn
+        // a double 6 into a success.
+        const faces = roll.dice?.[0]?.results?.map(({ result: face }) => face) ?? [];
+        if (skillSucceeds(data.roll.mode, faces, Number(result.target))) result.isSuccess = true;
+        else result.isFailure = true;
+        break;
+      }
+
       case "below": {
-        // MORALE, EXPLORATION
+        // MORALE
         if (roll.total <= result.target) {
           result.isSuccess = true;
         } else {
@@ -293,11 +325,38 @@ const OseDice = {
     // Optionally include a situational bonus
     if (form?.bonus.value) parts.push(form.bonus.value);
 
-    // Weapon length: a shorter weapon pays to work past a longer one.
-    if (form?.weaponLength?.value && Number(form.weaponLength.value) !== 0) parts.push(form.weaponLength.value);
+    // Weapon length: a shorter weapon pays to work past a longer one. Inside
+    // the reach length counts for nothing, and a weapon two or more grades
+    // longer keeps the lower die.
+    const length = form?.weaponLength?.value;
+    if (length === "inside") data.roll.dmg = [INSIDE_REACH_DAMAGE, ...data.roll.dmg.slice(1)];
+    else if (length && Number(length) !== 0) parts.push(length);
 
     // Which of the defender's armour classes this attack is measured against.
     if (form?.acVariant?.value) data.roll.acVariant = form.acVariant.value;
+
+    // Press or Defensive Fighting, declared with the attack. The choice also
+    // sets the attacker's stance, so their AC follows for the rest of the
+    // Round. Without a dialog, whatever stance they are already in counts.
+    if (data.roll.stances && data.actor) {
+      const held = currentStance(data.actor);
+      const chosen = form?.stance ? form.stance.value || null : held;
+      const stance = ATTACK_STANCES.includes(chosen) ? chosen : null;
+      const attack = stanceAttack(stance);
+      if (attack) parts.push(attack);
+      if (stance && stance !== held) await setStance(data.actor, stance);
+      else if (!stance && ATTACK_STANCES.includes(held)) await clearStance(data.actor);
+    }
+
+    // The weapon's armour modifier, capped by the target's Armour Rating
+    // (shield included). Never against a firearm AC: a gun has none, and the
+    // firearm rating already says what armour is worth against a ball.
+    const firearmAc = data.roll.firearm || data.roll.acVariant === "firearm";
+    if (data.roll.armourModifier && !firearmAc) {
+      const rating = targetArmourRating(data.roll.target?.actor?.system, data.roll.type === "missile");
+      const armour = cappedArmourModifier(data.roll.armourModifier, rating);
+      if (armour) parts.push(armour);
+    }
 
     const roll = new Roll(parts.join("+"), data);
     await roll.evaluate();
@@ -458,10 +517,23 @@ const OseDice = {
     let rolled = false;
     const template = `${OSE.systemPath()}/templates/chat/roll-dialog.html`;
     const isAttack = ["melee", "missile", "attack"].includes(data.roll.type);
+    const held = data.roll.stances ? currentStance(data.actor) : null;
     const dialogData = {
       formula: parts.join(" "),
       data,
       isAttack,
+      // Weapon length and stances are melee business only.
+      isMelee: isAttack && data.roll.type !== "missile",
+      stances: data.roll.stances
+        ? [
+            { value: "", label: "VF.stance.none", selected: !ATTACK_STANCES.includes(held) },
+            ...ATTACK_STANCES.map((kind) => ({
+              value: kind,
+              label: `VF.stance.${kind}.label`,
+              selected: held === kind,
+            })),
+          ]
+        : null,
       // Only offer the ACs that can answer this kind of attack.
       acVariants: ARMOUR_CLASS_VARIANTS.filter((v) => v.ranged === (data.roll.type === "missile")),
       rollMode: data.roll.blindroll ? "blindroll" : getRollMode(),

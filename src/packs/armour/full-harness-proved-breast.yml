@@ -19,7 +19,7 @@ system:
   type: "heavy"
   acMelee: 6
   acRanged: 6
-  proof: "partial"
+  acFirearm: 3
   encumbrancePoints: 3
 effects: []
 folder: null

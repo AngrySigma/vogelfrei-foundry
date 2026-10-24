@@ -18,7 +18,8 @@ system:
   tags:
     - title: "Training"
       value: "Training"
-  damage: "1d6"
+  damage: "1d8"
+  armourModifier: 0
   length: 0
   lengthTwoHanded: null
   melee: false

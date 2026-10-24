@@ -20,7 +20,8 @@ system:
       value: "Training"
     - title: "Curious"
       value: "Curious"
-  damage: "1d4"
+  damage: "2d8kl"
+  armourModifier: 0
   length: 1
   lengthTwoHanded: null
   melee: true

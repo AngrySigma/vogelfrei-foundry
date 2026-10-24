@@ -14,6 +14,8 @@
  *     4 points  severely       x 0.25        30' turn / 10' round /  6 miles
  *    5+ points  overencumbered nothing        0
  */
+
+import { type Coins, coinCount } from "../../purse";
 import {
   ENCUMBRANCE_LIMIT,
   type EncumbranceBreakdown,
@@ -21,7 +23,6 @@ import {
   encumbranceBreakdown,
   encumbranceStateLabel,
 } from "../encumbrance-points";
-import { type Coins, coinCount } from "../../purse";
 import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
 export default class OseDataModelCharacterEncumbranceVogelfrei
@@ -48,10 +49,16 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
    * @param items - Everything the character holds, worn armour included.
    * @param options - What else the character carries.
    * @param options.coins - The purse; every hundred coins is one item.
+   * @param strengthMod - The Strength modifier: one point per 5 + it items.
    */
-  constructor(_max = ENCUMBRANCE_LIMIT, items: EncumbranceItem[] = [], { coins }: { coins?: Partial<Coins> } = {}) {
+  constructor(
+    _max = ENCUMBRANCE_LIMIT,
+    items: EncumbranceItem[] = [],
+    { coins }: { coins?: Partial<Coins> } = {},
+    strengthMod = 0,
+  ) {
     super(OseDataModelCharacterEncumbranceVogelfrei.type, ENCUMBRANCE_LIMIT);
-    this.#breakdown = encumbranceBreakdown(items, coinCount(coins));
+    this.#breakdown = encumbranceBreakdown(items, coinCount(coins), strengthMod);
   }
 
   static defineSchema() {

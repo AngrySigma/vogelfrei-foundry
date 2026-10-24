@@ -19,7 +19,7 @@ system:
   type: "shield"
   acMelee: 2
   acRanged: 3
-  proof: "none"
+  acFirearm: 0
   encumbrancePoints: 1
 effects: []
 folder: null

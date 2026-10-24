@@ -8,6 +8,7 @@ import {
   ARMOUR_POINTS,
   ENCUMBRANCE_LIMIT,
   ITEMS_PER_POINT,
+  itemsPerPoint,
   countedItems,
   encumbranceBreakdown,
   encumbranceStateLabel,
@@ -63,6 +64,36 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
     it("Counts five items to a point", () => {
       expect(ITEMS_PER_POINT).equal(5);
+    });
+  });
+
+  describe("Strength", () => {
+    // Time and Movement.md: one point per 5 + Strength modifier items.
+    it("Makes a point of every two items at Strength 3 (-3)", () => {
+      expect(itemsPerPoint(-3)).equal(2);
+      expect(pointsFromItemCount(2, -3)).equal(0);
+      expect(pointsFromItemCount(3, -3)).equal(1);
+      expect(pointsFromItemCount(5, -3)).equal(2);
+    });
+
+    it("Makes a point of every eight items at Strength 18 (+3)", () => {
+      expect(itemsPerPoint(3)).equal(8);
+      expect(pointsFromItemCount(8, 3)).equal(0);
+      expect(pointsFromItemCount(9, 3)).equal(1);
+      expect(pointsFromItemCount(17, 3)).equal(2);
+    });
+
+    it("Leaves oversized items at a point each, whatever the Strength", () => {
+      const big = () => item({ encumbrance: "oversized" });
+      expect(encumbranceBreakdown([big(), big()], 0, 3).points).equal(2);
+      expect(encumbranceBreakdown([big(), big()], 0, -3).points).equal(2);
+    });
+
+    it("Scales the ordinary items in a full breakdown", () => {
+      expect(encumbranceBreakdown(many(6, item), 0, 0).points).equal(1);
+      expect(encumbranceBreakdown(many(6, item), 0, 1).points).equal(0);
+      expect(encumbranceBreakdown(many(6, item), 0, -1).points).equal(1);
+      expect(encumbranceBreakdown(many(9, item), 0, -1).points).equal(2);
     });
   });
 
