@@ -189,12 +189,6 @@ export const OSE = {
     silver: "VF.status.silver",
     gold: "VF.status.gold",
   },
-  /** Armour Proof grades, as localization keys. Armor.md#proof */
-  armorProof: {
-    none: "VF.armor.proof.none",
-    partial: "VF.armor.proof.partial",
-    full: "VF.armor.proof.full",
-  },
   /** Targeting modes for applying damage, keyed by mode. */
   apply_damage_options: {
     selected: "selected",

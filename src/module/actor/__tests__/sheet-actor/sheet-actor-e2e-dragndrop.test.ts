@@ -13,7 +13,8 @@ import {
   createWorldTestItem,
   itemTypes,
   waitForElement,
-  waitForInput, // eslint-disable-next-line prettier/prettier
+  waitForInput,
+  waitUntil, // eslint-disable-next-line prettier/prettier
 } from "../../../../e2e/testUtils";
 import type OseItem from "../../../item/entity";
 import type OseActor from "../../entity";
@@ -70,6 +71,18 @@ const executeDragNDrop = async (items: DragNDropItems) => {
   });
   items.target.itemElement?.dispatchEvent(mockDropEvent);
 };
+
+/**
+ * A drop is several round trips -- create the item if it is new, list it in
+ * the container, then point the item at the container -- so wait until the
+ * last of them has landed rather than for a fixed delay.
+ */
+const waitForStored = (items: DragNDropItems) =>
+  waitUntil(() => {
+    const container = items.target.item;
+    if (!container?.system.itemIds.length) return false;
+    return !!container.parent?.items.some((item: OseItem) => item.system.containerId === container.id);
+  });
 
 export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
   describe("_onDragStart(event)", () => {
@@ -174,7 +187,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
       // Execute drag'n'drop of stored item
       dragNDropCasePreflightCheck("New Actor Test Weapon", items);
       await executeDragNDrop(items);
-      await waitForInput();
+      await waitForStored(items);
 
       // Check items
       expect(items.target.item?.system.itemIds.length).equal(1);
@@ -260,7 +273,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
 
           // Drag N Drop
           await executeDragNDrop(items);
-          await waitForInput();
+          await waitForStored(items);
 
           // Perform post-flight checks
           dragNDropCasePostflightCheck(documents, items);
@@ -280,7 +293,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
 
           // Drag N Drop
           await executeDragNDrop(items);
-          await waitForInput();
+          await waitForStored(items);
 
           // Store new item as it recreates in the character sheet
           items.source.item = documents.actor?.items.getName(items.source.item?.name) as OseItem;
@@ -306,7 +319,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
 
           // Drag N Drop
           await executeDragNDrop(items);
-          await waitForInput();
+          await waitForStored(items);
 
           // Store new item as it recreates in the character sheet
           items.source.item = documents.actor?.items.getName(items.source.item?.name) as OseItem;

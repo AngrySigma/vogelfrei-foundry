@@ -19,6 +19,7 @@ system:
     - title: "Two-handed"
       value: "Two-handed"
   damage: "1d8"
+  armourModifier: 0
   length: 3
   lengthTwoHanded: null
   melee: true

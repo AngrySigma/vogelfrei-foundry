@@ -17,6 +17,7 @@ system:
   equipped: false
   tags: []
   damage: "1d8"
+  armourModifier: 0
   length: 2
   lengthTwoHanded: 3
   melee: true

@@ -11,6 +11,7 @@ import OseDataModelMonster from "./module/actor/data-model-monster";
 import registerActorDirectoryButton from "./module/actor/directory-button";
 import OseActor from "./module/actor/entity";
 import OseActorSheetMonster from "./module/actor/monster-sheet";
+import { registerStanceHooks } from "./module/actor/stance-store";
 import TokenRulerOSE from "./module/actor/token-ruler";
 import ChronicleApp from "./module/chronicle/chronicle-app";
 import { getChronicle, registerChronicleSetting, syncWorldTime } from "./module/chronicle/store";
@@ -32,6 +33,7 @@ import OseDataModelWeapon from "./module/item/data-model-weapon";
 import OseItem from "./module/item/entity";
 import registerArmourEquipHooks from "./module/item/equip-armour";
 import OseItemSheet from "./module/item/item-sheet";
+import { migratePlaytestRules, registerPlaytestRulesMigration } from "./module/migrate-playtest-rules";
 import registerPartyDirectoryButton from "./module/party/directory-button";
 import PartyApp from "./module/party/party-app";
 import { adoptLegacyParty, registerPartyHooks, registerPartySetting } from "./module/party/store";
@@ -67,6 +69,8 @@ Hooks.once("init", async () => {
   registerChronicleSetting();
   registerPartySetting();
   registerUploadGuard();
+  registerStanceHooks();
+  registerPlaytestRulesMigration();
 
   CONFIG.Combat.documentClass = OSECombat;
   CONFIG.Combatant.documentClass = OSECombatant;
@@ -168,6 +172,7 @@ Hooks.once("ready", async () => {
 
   await adoptVogelfreiEncumbrance();
   await migrateCoinItems();
+  await migratePlaytestRules();
   await syncWorldTime(getChronicle());
   await adoptLegacyParty();
   await promptTokenRingSelection();

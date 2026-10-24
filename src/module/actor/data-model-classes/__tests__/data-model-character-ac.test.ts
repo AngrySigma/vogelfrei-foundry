@@ -8,8 +8,8 @@ export const key = "vogelfrei.actor.datamodel.character.ac";
 export const options = { displayName: "Vogelfrei: Actor: Data Model: Character AC" };
 
 /** A minimal stand-in for an equipped armour Item. */
-const armour = (type: string, acMelee: number, acRanged: number, proof = "none") =>
-  ({ system: { type, acMelee, acRanged, proof } }) as never;
+const armour = (type: string, acMelee: number, acRanged: number, acFirearm = 0) =>
+  ({ system: { type, acMelee, acRanged, acFirearm } }) as never;
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("ARMOUR_CLASS_VARIANTS", () => {
@@ -65,8 +65,8 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("The rulebook's worked example", () => {
-    // Combat Actions.md: Hans, Weapon Skill 2, Agility +2, Light Armour (AR 2),
-    // has an Armour Class of 16.
+    // Combat Actions.md: Hans, Weapon Skill 2, Agility +2, Buff coat (Armour
+    // Rating 2, firearm 0), has an Armour Class of 16.
     const hans = new OseDataModelCharacterAC([armour("light", 2, 2)], 2, 2, 0);
 
     it("Computes Hans' melee AC as 16", () => {
@@ -85,7 +85,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(hans.values.surprised).equal(12);
     });
 
-    it("Keeps nothing but the base against a shot, his armour being unproved", () => {
+    it("Keeps nothing but the base against a shot, a buff coat being worth nothing against a ball", () => {
       expect(hans.values.firearm).equal(10);
     });
   });
@@ -123,12 +123,6 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(ac.values.ranged).equal(13);
     });
 
-    it("Gives a pavise its ranged bonus only", () => {
-      const ac = new OseDataModelCharacterAC([armour("shield", 0, 5)]);
-      expect(ac.values.melee).equal(10);
-      expect(ac.values.ranged).equal(15);
-    });
-
     it("Adds the shield to melee AC on top of body armour", () => {
       const ac = new OseDataModelCharacterAC([armour("light", 2, 2), armour("shield", 2, 3)], 2, 2, 0);
       expect(ac.values.melee).equal(18);
@@ -136,38 +130,76 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
   });
 
-  describe("Proof, against a firearm", () => {
-    it("Ignores unproved armour entirely", () => {
-      const ac = new OseDataModelCharacterAC([armour("heavy", 6, 6, "none")], 2, 2, 0);
+  describe("The firearm rating", () => {
+    it("Ignores armour with no firearm rating", () => {
+      // Full harness: Armour Rating 6, firearm 0.
+      const ac = new OseDataModelCharacterAC([armour("heavy", 6, 6, 0)], 2, 2, 0);
       expect(ac.values.firearm).equal(10);
     });
 
-    it("Counts partial proof at half, rounded down", () => {
-      const ac = new OseDataModelCharacterAC([armour("heavy", 3, 3, "partial")]);
-      expect(ac.values.firearm).equal(11);
-    });
-
-    it("Counts full proof in full", () => {
-      const ac = new OseDataModelCharacterAC([armour("medium", 4, 4, "full")]);
-      expect(ac.values.firearm).equal(14);
+    it("Counts the armour's firearm rating, not its Armour Rating", () => {
+      // Breastplate: 3, firearm 2.
+      const ac = new OseDataModelCharacterAC([armour("medium", 3, 3, 2)]);
+      expect(ac.values.firearm).equal(12);
+      expect(ac.values.melee).equal(13);
     });
 
     it("Counts only a target of proof among shields", () => {
-      const target = new OseDataModelCharacterAC([armour("shield", 2, 3)]);
-      const proved = new OseDataModelCharacterAC([armour("shield", 2, 3, "full")]);
+      const target = new OseDataModelCharacterAC([armour("shield", 2, 3, 0)]);
+      const proved = new OseDataModelCharacterAC([armour("shield", 2, 3, 3)]);
       expect(target.values.firearm).equal(10);
       expect(proved.values.firearm).equal(13);
     });
 
-    it("Leaves Proof out of every other AC", () => {
-      const ac = new OseDataModelCharacterAC([armour("heavy", 6, 6, "none")]);
-      expect(ac.values.melee).equal(16);
-      expect(ac.values.ranged).equal(16);
+    it("Adds a target of proof to the harness", () => {
+      const ac = new OseDataModelCharacterAC([armour("medium", 4, 4, 4), armour("shield", 2, 3, 3)]);
+      expect(ac.values.firearm).equal(17);
     });
 
     it("Takes no Agility, even a negative one", () => {
       expect(new OseDataModelCharacterAC([], 3, 0, 0).values.firearm).equal(10);
       expect(new OseDataModelCharacterAC([], -3, 0, 0).values.firearm).equal(10);
+    });
+  });
+
+  describe("Stances", () => {
+    const withStance = (stance: number) => new OseDataModelCharacterAC([armour("light", 2, 2)], 0, 2, 0, stance);
+
+    it("Adds to melee, monster-melee and ranged AC", () => {
+      const ac = withStance(4);
+      expect(ac.values.melee).equal(18);
+      expect(ac.values.meleeMonster).equal(16);
+      expect(ac.values.ranged).equal(16);
+    });
+
+    it("Never touches the firearm AC", () => {
+      expect(withStance(4).values.firearm).equal(10);
+      expect(withStance(-4).values.firearm).equal(10);
+    });
+
+    it("Leaves a surprised character alone", () => {
+      expect(withStance(4).values.surprised).equal(12);
+    });
+
+    it("Takes a Press away as readily as it gives a Guard", () => {
+      expect(withStance(-4).values.melee).equal(10);
+    });
+  });
+
+  describe("Armour Rating, for weapons' armour modifiers", () => {
+    it("Counts the harness and the shield together", () => {
+      const ac = new OseDataModelCharacterAC([armour("light", 1, 1), armour("shield", 2, 3)]);
+      expect(ac.armourRatingMelee).equal(3);
+      expect(ac.armourRatingRanged).equal(4);
+    });
+
+    it("Is 0 with nothing on", () => {
+      expect(new OseDataModelCharacterAC([], 2, 2, 0).armourRatingMelee).equal(0);
+    });
+
+    it("Leaves out Agility, Weapon Skill, stance and the modifier", () => {
+      const ac = new OseDataModelCharacterAC([armour("medium", 4, 4)], 3, 3, 2, 4);
+      expect(ac.armourRatingMelee).equal(4);
     });
   });
 

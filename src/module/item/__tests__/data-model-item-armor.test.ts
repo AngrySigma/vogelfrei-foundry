@@ -12,8 +12,8 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   describe("ArmorTypes", () => {
     const dataTypes = OseDataModelArmor.ArmorTypes;
 
-    it("Has 4 armor types", () => {
-      expect(Object.keys(dataTypes).length).equal(4);
+    it("Has 5 armor types", () => {
+      expect(Object.keys(dataTypes).length).equal(5);
     });
     it("Has unarmored", () => {
       expect(dataTypes.unarmored).equal("VF.armor.unarmored");

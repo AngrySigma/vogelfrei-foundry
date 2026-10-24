@@ -21,6 +21,7 @@ system:
     - title: "Brace"
       value: "Brace"
   damage: "1d8"
+  armourModifier: 0
   length: 5
   lengthTwoHanded: null
   melee: true
@@ -35,7 +36,7 @@ system:
   counter:
     value: 0
     max: 0
-  description: "<p>May attack from the second rank or Brace. A pike deals only d3 damage inside its reach.</p>"
+  description: "<p>May attack from the second rank or Brace. Inside its reach a pike always keeps the lower die.</p>"
 effects: []
 folder: null
 sort: 0

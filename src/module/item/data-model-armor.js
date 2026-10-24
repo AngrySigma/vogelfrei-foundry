@@ -2,6 +2,7 @@
  * @file The data model for Items of type Armor
  */
 import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
+import { proofToFirearmRating } from "../migrate-playtest-rules-core";
 import costFields from "./cost-fields";
 export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
@@ -12,12 +13,20 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
     shield: "VF.armor.shield",
   };
 
-  /** Armor.md#proof: how much of the rating stands up to a firearm. */
-  static ProofTypes = {
-    none: "VF.armor.proof.none",
-    partial: "VF.armor.proof.partial",
-    full: "VF.armor.proof.full",
-  };
+  /**
+   * Armour saved before the playtest rules carries a Proof grade instead of a
+   * firearm rating. Convert it on load, so every copy -- on a sheet, in a
+   * token, in a compendium -- reads right before anything refreshes it.
+   *
+   * @param {object} source - The stored system data.
+   * @returns {object} The data, migrated.
+   */
+  static migrateData(source) {
+    if (source && "proof" in source && source.acFirearm === undefined) {
+      source.acFirearm = proofToFirearmRating(source.proof, source.acRanged);
+    }
+    return source;
+  }
 
   static defineSchema() {
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
@@ -28,14 +37,12 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       }),
       // Bonuses added to AC, not replacements for it. Body armour sets both to
       // its Armour Rating; shields are asymmetric -- a buckler helps only in
-      // melee, a pavise only at range, a shield both by different amounts.
+      // melee, a target in both by different amounts.
       acMelee: new NumberField({ integer: true, initial: 0 }),
       acRanged: new NumberField({ integer: true, initial: 0 }),
-      // Only a firearm looks at this; everything else meets the full rating.
-      proof: new StringField({
-        initial: "none",
-        choices: Object.keys(OseDataModelArmor.ProofTypes),
-      }),
+      // Armor.md, Firearm column: what the armour is worth against a ball.
+      // Only a firearm looks at this; everything else meets the rating above.
+      acFirearm: new NumberField({ integer: true, initial: 0 }),
       // The Enc column of Armor.md: points the harness costs while worn, or a
       // shield while carried. Null falls back to the points for its type.
       encumbrancePoints: new NumberField({ integer: true, min: 0, initial: null, nullable: true }),
@@ -86,14 +93,13 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 
-    const proof =
-      this.proof && this.proof !== "none"
-        ? { label: OseDataModelArmor.ProofTypes[this.proof], icon: "fa-crosshairs" }
-        : null;
+    const firearm = this.acFirearm
+      ? { label: game.i18n.format("VF.armor.firearm.tag", { value: this.acFirearm }), icon: "fa-crosshairs" }
+      : null;
 
     return [
       { label: OseDataModelArmor.ArmorTypes[this.type], icon: "fa-tshirt" },
-      proof,
+      firearm,
       ...autoTags,
       ...this.manualTags,
     ]

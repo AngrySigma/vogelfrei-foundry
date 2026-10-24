@@ -20,7 +20,8 @@ system:
       value: "Training"
     - title: "Two-handed"
       value: "Two-handed"
-  damage: "1d6"
+  damage: "2d8kl"
+  armourModifier: 0
   length: 0
   lengthTwoHanded: null
   melee: true
@@ -35,7 +36,7 @@ system:
   counter:
     value: 0
     max: 0
-  description: "<p>Requires an attack from surprise or a successful wrestling attempt. On a hit, the target is immobilized and takes 1d6 damage per Round until freed.</p>"
+  description: "<p>Requires an attack from surprise or a successful wrestling attempt. On a hit, the target is immobilized and takes the garrote's damage again each Round until freed.</p>"
 effects: []
 folder: null
 sort: 0

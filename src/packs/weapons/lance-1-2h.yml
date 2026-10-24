@@ -20,7 +20,8 @@ system:
       value: "Training"
     - title: "Brace"
       value: "Brace"
-  damage: "1d10"
+  damage: "2d8kh"
+  armourModifier: 0
   length: 5
   lengthTwoHanded: null
   melee: true

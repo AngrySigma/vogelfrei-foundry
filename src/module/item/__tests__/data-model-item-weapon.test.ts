@@ -61,12 +61,12 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("autotags()", () => {
-    it("Returns a flattened array with damage and autotags", () => {
+    it("Returns a flattened array with damage and autotags; a new weapon deals d8", () => {
       const item = new OseDataModelWeapon();
       expect(item.autoTags.length).equal(2);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
     });
 
     it("Damage is present in flattened array", () => {
@@ -84,7 +84,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(item.autoTags.length).equal(2);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
       expect(Object.keys(item.autoTags[1]).length).equal(3);
       expect(item.autoTags[1].label).equal("Melee");
       expect(item.autoTags[1].icon).equal("fa-sword");
@@ -98,7 +98,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
       expect(Object.keys(item.autoTags[1]).length).equal(3);
       expect(item.autoTags[1].label).equal("Missile");
       expect(item.autoTags[1].icon).equal("fa-bow-arrow");
@@ -118,7 +118,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
       expect(Object.keys(item.autoTags[1]).length).equal(3);
       expect(item.autoTags[1].label).equal("Missile");
       expect(item.autoTags[1].icon).equal("fa-bow-arrow");
@@ -134,7 +134,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
       expect(Object.keys(item.autoTags[2]).length).equal(3);
       expect(item.autoTags[2].label).equal("Slow");
       expect(item.autoTags[2].icon).equal("fa-weight-hanging");
@@ -147,7 +147,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
-      expect(item.autoTags[0].label).equal("");
+      expect(item.autoTags[0].label).equal("d8");
       expect(Object.keys(item.autoTags[2]).length).equal(2);
       expect(item.autoTags[2].label).equal(game.i18n.localize("VF.saves.poison.long"));
       expect(item.autoTags[2].icon).equal("fa-skull");

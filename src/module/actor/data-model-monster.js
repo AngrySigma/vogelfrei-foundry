@@ -74,6 +74,9 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
       aac: new ObjectField(),
       ws: new NumberField({ integer: true, initial: 0 }),
       bs: new NumberField({ integer: true, initial: 0 }),
+      // How much of the AC is armour, for weapons' armour modifiers. Natural
+      // AC is not an Armour Rating (Monsters and NPCs.md), so it defaults to 0.
+      armourRating: new NumberField({ integer: true, min: 0, initial: 0 }),
       encumbrance: new SchemaField({
         value: new NumberField({ integer: false }),
         max: new NumberField({ integer: false }),

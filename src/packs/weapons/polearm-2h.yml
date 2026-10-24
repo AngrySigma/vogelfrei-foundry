@@ -20,7 +20,8 @@ system:
       value: "Two-handed"
     - title: "Brace"
       value: "Brace"
-  damage: "1d8"
+  damage: "2d8kh"
+  armourModifier: 2
   length: 4
   lengthTwoHanded: null
   melee: true

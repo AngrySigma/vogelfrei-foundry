@@ -19,7 +19,7 @@ system:
   type: "medium"
   acMelee: 3
   acRanged: 3
-  proof: "partial"
+  acFirearm: 2
   encumbrancePoints: 1
 effects: []
 folder: null

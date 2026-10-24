@@ -17,14 +17,27 @@
             {{/each}}
         </select>
     </div>
+    {{#if isMelee}}
     <div class="form-group">
         <label>{{localize "VF.WeaponLength"}}</label>
         <select name="weaponLength">
             <option value="0">{{localize "VF.weaponLength.equal"}}</option>
             <option value="-2">{{localize "VF.weaponLength.shorter"}}</option>
             <option value="-4">{{localize "VF.weaponLength.unarmed"}}</option>
+            <option value="inside">{{localize "VF.weaponLength.inside"}}</option>
         </select>
     </div>
+    {{#if stances}}
+    <div class="form-group">
+        <label>{{localize "VF.stance.attack"}}</label>
+        <select name="stance">
+            {{#each stances}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+            {{/each}}
+        </select>
+    </div>
+    {{/if}}
+    {{/if}}
     {{/if}}
     <div class="form-group">
         <label>{{localize "VF.SitMod"}}</label>

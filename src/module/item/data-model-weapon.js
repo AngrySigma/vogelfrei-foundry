@@ -3,11 +3,14 @@
  */
 import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 import costFields from "./cost-fields";
+import { DEFAULT_WEAPON_DAMAGE, weaponDamageGrade } from "./weapon-damage";
 export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
     return {
-      damage: new StringField(),
+      // A dice formula. The sheet offers the four grades of weapon-damage.ts
+      // and keeps anything else as typed.
+      damage: new StringField({ initial: DEFAULT_WEAPON_DAMAGE }),
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),
@@ -18,6 +21,12 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
         long: new NumberField({ integer: true, min: 0, initial: 0 }),
       }),
       bonus: new NumberField({}),
+      /**
+       * The weapon's armour modifier (Melee Weapons.md, Armour column): a
+       * rapier -2, a heavy crossbow +3. Added to the attack against an
+       * armoured target, capped by its Armour Rating; see armour-modifier.ts.
+       */
+      armourModifier: new NumberField({ integer: true, initial: 0 }),
       /**
        * Weapon length, 0-5, as the melee table gives it. A cestus is 0, a pike
        * is 5. Combat Actions.md makes the difference in reach a modifier on the
@@ -85,6 +94,12 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
     return CONFIG.OSE.auto_tags.slow;
   }
 
+  get #armourTag() {
+    if (!this.armourModifier) return null;
+    const value = this.armourModifier > 0 ? `+${this.armourModifier}` : `\u2212${-this.armourModifier}`;
+    return { label: game.i18n.format("VF.items.ArmourModifierTag", { value }), icon: "fa-shield-alt" };
+  }
+
   get #saveTag() {
     if (!this.save) return null;
 
@@ -118,16 +133,23 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
     ];
   }
 
+  /** The damage as the book writes it ("d8 low"), or the formula if it is no grade. */
+  get #damageLabel() {
+    const grade = weaponDamageGrade(this.damage);
+    return grade === "custom" ? (this.damage ?? "") : game.i18n.localize(`VF.weaponDamage.${grade}.short`);
+  }
+
   get autoTags() {
     const tagNames = Object.values(CONFIG.OSE.auto_tags);
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 
     return [
-      { label: this.damage ?? "", icon: "fa-tint" },
+      { label: this.#damageLabel, icon: "fa-tint" },
       this.#meleeTag,
       this.#missileTag,
       this.#slowTag,
+      this.#armourTag,
       ...autoTags,
       this.#saveTag,
     ]

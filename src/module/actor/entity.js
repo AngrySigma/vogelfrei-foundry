@@ -1,8 +1,9 @@
 import skipRollDialogCheck from "../helpers-behaviour";
 import OseDice from "../helpers-dice";
 import OseItem from "../item/entity";
+import { WEAPON_DAMAGE } from "../item/weapon-damage";
 import { applyDamageToPools } from "./damage";
-import { explorationSkillTotal } from "./exploration-skills";
+import { explorationSkillTotal, skillDice, skillRollMode } from "./exploration-skills";
 
 /**
  * Used in the rollAttack function to remove zeroes from rollParts arrays
@@ -14,10 +15,10 @@ const removeFalsyElements = (arr) => arr.filter((b) => b);
 
 /**
  * Damage for a blow struck with no weapon Item behind it: a fist, a rock, a
- * chair leg. Melee Weapons.md lists Improvised at d3, length 0. OSE defaulted
- * this to 1d6, which is a shortsword.
+ * chair leg. Melee Weapons.md lists Improvised at d8-3, at least 1, length 0.
+ * OSE defaulted this to 1d6.
  */
-const IMPROVISED_DAMAGE = "1d3";
+const IMPROVISED_DAMAGE = WEAPON_DAMAGE.improvised;
 
 /**
  * Whether a weapon is a gun. The equipment compendium tags every entry of
@@ -202,7 +203,8 @@ export default class OseActor extends Actor {
         type: "above",
         target: actorData.saves[save].value,
         // Ability Scores.md: Intelligence is added to saving throws against
-        // Magic-User spells; Willpower to every save that is not spell-related.
+        // anything magical -- a spell, a miracle, a magic item, a creature's
+        // innate magic; Willpower to every other save.
         // Which one applies is the Referee's call at the table, so the dialog
         // offers all three and the roll takes whichever button was pressed.
         magic: actorType === "character" ? actorData.scores.intelligence.mod + actorData.details.magic.bonus : 0,
@@ -358,15 +360,10 @@ export default class OseActor extends Actor {
     const actorData = this.system;
 
     const label = game.i18n.localize("VF.roll.hd");
-    let rollParts = [actorData.wounds.hd];
-
-    if (actorType === "character") {
-      // Class and Career.md: the Wounds die is rolled once, at first level,
-      // and the Toughness bonus added to it once -- not once per level, as OSE
-      // had it. The class minimum is the Referee's to apply; it is not on the
-      // sheet.
-      rollParts = [`max(${actorData.wounds.hd} + ${actorData.scores.toughness.mod}, 1)`];
-    }
+    // A monster's Hit Dice. Characters have nothing to roll: Class and
+    // Career.md gives them 6 + Toughness Wounds (a Warrior 7), not a die.
+    if (actorType === "character") return undefined;
+    const rollParts = [actorData.wounds.hd];
 
     const data = {
       actor: this,
@@ -467,13 +464,17 @@ export default class OseActor extends Actor {
     const actorData = this.system;
 
     const label = game.i18n.localize(`VF.exploration.${expl}.long`);
-    const rollParts = ["1d6"];
+    const target = explorationSkillTotal(expl, actorData.exploration[expl] ?? 0, actorData.scores.strength.mod);
+    // A sure thing or a long shot rolls 2d6 instead; see skillRollMode.
+    const mode = skillRollMode(target);
+    const rollParts = [skillDice(mode)];
 
     const data = {
       actor: this,
       roll: {
-        type: "below",
-        target: explorationSkillTotal(expl, actorData.exploration[expl] ?? 0, actorData.scores.strength.mod),
+        type: "skill",
+        mode,
+        target,
         blindroll: true,
       },
       details: game.i18n.format("VF.roll.details.exploration", {
@@ -586,17 +587,16 @@ export default class OseActor extends Actor {
 
     const rollParts = ["1d20"];
 
-    // Vogelfrei attack roll: d20 + Weapon Skill and Strength in melee, or
-    // Ballistic Skill and Agility at range. There is no THAC0 and no attack
-    // bonus from Hit Dice. Damage is the weapon die alone -- Combat Actions.md
-    // step 4 adds no ability modifier to it.
-    // Monsters have no ability scores -- they roll their attack bonus alone --
-    // so the ability modifier has to be optional rather than assumed. Monster
-    // attacks use type "attack", which falls here alongside melee.
+    // Vogelfrei attack roll (Combat Actions.md, step 3): d20 + Weapon Skill
+    // in melee, or + Ballistic Skill at range. No ability modifier adds to it.
+    // A firearm adds neither -- anyone can point a gun -- and that holds for a
+    // monster's Hit Dice too (Monsters and NPCs.md). Monster attacks use type
+    // "attack", which falls here alongside melee. Damage is the weapon's dice
+    // alone; step 4 adds no ability modifier to it.
     const isMissile = options.type === "missile";
-    const attackMods = isMissile
-      ? [data.bs, data.scores?.agility?.mod]
-      : [data.ws, data.scores?.strength?.mod];
+    const firearm = isMissile && isFirearm(attData.item);
+    let attackMods = [];
+    if (!firearm) attackMods = isMissile ? [data.bs] : [data.ws];
 
     // Add weapon bonus to attack roll only (already added to dmgParts)
     if (attData.item) attackMods.push(attData.item?.system?.bonus);
@@ -610,8 +610,15 @@ export default class OseActor extends Actor {
       roll: {
         type: options.type,
         // A shot is answered by the target's firearm AC -- no Agility, and
-        // armour only as far as its Proof goes. The dialog can still change it.
-        acVariant: isMissile && isFirearm(attData.item) ? "firearm" : undefined,
+        // armour only as far as its firearm rating. The dialog can still
+        // change it.
+        acVariant: firearm ? "firearm" : undefined,
+        firearm,
+        // Capped against the target's Armour Rating once the target is known,
+        // in OseDice.sendAttackRoll. A gun has none.
+        armourModifier: firearm ? 0 : (attData.item?.system?.armourModifier ?? 0),
+        // Press and Defensive Fighting want Weapon Skill 1+ and a melee blow.
+        stances: this.type === "character" && !isMissile && (data.ws ?? 0) >= 1,
         dmg: dmgParts,
         save: attData.roll.save,
         target: attData.roll.target,

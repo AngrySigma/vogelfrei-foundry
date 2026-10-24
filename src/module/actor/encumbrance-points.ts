@@ -26,10 +26,22 @@ export const ITEM_ENCUMBRANCE_TYPES: readonly ItemEncumbrance[] = ["normal", "no
 export const DEFAULT_ITEM_ENCUMBRANCE: ItemEncumbrance = "normal";
 
 /**
- * Items carried per point of encumbrance. The first five are free -- the sixth
- * item is what earns the first point, the eleventh the second, and so on.
+ * Items carried per point of encumbrance, before Strength. Time and
+ * Movement.md: one point per 5 + Strength modifier items -- 2 for Strength 3,
+ * 8 for Strength 18. The first batch is free: with no modifier the sixth item
+ * earns the first point, the eleventh the second, and so on.
  */
 export const ITEMS_PER_POINT = 5;
+
+/**
+ * How many items make one encumbrance point for a given Strength.
+ *
+ * @param strengthMod - The Strength modifier, -3 to +3.
+ * @returns Items per point; never below 1.
+ */
+export function itemsPerPoint(strengthMod = 0): number {
+  return Math.max(1, ITEMS_PER_POINT + Math.trunc(Number(strengthMod) || 0));
+}
 
 /** Points at which a character stops moving altogether. */
 export const ENCUMBRANCE_LIMIT = 5;
@@ -105,15 +117,18 @@ export function countedItems(quantity = 1, stackSize = 0): number {
 }
 
 /**
- * Points earned by carrying a number of ordinary items. The first five are
- * free, and every five after that costs a point.
+ * Points earned by carrying a number of ordinary items. The first batch is
+ * free, and every batch after that costs a point. Oversized items are not
+ * counted here: they are +1 each whatever the Strength.
  *
  * @param itemCount - Countable items carried.
+ * @param strengthMod - The Strength modifier, which sets the batch size.
  * @returns Encumbrance points, never below zero.
  */
-export function pointsFromItemCount(itemCount: number): number {
-  if (!Number.isFinite(itemCount) || itemCount < ITEMS_PER_POINT + 1) return 0;
-  return Math.floor((itemCount - 1) / ITEMS_PER_POINT);
+export function pointsFromItemCount(itemCount: number, strengthMod = 0): number {
+  const batch = itemsPerPoint(strengthMod);
+  if (!Number.isFinite(itemCount) || itemCount < batch + 1) return 0;
+  return Math.floor((itemCount - 1) / batch);
 }
 
 /**
@@ -149,9 +164,10 @@ export type EncumbranceBreakdown = {
  * @param items - Everything the character holds, including worn armour.
  * @param coins - How many coins the character carries, of any kind. Every
  *   full hundred is one regular item; a part-hundred counts for nothing.
+ * @param strengthMod - The Strength modifier: how many items make a point.
  * @returns The point total and where each part of it came from.
  */
-export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0): EncumbranceBreakdown {
+export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, strengthMod = 0): EncumbranceBreakdown {
   const coinItems = Math.floor(Math.max(0, Math.floor(Number(coins) || 0)) / COINS_PER_ITEM);
   let itemCount = coinItems;
   let oversizedPoints = 0;
@@ -185,7 +201,7 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0): 
     else itemCount += counted;
   }
 
-  const itemPoints = pointsFromItemCount(itemCount);
+  const itemPoints = pointsFromItemCount(itemCount, strengthMod);
 
   return {
     points: itemPoints + oversizedPoints + armourPoints,

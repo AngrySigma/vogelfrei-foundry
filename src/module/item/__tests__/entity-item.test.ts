@@ -16,6 +16,7 @@ import {
 } from "../../../e2e/testUtils";
 import { getRollMode, setRollMode } from "../../helpers-message-mode";
 import OseItem from "../entity";
+import { DEFAULT_WEAPON_DAMAGE } from "../weapon-damage";
 
 export const key = "ose.item.entity";
 export const options = { displayName: "OSE: Item: Entity" };
@@ -378,7 +379,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       const tagList = item.getAutoTagList();
       expect(tagList.length).equal(1);
       expect(tagList[0].icon).equal("fa-tint");
-      expect(tagList[0].label).equal("1d6");
+      expect(tagList[0].label).equal(DEFAULT_WEAPON_DAMAGE);
       item.delete();
     });
     it("Missile weapon has ranges applied", async () => {
@@ -388,7 +389,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       const tagList = item.getAutoTagList();
       expect(tagList.length).equal(2);
       expect(tagList[0].icon).equal("fa-tint");
-      expect(tagList[0].label).equal("1d6");
+      expect(tagList[0].label).equal(DEFAULT_WEAPON_DAMAGE);
       expect(tagList[1].icon).equal("fa-bullseye");
       expect(tagList[1].label).equal("0/0/0");
       item.delete();
@@ -399,7 +400,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       const tagList = item.getAutoTagList();
       expect(tagList.length).equal(2);
       expect(tagList[0].icon).equal("fa-tint");
-      expect(tagList[0].label).equal("1d6");
+      expect(tagList[0].label).equal(DEFAULT_WEAPON_DAMAGE);
       expect(tagList[1].label).equal("Test");
       item.delete();
     });

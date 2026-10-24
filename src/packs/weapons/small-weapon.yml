@@ -16,7 +16,8 @@ system:
   containerId: ""
   equipped: false
   tags: []
-  damage: "1d6"
+  damage: "1d8"
+  armourModifier: -1
   length: 2
   lengthTwoHanded: null
   melee: true

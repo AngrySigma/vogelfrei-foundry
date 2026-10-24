@@ -30,6 +30,10 @@ import helpersTreasureTests, {
   key as helpersTreasureKey,
   options as helpersTreasureOptions,
 } from "../module/__tests__/helpers-treasure.test";
+import migratePlaytestRulesTests, {
+  key as migratePlaytestRulesKey,
+  options as migratePlaytestRulesOptions,
+} from "../module/__tests__/migrate-playtest-rules.test";
 import moneyTests, { key as moneyKey, options as moneyOptions } from "../module/__tests__/money.test";
 import purseTests, { key as purseKey, options as purseOptions } from "../module/__tests__/purse.test";
 import uploadGuardTests, {
@@ -40,6 +44,10 @@ import actorAlignmentTests, {
   key as actorAlignmentKey,
   options as actorAlignmentOptions,
 } from "../module/actor/__tests__/alignment.test";
+import actorArmourModifierTests, {
+  key as actorArmourModifierKey,
+  options as actorArmourModifierOptions,
+} from "../module/actor/__tests__/armour-modifier.test";
 import actorDamageTests, {
   key as actorDamageKey,
   options as actorDamageOptions,
@@ -61,6 +69,10 @@ import actorEntityTests, {
   key as actorEntityKey,
   options as actorEntityOptions,
 } from "../module/actor/__tests__/entity-actor.test";
+import actorExplorationSkillsTests, {
+  key as actorExplorationSkillsKey,
+  options as actorExplorationSkillsOptions,
+} from "../module/actor/__tests__/exploration-skills.test";
 import actorSheetDragNDropTests, {
   key as actorSheetDragNDropKey,
   options as actorSheetDragNDropOptions,
@@ -77,6 +89,10 @@ import actorSheetMonsterTests, {
   key as actorSheetMonsterKey,
   options as actorSheetMonsterOptions,
 } from "../module/actor/__tests__/sheet-monster.test";
+import actorStanceTests, {
+  key as actorStanceKey,
+  options as actorStanceOptions,
+} from "../module/actor/__tests__/stance.test";
 import actorDataModelCharacterACTests, {
   key as actorDataModelCharacterACKey,
   options as actorDataModelCharacterACOptions,
@@ -141,6 +157,10 @@ import itemSheetTests, {
   key as itemSheetKey,
   options as itemSheetOptions,
 } from "../module/item/__tests__/sheet-item.test";
+import itemWeaponDamageTests, {
+  key as itemWeaponDamageKey,
+  options as itemWeaponDamageOptions,
+} from "../module/item/__tests__/weapon-damage.test";
 import partyFormationTests, {
   key as partyFormationKey,
   options as partyFormationOptions,
@@ -195,6 +215,10 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(actorDamageKey, actorDamageTests, actorDamageOptions);
   quench.registerBatch(actorAlignmentKey, actorAlignmentTests, actorAlignmentOptions);
   quench.registerBatch(actorEncumbranceKey, actorEncumbranceTests, actorEncumbranceOptions);
+  quench.registerBatch(actorArmourModifierKey, actorArmourModifierTests, actorArmourModifierOptions);
+  quench.registerBatch(actorStanceKey, actorStanceTests, actorStanceOptions);
+  quench.registerBatch(actorExplorationSkillsKey, actorExplorationSkillsTests, actorExplorationSkillsOptions);
+  quench.registerBatch(migratePlaytestRulesKey, migratePlaytestRulesTests, migratePlaytestRulesOptions);
 
   quench.registerBatch(actorSheetKey, actorSheetTests, actorSheetOptions);
   quench.registerBatch(actorSheetDragNDropKey, actorSheetDragNDropTests, actorSheetDragNDropOptions);
@@ -232,6 +256,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(itemDataModelMiscKey, itemDataModelMiscTests, itemDataModelMiscOptions);
   quench.registerBatch(itemDataModelSpellKey, itemDataModelSpellTests, itemDataModelSpellOptions);
   quench.registerBatch(itemDataModelWeaponKey, itemDataModelWeaponTests, itemDataModelWeaponOptions);
+  quench.registerBatch(itemWeaponDamageKey, itemWeaponDamageTests, itemWeaponDamageOptions);
 
   quench.registerBatch(itemEntityKey, itemEntityTests, itemEntityOptions);
 

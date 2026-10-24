@@ -31,6 +31,17 @@
                         placeholder="8" />
                 </div>
             </li>
+            {{!-- Natural AC is not an Armour Rating, so weapons' armour
+                  modifiers ignore it. Only a creature in armour, or one whose
+                  description says how much of its AC is hide or scale, has one. --}}
+            <li class="attribute">
+                <h4 class="attribute-name box-title" title="{{ localize 'VF.ArmourRatingHint' }}">
+                    {{ localize "VF.ArmourRatingShort" }}</h4>
+                <div class="attribute-value">
+                    <input name="system.armourRating" type="text" value="{{system.armourRating}}" data-dtype="Number"
+                        placeholder="0" />
+                </div>
+            </li>
             <li class="attribute attack">
                 {{#if config.ascendingAC}}
                 <h4 class="attribute-name box-title" title="{{localize 'VF.AB'}}"><a>{{ localize "VF.ABShort" }}</a>

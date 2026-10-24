@@ -122,10 +122,21 @@
         <div class="form-group block-input">
           <label>{{localize 'VF.items.Damage'}}</label>
           <div class="form-fields">
+            <select class="damage-grade" title="{{localize 'VF.weaponDamage.hint'}}">
+              {{#each damageGrades}}
+              <option value="{{value}}" {{#if (eq value ../damageGrade)}}selected{{/if}}>{{localize label}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        <div class="form-group block-input damage-formula {{#unless (eq damageGrade 'custom')}}hidden{{/unless}}">
+          <label>{{localize 'VF.weaponDamage.formula'}}</label>
+          <div class="form-fields">
             <input
               type="text"
               name="system.damage"
               value="{{system.damage}}"
+              placeholder="1d8"
               data-dtype="String"
             />
           </div>
@@ -139,6 +150,19 @@
               type="text"
               name="system.bonus"
               value="{{system.bonus}}"
+              data-dtype="Number"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-tooltip aria-label="{{localize 'VF.items.ArmourModifierHint'}}"
+            >{{localize 'VF.items.ArmourModifier'}}</label
+          >
+          <div class="form-fields">
+            <input
+              type="text"
+              name="system.armourModifier"
+              value="{{system.armourModifier}}"
               data-dtype="Number"
             />
           </div>

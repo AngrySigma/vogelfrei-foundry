@@ -31,6 +31,42 @@ export const explorationSkillKeys = (): ExplorationSkill[] =>
 export const explorationSkillTotal = (key: ExplorationSkill, value = 0, strengthMod = 0): number =>
   key === "doors" ? value + strengthMod : value;
 
+/**
+ * How a skill is rolled at a given chance (Skills.md, "Sure things and long
+ * shots"). Between 1 and 5 in 6 it is the usual d6 at or under the chance. At
+ * 6 in 6 or better the roll is 2d6 and fails only on a double 6; at 0 in 6 or
+ * worse it is 2d6 and succeeds only on a double 1. Either way, 1 in 36.
+ */
+export type SkillRollMode = "normal" | "sure" | "longShot";
+
+export const skillRollMode = (chance: number): SkillRollMode => {
+  if (chance >= 6) return "sure";
+  if (chance <= 0) return "longShot";
+  return "normal";
+};
+
+/** The dice a skill roll throws in a given mode. */
+export const skillDice = (mode: SkillRollMode): string => (mode === "normal" ? "1d6" : "2d6");
+
+/**
+ * Whether a skill roll succeeded.
+ *
+ * @param mode - From skillRollMode.
+ * @param faces - The die faces rolled: one for a normal roll, two otherwise.
+ * @param chance - The x in "x in 6".
+ * @returns True on a success.
+ */
+export const skillSucceeds = (mode: SkillRollMode, faces: number[], chance: number): boolean => {
+  switch (mode) {
+    case "sure":
+      return !(faces.length >= 2 && faces.every((face) => face === 6));
+    case "longShot":
+      return faces.length >= 2 && faces.every((face) => face === 1);
+    default:
+      return (faces[0] ?? 7) <= chance;
+  }
+};
+
 export const prepareExplorationSkills = (
   exploration: ExplorationSkills = {},
   strengthMod = 0,
