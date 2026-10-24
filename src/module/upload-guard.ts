@@ -125,7 +125,7 @@ export const registerUploadGuard = () => {
 
     // biome-ignore lint/suspicious/noExplicitAny: see above
     static async upload(source: string, path: string, file: File, body: any = {}, options: any = {}) {
-      if (!isRestricted()) return Base.upload(source, path, file, body, options);
+      if (!isRestricted()) return super.upload(source, path, file, body, options);
       const dir = playerUploadDir();
       // A pasted image carries a document uuid and the server would pick its
       // own folder for it; drop the uuid so it lands with everything else.
@@ -145,7 +145,7 @@ export const registerUploadGuard = () => {
       if (source !== "data" || !isUploadDir(path ?? "", dir)) {
         ui.notifications?.info(game.i18n.format("VF.upload.Redirected", { dir }));
       }
-      return Base.upload("data", dir, upload, rest, options);
+      return super.upload("data", dir, upload, rest, options);
     }
   }
 
