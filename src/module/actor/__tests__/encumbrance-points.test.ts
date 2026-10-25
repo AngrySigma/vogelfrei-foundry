@@ -6,12 +6,12 @@
 import type { QuenchMethods } from "../../../e2e";
 import {
   ARMOUR_POINTS,
-  ENCUMBRANCE_LIMIT,
-  ITEMS_PER_POINT,
-  itemsPerPoint,
   countedItems,
+  ENCUMBRANCE_LIMIT,
   encumbranceBreakdown,
   encumbranceStateLabel,
+  ITEMS_PER_POINT,
+  itemsPerPoint,
   pointsFromItemCount,
 } from "../encumbrance-points";
 
@@ -300,5 +300,52 @@ export default ({ describe, it, expect }: QuenchMethods) => {
         expect(feetPerTurn(points) / 5).equal(miles);
       });
     }
+  });
+  describe("A handcart", () => {
+    /** A cart that bears 10 points, and things in it. */
+    const cart = () => ({ type: "container", id: "cart", system: { encumbrance: "oversized", relief: 10 } }) as never;
+    const inCart = (system: Record<string, unknown> = {}) => item({ containerId: "cart", ...system });
+
+    it("Costs a point of its own, empty", () => {
+      expect(encumbranceBreakdown([cart()]).points).equal(1);
+    });
+
+    it("Takes its contents off the carrier", () => {
+      const load = encumbranceBreakdown([cart(), ...many(30, () => inCart())]);
+      expect(load.points).equal(1);
+      expect(load.reliefPoints).equal(5);
+    });
+
+    it("Bears its 10 points the carrier's own way, so the weak fit less in it", () => {
+      // Strength mod -3: 2 items a point. Forty items are 19 points; the cart
+      // bears 10 of them, leaving 9 plus its own.
+      expect(encumbranceBreakdown([cart(), ...many(40, () => inCart())], 0, -3).points).equal(10);
+      // Strength mod +3: 8 a point. The same forty are 4 points, all borne.
+      expect(encumbranceBreakdown([cart(), ...many(40, () => inCart())], 0, 3).points).equal(1);
+    });
+
+    it("Bears oversized things as a point each", () => {
+      const load = encumbranceBreakdown([cart(), ...many(3, () => inCart({ encumbrance: "oversized" }))]);
+      expect(load.points).equal(1);
+    });
+
+    it("Never takes off what the carrier holds themselves", () => {
+      const own = many(16, item);
+      expect(encumbranceBreakdown([cart(), ...own]).points).equal(4);
+      expect(encumbranceBreakdown([cart(), ...own, ...many(5, () => inCart())]).points).equal(4);
+    });
+
+    it("Counts what overflows its 10 points on the carrier", () => {
+      // Seventy items are 13 points; the cart bears 10.
+      expect(encumbranceBreakdown([cart(), ...many(70, () => inCart())]).points).equal(4);
+    });
+
+    it("Bears what is in a sack in the cart, but not a sack on the back", () => {
+      const sack = (containerId = "") =>
+        ({ type: "container", id: "sack", system: { encumbrance: "none", containerId } }) as never;
+      const inSack = () => item({ containerId: "sack" });
+      expect(encumbranceBreakdown([cart(), sack("cart"), ...many(10, inSack)]).points).equal(1);
+      expect(encumbranceBreakdown([cart(), sack(), ...many(10, inSack)]).points).equal(2);
+    });
   });
 };

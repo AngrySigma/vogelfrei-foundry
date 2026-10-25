@@ -24,6 +24,9 @@ export default class OseDataModelContainer extends foundry.abstract.TypeDataMode
         choices: [...ITEM_ENCUMBRANCE_TYPES],
       }),
       stackSize: new NumberField({ min: 0, integer: true, initial: 0 }),
+      // Points of its carrier's load this container bears itself: 10 for a
+      // handcart, 0 for anything carried on the back. See encumbrance-points.ts.
+      relief: new NumberField({ min: 0, integer: true, initial: 0 }),
     };
   }
 

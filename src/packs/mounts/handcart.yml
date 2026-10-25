@@ -1,13 +1,13 @@
 _id: "6jnjsORZMBxMqfBk"
 _key: "!items!6jnjsORZMBxMqfBk"
 name: "Handcart"
-type: "item"
+type: "container"
 img: "icons/svg/cart.svg"
 system:
   cost: 180
   costRural: 120
   costMinimum: false
-  encumbrance: "normal"
+  encumbrance: "oversized"
   stackSize: 0
   quantity:
     value: 0
@@ -16,8 +16,9 @@ system:
   containerId: ""
   equipped: false
   tags: []
-  treasure: false
   description: "<p>One person; expedition gear or market goods</p>"
+  relief: 10
+  itemIds: []
 effects: []
 folder: null
 sort: 0

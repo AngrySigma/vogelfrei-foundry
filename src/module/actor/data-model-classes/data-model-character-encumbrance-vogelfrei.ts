@@ -86,6 +86,7 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
       itemPoints: new NumberField({ integer: true, initial: 0 }),
       oversizedPoints: new NumberField({ integer: true, initial: 0 }),
       armourPoints: new NumberField({ integer: true, initial: 0 }),
+      reliefPoints: new NumberField({ integer: true, initial: 0 }),
       stateLabel: new StringField({ initial: "VF.encumbrance.unencumbered" }),
     });
   }
@@ -114,6 +115,11 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
 
   get armourPoints(): number {
     return this.#breakdown.armourPoints;
+  }
+
+  /** Points a handcart takes off, already left out of the total. */
+  get reliefPoints(): number {
+    return this.#breakdown.reliefPoints;
   }
 
   /** Localization key naming the state, e.g. "Lightly Encumbered". */

@@ -566,6 +566,12 @@ def armour(path: Path) -> list[Item]:
     return items
 
 
+# A handcart is pushed by its carrier rather than pulled by a team, so it is
+# gear, not a vehicle: an oversized container that bears up to this many of
+# its carrier's points (agreed with the rulebook's author, 2026-10-25).
+HANDCART_RELIEF = 10
+
+
 def vehicles(path: Path, *, antiquated: bool = False) -> list[Item]:
     """Vehicles.md, and the Advanced page of earlier and later ones."""
     items = []
@@ -582,6 +588,13 @@ def vehicles(path: Path, *, antiquated: bool = False) -> list[Item]:
                     "tags": [tag("Antiquated")] if antiquated else [],
                 }
             )
+            if cell.clean == "Handcart":
+                system.pop("treasure")
+                system.update(
+                    {"encumbrance": "oversized", "relief": HANDCART_RELIEF, "itemIds": []}
+                )
+                items.append(Item(cell.clean, "container", "mounts", system, "icons/svg/cart.svg"))
+                continue
             items.append(Item(cell.clean, "item", "mounts", system, "icons/svg/cart.svg"))
     return items
 
