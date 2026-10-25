@@ -22,7 +22,7 @@
  */
 
 import { DEFAULT_EPOCH, type Epoch, type Feast } from "./calendar";
-import { type Calendar, DEFAULT_WATCHES_PER_DAY, watchesForTurns } from "./day";
+import { type Calendar, clampWatches, DEFAULT_WATCHES_PER_DAY, rescaleCalendar, watchesForTurns } from "./day";
 
 export type { Epoch, Feast } from "./calendar";
 export type { Calendar } from "./day";
@@ -179,6 +179,29 @@ export function defaultChronicle(): Chronicle {
       terrain: "clear",
       distance: TERRAIN.clear?.distance ?? DUNGEON_DISTANCE,
     },
+  };
+}
+
+/**
+ * Cut the day into a different number of watches, keeping the time of day.
+ *
+ * A travel check set to once a day stays once a day; any other cadence is the
+ * Referee's own number and is left as they set it.
+ *
+ * @param chronicle - The Chronicle.
+ * @param watchesPerDay - The new count; clamped.
+ * @returns The changed Chronicle, or null if the count is already that.
+ */
+export function withWatchesPerDay(chronicle: Chronicle, watchesPerDay: number): Chronicle | null {
+  const previous = chronicle.watchesPerDay;
+  const next = clampWatches(watchesPerDay);
+  if (next === previous) return null;
+  const onceADay = chronicle.travel.everyWatches === previous;
+  return {
+    ...chronicle,
+    ...rescaleCalendar(chronicle, previous, next),
+    watchesPerDay: next,
+    travel: { ...chronicle.travel, everyWatches: onceADay ? next : chronicle.travel.everyWatches },
   };
 }
 

@@ -173,6 +173,8 @@ export type Walker = {
   perTurn: number | null;
   /** Overland travel in miles per day, or null if the Actor has none. */
   perDay: number | null;
+  /** Encumbrance points, or null if the Actor does not count them. */
+  points?: number | null;
 };
 
 /** A pace, and every member moving at exactly it. */
@@ -219,4 +221,58 @@ export function slowest(walkers: Walker[], pace: "perTurn" | "perDay"): Pace | n
 
   const value = Math.min(...counted.map((walker) => walker[pace] as number));
   return { value, names: counted.filter((walker) => walker[pace] === value).map((walker) => walker.name) };
+}
+
+/** Watches of rest that end every day, whatever the load. */
+export const REST_WATCHES = 2;
+
+/**
+ * Active watches in a day for one Encumbrance.
+ *
+ * Time and Movement.md: 0-1 points give four, then one fewer for each point
+ * after, down to none for the overencumbered at 5+.
+ *
+ * @param points - Encumbrance points.
+ * @returns Active watches, four to zero.
+ */
+export function activeWatches(points: number): number {
+  return Math.max(0, 4 - Math.max(0, Math.floor(points) - 1));
+}
+
+/**
+ * How many watches the party's day holds, and who sets it.
+ *
+ * Time and Movement.md: "The party's day is set by its most encumbered
+ * member, for everyone", and "Every day adds two watches of rest". Vehicles
+ * and members without encumbrance points -- monsters, mounts -- are left out,
+ * as for the pace.
+ *
+ * @param walkers - Every member, with its encumbrance points.
+ * @returns Watches per day and everyone carrying the heaviest load, or null if nobody counts.
+ */
+export function partyWatchesPerDay(walkers: Walker[]): Pace | null {
+  const counted = walkers.filter(
+    (walker) => walker.role !== "vehicle" && typeof walker.points === "number" && Number.isFinite(walker.points),
+  );
+  if (counted.length === 0) return null;
+
+  const heaviest = Math.max(...counted.map((walker) => walker.points as number));
+  const value = activeWatches(heaviest) + REST_WATCHES;
+  return {
+    value,
+    names: counted
+      .filter((walker) => activeWatches(walker.points as number) + REST_WATCHES === value)
+      .map((walker) => walker.name),
+  };
+}
+
+/**
+ * Who is on the roster, and as what -- everything that decides the party's
+ * day, and nothing (shares, marching order) that does not.
+ *
+ * @param party - The roster.
+ * @returns A string that changes exactly when the membership does, in any order.
+ */
+export function membershipOf(party: Party): string {
+  return party.members.map((entry) => `${entry.role}:${entry.uuid}`).sort().join("|");
 }

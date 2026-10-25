@@ -4,13 +4,16 @@
 
 import type { QuenchMethods } from "../../../e2e";
 import {
+  activeWatches,
   cleanShares,
   DEFAULT_SHARES,
   defaultParty,
+  membershipOf,
   membersOf,
   milesPerDay,
   normaliseParty,
   type Party,
+  partyWatchesPerDay,
   placeMember,
   removeMember,
   setShares,
@@ -156,6 +159,47 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     it("Has no pace for a roster nobody counts in", () => {
       expect(slowest([], "perTurn")).equal(null);
       expect(slowest([walker("Wagon", 30, 6, "vehicle")], "perDay")).equal(null);
+    });
+  });
+
+  describe("Watches per day", () => {
+    const loaded = (name: string, points: number | null, role: Walker["role"] = "player") => ({
+      ...walker(name, null, null, role),
+      points,
+    });
+
+    it("Follows the book's table of active watches", () => {
+      expect([0, 1, 2, 3, 4, 5, 9].map(activeWatches)).deep.equal([4, 4, 3, 2, 1, 0, 0]);
+    });
+
+    it("Adds two watches of rest to the most burdened member's", () => {
+      const walkers = [loaded("Anna", 0), loaded("Bert", 3), loaded("Hans", 3, "henchman")];
+      expect(partyWatchesPerDay(walkers)).deep.equal({ value: 4, names: ["Bert", "Hans"] });
+      expect(partyWatchesPerDay([loaded("Anna", 1)])).deep.equal({ value: 6, names: ["Anna"] });
+      expect(partyWatchesPerDay([loaded("Anna", 7)])).deep.equal({ value: 2, names: ["Anna"] });
+    });
+
+    it("Names everyone in the same Encumbrance band, not just the heaviest", () => {
+      expect(partyWatchesPerDay([loaded("Anna", 0), loaded("Bert", 1)])).deep.equal({
+        value: 6,
+        names: ["Anna", "Bert"],
+      });
+    });
+
+    it("Leaves vehicles and members without points out", () => {
+      const walkers = [loaded("Anna", 2), loaded("Wagon", 5, "vehicle"), loaded("Mule", null, "hireling")];
+      expect(partyWatchesPerDay(walkers)).deep.equal({ value: 5, names: ["Anna"] });
+      expect(partyWatchesPerDay([loaded("Wagon", 5, "vehicle")])).equal(null);
+      expect(partyWatchesPerDay([])).equal(null);
+    });
+
+    it("Sees joins, leaves and role changes in the membership, but not shares or order", () => {
+      const before = membershipOf(party());
+      expect(membershipOf(setShares(party(), "Actor.anna", 3))).equal(before);
+      expect(membershipOf(placeMember(party(), "Actor.bert", "player", "Actor.anna"))).equal(before);
+      expect(membershipOf(placeMember(party(), "Actor.hans", "hireling"))).not.equal(before);
+      expect(membershipOf(removeMember(party(), "Actor.bert"))).not.equal(before);
+      expect(membershipOf(placeMember(party(), "Actor.carl", "player"))).not.equal(before);
     });
   });
 };

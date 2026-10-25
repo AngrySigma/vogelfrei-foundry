@@ -14,7 +14,7 @@
  * told so.
  */
 import { applyFormationOp } from "./formation";
-import { defaultParty, inFormation, normaliseParty, placeMember, removeMember } from "./roster";
+import { defaultParty, inFormation, membershipOf, normaliseParty, placeMember, removeMember } from "./roster";
 
 /** The setting key, under the system's namespace. */
 export const SETTING = "party";
@@ -48,6 +48,32 @@ export function refresh() {
   }
 }
 
+/** Callbacks for when who is on the roster, or as what, changes. */
+const membershipListeners = new Set();
+
+/** The membership last seen, or null before `ready`. */
+let lastMembership = null;
+
+/**
+ * Be told when someone joins, leaves or changes role -- not when shares or the
+ * marching order move. Fires on every client; the callback decides who acts.
+ *
+ * @param {Function} callback - Called with no arguments.
+ */
+export function onMembershipChange(callback) {
+  membershipListeners.add(callback);
+}
+
+/** Redraw, and tell the membership listeners if the membership moved. */
+function onPartyChange() {
+  refresh();
+  if (lastMembership === null) return;
+  const membership = membershipOf(getParty());
+  if (membership === lastMembership) return;
+  lastMembership = membership;
+  for (const callback of membershipListeners) callback();
+}
+
 /** Register the setting. Called from `init`. */
 export function registerPartySetting() {
   CONFIG.queries[FORMATION_QUERY] = onFormationQuery;
@@ -56,7 +82,10 @@ export function registerPartySetting() {
     config: false,
     type: Object,
     default: defaultParty(),
-    onChange: refresh,
+    onChange: onPartyChange,
+  });
+  Hooks.once("ready", () => {
+    lastMembership = membershipOf(getParty());
   });
 }
 

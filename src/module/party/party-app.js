@@ -21,7 +21,7 @@
  */
 
 import { layoutOf, MAX_WIDTH, placed, ranks } from "./formation";
-import { milesPerDay, placeMember, ROLES, removeMember, setShares, slowest } from "./roster";
+import { milesPerDay, partyWatchesPerDay, placeMember, ROLES, removeMember, setShares, slowest } from "./roster";
 import { editFormation, getParty, refreshOnChange, updateParty } from "./store";
 import { splitXP } from "./xp-split";
 
@@ -62,6 +62,9 @@ function describeMember(entry) {
   const toughness = actor.type === "character" ? Number(actor.system?.scores?.toughness?.mod) || 0 : 0;
   const perDay = hasMovement ? milesPerDay(perTurn, toughness) : null;
   const encumbrance = actor.type === "character" ? actor.system?.encumbrance?.stateLabel : null;
+  // Only the points scheme has the book's breakpoints; OSE's weights do not.
+  const points =
+    encumbrance && actor.system.encumbrance.variant === "vogelfrei" ? actor.system.encumbrance.value : null;
 
   return {
     uuid: entry.uuid,
@@ -74,7 +77,7 @@ function describeMember(entry) {
     perTurn: hasMovement ? perTurn : null,
     perDay,
     encumbrance: encumbrance ? game.i18n.localize(encumbrance) : null,
-    walker: { name: actor.name, role: entry.role, perTurn: hasMovement ? perTurn : null, perDay },
+    walker: { name: actor.name, role: entry.role, perTurn: hasMovement ? perTurn : null, perDay, points },
   };
 }
 
@@ -224,6 +227,17 @@ export function partyPace(members = getParty().members.map(describeMember)) {
     return found ? { value: found.value, names: found.names.join(", ") } : null;
   };
   return { perTurn: pace("perTurn"), perDay: pace("perDay") };
+}
+
+/**
+ * How many watches the party's day holds, set by its most burdened member.
+ *
+ * @param {object[]} [members] - Described members; the roster's own by default.
+ * @returns {{value: number, names: string}|null} Watches per day and who sets it, or null if nobody counts.
+ */
+export function partyWatches(members = getParty().members.map(describeMember)) {
+  const found = partyWatchesPerDay(members.map((member) => member.walker));
+  return found ? { value: found.value, names: found.names.join(", ") } : null;
 }
 
 /**

@@ -532,6 +532,7 @@
   "VF.chronicle.AdvanceSurface": "Surface time",
   "VF.chronicle.AdvanceWatches": "Advance watches",
   "VF.chronicle.RefereeOnly": "Only the Referee can change the Chronicle.",
+  "VF.chronicle.WatchesFromParty": "The party's day is now {count} watches, set by {names}.",
   "VF.chronicle.terrain.clear": "Clear, Plains",
   "VF.chronicle.terrain.forest": "Forest",
   "VF.chronicle.terrain.hills": "Hills",
