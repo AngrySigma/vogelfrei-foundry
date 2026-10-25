@@ -4,7 +4,8 @@
 
 import type { QuenchMethods } from "../../../e2e";
 import {
-  activeWatches,
+  alight,
+  board,
   cleanShares,
   DEFAULT_SHARES,
   defaultParty,
@@ -13,12 +14,10 @@ import {
   milesPerDay,
   normaliseParty,
   type Party,
-  partyWatchesPerDay,
   placeMember,
   removeMember,
+  replaceMember,
   setShares,
-  slowest,
-  type Walker,
 } from "../roster";
 
 export const key = "vogelfrei.party.roster";
@@ -32,13 +31,6 @@ const party = (): Party =>
   );
 
 const uuids = (list: { uuid: string }[]) => list.map((entry) => entry.uuid);
-
-const walker = (name: string, perTurn: number | null, perDay: number | null, role: Walker["role"] = "player") => ({
-  name,
-  role,
-  perTurn,
-  perDay,
-});
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("Shares", () => {
@@ -127,70 +119,74 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       });
       expect(roster.version).equal(1);
       expect(roster.members).deep.equal([
-        { uuid: "Actor.anna", role: "player", shares: 1 },
-        { uuid: "Actor.hans", role: "henchman", shares: 0 },
+        { uuid: "Actor.anna", role: "player", shares: 1, in: null, seat: "aboard" },
+        { uuid: "Actor.hans", role: "henchman", shares: 0, in: null, seat: "aboard" },
       ]);
     });
   });
 
-  describe("Pace", () => {
+  describe("Riding in things", () => {
+    /** The party, with a wagon and a horse on it. */
+    const train = () => placeMember(placeMember(party(), "Actor.wagon", "vehicle"), "Actor.bess", "vehicle");
+
+    it("Boards a member into a container, in a seat", () => {
+      const roster = board(train(), "Actor.bess", "Actor.wagon", "team");
+      expect(roster.members.find((entry) => entry.uuid === "Actor.bess")).include({ in: "Actor.wagon", seat: "team" });
+    });
+
+    it("Refuses anything off the roster, and loops", () => {
+      const roster = board(train(), "Actor.anna", "Actor.wagon");
+      expect(board(roster, "Actor.wagon", "Actor.anna")).equal(roster);
+      expect(board(roster, "Actor.anna", "Actor.anna")).equal(roster);
+      expect(board(roster, "Actor.ghost", "Actor.wagon")).equal(roster);
+    });
+
+    it("Seats one Teamster, moving the last one aboard", () => {
+      let roster = board(train(), "Actor.driver", "Actor.wagon", "teamster");
+      roster = board(roster, "Actor.hans", "Actor.wagon", "teamster");
+      const seat = (uuid: string) => roster.members.find((entry) => entry.uuid === uuid)?.seat;
+      expect(seat("Actor.hans")).equal("teamster");
+      expect(seat("Actor.driver")).equal("aboard");
+    });
+
+    it("Steps the passengers out when their container leaves the roster", () => {
+      const roster = removeMember(board(train(), "Actor.anna", "Actor.wagon"), "Actor.wagon");
+      expect(roster.members.find((entry) => entry.uuid === "Actor.anna")?.in).equal(null);
+    });
+
+    it("Keeps a member seated through a change of role, and lets them alight", () => {
+      const roster = placeMember(board(train(), "Actor.anna", "Actor.bess"), "Actor.anna", "npc");
+      expect(roster.members.find((entry) => entry.uuid === "Actor.anna")?.in).equal("Actor.bess");
+      expect(alight(roster, "Actor.anna").members.find((entry) => entry.uuid === "Actor.anna")?.in).equal(null);
+    });
+
+    it("Puts a new Actor in an old one's place, passengers and all", () => {
+      const roster = replaceMember(board(train(), "Actor.anna", "Actor.wagon"), "Actor.wagon", "Actor.cart");
+      expect(roster.members.find((entry) => entry.uuid === "Actor.cart")?.role).equal("vehicle");
+      expect(roster.members.find((entry) => entry.uuid === "Actor.anna")?.in).equal("Actor.cart");
+      expect(replaceMember(roster, "Actor.cart", "Actor.anna")).equal(roster);
+    });
+
+    it("Unseats a stored member whose container is gone or loops", () => {
+      const roster = normaliseParty({
+        members: [
+          { uuid: "Actor.anna", role: "player", shares: 1, in: "Actor.gone" },
+          { uuid: "Actor.a", role: "vehicle", shares: 0, in: "Actor.b" },
+          { uuid: "Actor.b", role: "vehicle", shares: 0, in: "Actor.a" },
+        ],
+      });
+      expect(roster.members.find((entry) => entry.uuid === "Actor.anna")?.in).equal(null);
+      expect(roster.members.filter((entry) => entry.in).length).lessThan(2);
+    });
+  });
+
+  describe("Miles and membership", () => {
     it("Turns movement per Turn into miles per day, with Toughness", () => {
       expect(milesPerDay(120)).equal(24);
       expect(milesPerDay(90, 1)).equal(19);
       expect(milesPerDay(30, -3)).equal(3);
-    });
-
-    it("Never gets an overencumbered character moving, nor below a standstill", () => {
       expect(milesPerDay(0, 3)).equal(0);
       expect(milesPerDay(30, -9)).equal(0);
-    });
-
-    it("Finds the slowest member and names everyone at that pace", () => {
-      const walkers = [walker("Anna", 120, 24), walker("Bert", 90, 18), walker("Hans", 90, 17, "henchman")];
-      expect(slowest(walkers, "perTurn")).deep.equal({ value: 90, names: ["Bert", "Hans"] });
-      expect(slowest(walkers, "perDay")).deep.equal({ value: 17, names: ["Hans"] });
-    });
-
-    it("Leaves vehicles and members without movement out", () => {
-      const walkers = [walker("Anna", 120, 24), walker("Wagon", 30, 6, "vehicle"), walker("Ghost", null, null)];
-      expect(slowest(walkers, "perTurn")).deep.equal({ value: 120, names: ["Anna"] });
-    });
-
-    it("Has no pace for a roster nobody counts in", () => {
-      expect(slowest([], "perTurn")).equal(null);
-      expect(slowest([walker("Wagon", 30, 6, "vehicle")], "perDay")).equal(null);
-    });
-  });
-
-  describe("Watches per day", () => {
-    const loaded = (name: string, points: number | null, role: Walker["role"] = "player") => ({
-      ...walker(name, null, null, role),
-      points,
-    });
-
-    it("Follows the book's table of active watches", () => {
-      expect([0, 1, 2, 3, 4, 5, 9].map(activeWatches)).deep.equal([4, 4, 3, 2, 1, 0, 0]);
-    });
-
-    it("Adds two watches of rest to the most burdened member's", () => {
-      const walkers = [loaded("Anna", 0), loaded("Bert", 3), loaded("Hans", 3, "henchman")];
-      expect(partyWatchesPerDay(walkers)).deep.equal({ value: 4, names: ["Bert", "Hans"] });
-      expect(partyWatchesPerDay([loaded("Anna", 1)])).deep.equal({ value: 6, names: ["Anna"] });
-      expect(partyWatchesPerDay([loaded("Anna", 7)])).deep.equal({ value: 2, names: ["Anna"] });
-    });
-
-    it("Names everyone in the same Encumbrance band, not just the heaviest", () => {
-      expect(partyWatchesPerDay([loaded("Anna", 0), loaded("Bert", 1)])).deep.equal({
-        value: 6,
-        names: ["Anna", "Bert"],
-      });
-    });
-
-    it("Leaves vehicles and members without points out", () => {
-      const walkers = [loaded("Anna", 2), loaded("Wagon", 5, "vehicle"), loaded("Mule", null, "hireling")];
-      expect(partyWatchesPerDay(walkers)).deep.equal({ value: 5, names: ["Anna"] });
-      expect(partyWatchesPerDay([loaded("Wagon", 5, "vehicle")])).equal(null);
-      expect(partyWatchesPerDay([])).equal(null);
     });
 
     it("Sees joins, leaves and role changes in the membership, but not shares or order", () => {
@@ -200,6 +196,11 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(membershipOf(placeMember(party(), "Actor.hans", "hireling"))).not.equal(before);
       expect(membershipOf(removeMember(party(), "Actor.bert"))).not.equal(before);
       expect(membershipOf(placeMember(party(), "Actor.carl", "player"))).not.equal(before);
+    });
+
+    it("Sees someone climb onto a horse or into a wagon", () => {
+      const roster = placeMember(party(), "Actor.bess", "vehicle");
+      expect(membershipOf(board(roster, "Actor.anna", "Actor.bess"))).not.equal(membershipOf(roster));
     });
   });
 };

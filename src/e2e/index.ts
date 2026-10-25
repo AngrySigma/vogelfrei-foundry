@@ -170,6 +170,10 @@ import partyRosterTests, {
   key as partyRosterKey,
   options as partyRosterOptions,
 } from "../module/party/__tests__/roster.test";
+import partyTravelTests, {
+  key as partyTravelKey,
+  options as partyTravelOptions,
+} from "../module/party/__tests__/travel.test";
 import partyXpSplitTests, {
   key as partyXpSplitKey,
   options as partyXpSplitOptions,
@@ -269,6 +273,7 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(partyRosterKey, partyRosterTests, partyRosterOptions);
   quench.registerBatch(partyXpSplitKey, partyXpSplitTests, partyXpSplitOptions);
   quench.registerBatch(partyFormationKey, partyFormationTests, partyFormationOptions);
+  quench.registerBatch(partyTravelKey, partyTravelTests, partyTravelOptions);
 
   /* ------------------------------------------- */
   /* HELPER TESTING                               */

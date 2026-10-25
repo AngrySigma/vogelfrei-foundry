@@ -8,8 +8,8 @@ import OseDataModelCharacterEncumbranceDisabled from "./actor/data-model-classes
 import OseDataModelCharacterEncumbranceItemBased from "./actor/data-model-classes/data-model-character-encumbrance-item-based";
 import OseDataModelCharacterEncumbranceVogelfrei from "./actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import { ITEM_ENCUMBRANCE_TYPES } from "./actor/encumbrance-points";
-
 import { CLASSIC_FANTASY_CLASSES } from "./classes/classic-fantasy-classes";
+import { BARDING_POINTS } from "./party/travel";
 
 /**
  * The shape of the system's global configuration object, `OSE` (exposed at
@@ -90,6 +90,12 @@ export const OSE = {
   item_encumbrance: Object.fromEntries(
     ITEM_ENCUMBRANCE_TYPES.map((kind) => [kind, `VF.itemEncumbrance.${kind}`]),
   ) as Record<(typeof ITEM_ENCUMBRANCE_TYPES)[number], string>,
+  /** Barding an animal can wear, as localization keys. Time and Movement.md#mounts */
+  barding: Object.fromEntries(Object.keys(BARDING_POINTS).map((kind) => [kind, `VF.burden.barding.${kind}`])),
+  /** How a vehicle moves: pulled by a team, or by sail and oar. */
+  propulsion: { drawn: "VF.vehicle.propulsion.drawn", self: "VF.vehicle.propulsion.self" },
+  /** Where a vehicle goes. */
+  medium: { land: "VF.vehicle.medium.land", water: "VF.vehicle.medium.water" },
   /** Full ability-score names, as localization keys, keyed by ability. */
   scores: {
     strength: "VF.scores.strength.long",

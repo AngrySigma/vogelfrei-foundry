@@ -8,9 +8,11 @@ import { migrateCoinItems, registerCoinItemHook } from "./module/actor/coin-item
 import OseDataModelCharacter from "./module/actor/data-model-character";
 import OseDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import OseDataModelMonster from "./module/actor/data-model-monster";
+import OseDataModelVehicle from "./module/actor/data-model-vehicle";
 import registerActorDirectoryButton from "./module/actor/directory-button";
 import OseActor from "./module/actor/entity";
 import OseActorSheetMonster from "./module/actor/monster-sheet";
+import OseActorSheetVehicle from "./module/actor/vehicle-sheet";
 import { registerStanceHooks } from "./module/actor/stance-store";
 import TokenRulerOSE from "./module/actor/token-ruler";
 import ChronicleApp from "./module/chronicle/chronicle-app";
@@ -107,6 +109,7 @@ Hooks.once("init", async () => {
   CONFIG.Actor.dataModels = {
     character: OseDataModelCharacter,
     monster: OseDataModelMonster,
+    vehicle: OseDataModelVehicle,
   };
   CONFIG.Item.dataModels = {
     weapon: OseDataModelWeapon,
@@ -128,6 +131,11 @@ Hooks.once("init", async () => {
     types: ["monster"],
     makeDefault: true,
     label: "VF.SheetClassMonster",
+  });
+  foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetVehicle, {
+    types: ["vehicle"],
+    makeDefault: true,
+    label: "VF.SheetClassVehicle",
   });
 
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);

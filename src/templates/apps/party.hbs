@@ -7,14 +7,24 @@
       <span class="value">{{pace.perTurn.value}}'</span>
       <span class="who">{{pace.perTurn.names}}</span>
     </div>
+    {{/if}}
+    {{#if pace.perDay}}
     <div class="pace-row" data-tooltip="{{localize 'VF.party.PerDayHint'}}">
       <span class="label">{{localize "VF.party.PerDay"}}</span>
       <span class="value">{{pace.perDay.value}} {{localize "VF.party.Miles"}}</span>
       <span class="who">{{pace.perDay.names}}</span>
     </div>
-    {{else}}
-    <p class="empty">{{localize "VF.party.NoPace"}}</p>
     {{/if}}
+    {{#if pace.watches}}
+    <div class="pace-row" data-tooltip="{{localize 'VF.party.WatchesHint'}}">
+      <span class="label">{{localize "VF.party.Watches"}}</span>
+      <span class="value">{{pace.watches.value}}</span>
+      <span class="who">{{pace.watches.names}}</span>
+    </div>
+    {{/if}}
+    {{#unless (or pace.perTurn pace.perDay pace.watches)}}
+    <p class="empty">{{localize "VF.party.NoPace"}}</p>
+    {{/unless}}
   </header>
 
   {{#if isReferee}}
@@ -23,7 +33,7 @@
   </button>
   {{/if}}
 
-  {{#if (and isReferee empty)}}
+  {{#if empty}}
   <p class="hint">{{localize "VF.party.DropHint"}}</p>
   {{/if}}
 
@@ -35,25 +45,50 @@
     </h3>
     <ol class="unlist members">
       {{#each members}}
-      <li class="member {{#if missing}}missing{{/if}}" data-uuid="{{uuid}}" {{#if @root.isReferee}}draggable="true"{{/if}}>
-        <img class="portrait" src="{{img}}" alt="" draggable="false" />
-        <span class="name">
-          {{#if canOpen}}<a data-action="openSheet">{{name}}</a>{{else}}{{name}}{{/if}}
-          {{#if encumbrance}}<span class="load">{{encumbrance}}</span>{{/if}}
-        </span>
-        {{#unless missing}}
-        <span class="move" data-tooltip="{{localize 'VF.party.MemberPace'}}">
-          {{#if (ne perTurn null)}}{{perTurn}}'{{else}}&mdash;{{/if}}
-        </span>
-        {{/unless}}
-        {{#if @root.isReferee}}
-        <input type="number" name="shares" min="0" step="0.05" value="{{shares}}"
-               data-tooltip="{{localize 'VF.party.Shares'}}" />
-        <button type="button" class="drop" data-action="removeMember" data-tooltip="{{localize 'VF.party.Remove'}}">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        {{else}}
-        <span class="shares" data-tooltip="{{localize 'VF.party.Shares'}}">{{shares}}</span>
+      <li class="member {{#if missing}}missing{{/if}} {{#if in}}seated{{/if}}" data-uuid="{{uuid}}" draggable="true">
+        <div class="member-row">
+          <img class="portrait" src="{{img}}" alt="" draggable="false" />
+          <span class="name">
+            {{#if canOpen}}<a data-action="openSheet">{{name}}</a>{{else}}{{name}}{{/if}}
+            {{#if load}}<span class="load">{{load}}{{#if (ne points null)}} ({{points}}){{/if}}</span>{{/if}}
+            {{#if in}}<span class="where">{{localize in.seat}}: {{in.name}}</span>{{/if}}
+          </span>
+          {{#unless missing}}
+          <span class="move" data-tooltip="{{localize 'VF.party.MemberPace'}}">
+            {{#if in}}&mdash;{{else}}{{#if (ne perTurn null)}}{{perTurn}}'{{else}}&mdash;{{/if}}{{/if}}
+          </span>
+          {{/unless}}
+          {{#if (and @root.isReferee (eq kind "other") (not missing))}}
+          <button type="button" class="drop" data-action="makeVehicle" data-tooltip="{{localize 'VF.party.MakeVehicleHint'}}">
+            <i class="fa-solid fa-cart-flatbed"></i>
+          </button>
+          {{/if}}
+          {{#if @root.isReferee}}
+          <input type="number" name="shares" min="0" step="0.05" value="{{shares}}"
+                 data-tooltip="{{localize 'VF.party.Shares'}}" />
+          {{else}}
+          <span class="shares" data-tooltip="{{localize 'VF.party.Shares'}}">{{shares}}</span>
+          {{/if}}
+          <button type="button" class="drop" data-action="removeMember" data-tooltip="{{localize 'VF.party.Remove'}}">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        {{#if seats.length}}
+        <div class="seats">
+          {{#each seats}}
+          <div class="seat" data-seat="{{seat}}" data-tooltip="{{localize 'VF.party.SeatHint'}}">
+            <span class="seat-label">{{localize label}}</span>
+            {{#each occupants}}
+            <span class="occupant" data-occupant="{{uuid}}" draggable="true">
+              {{name}}
+              <a data-action="alight" data-tooltip="{{localize 'VF.party.Alight'}}"><i class="fa-solid fa-person-walking-arrow-right"></i></a>
+            </span>
+            {{else}}
+            <span class="seat-empty">&mdash;</span>
+            {{/each}}
+          </div>
+          {{/each}}
+        </div>
         {{/if}}
       </li>
       {{else}}

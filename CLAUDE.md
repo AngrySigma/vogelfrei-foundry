@@ -128,11 +128,20 @@ and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relab
   runtime dependency.
 - `chronicle/`: Vogelfrei-specific calendar, watch/turn clocks, encounters and upkeep. It has
   no OSE counterpart.
-- `party/`: the Party window, with Roster and Formation tabs. The pure parts are `roster.ts`
-  (roles, shares, slowest-member pace), `xp-split.ts` (an XP award by shares, posted to chat
+- Vehicles: the `vehicle` Actor type (`actor/data-model-vehicle.js`, `vehicle-sheet.js`) is drawn
+  by a team (axles) or self-propelled (typed-in miles per day), with cargo as Items. Animals
+  are monsters with `system.burden.enabled` (mount table: barding, mule/pony offset, speed
+  factor). A handcart is a container Item with `relief` 10, which takes up to that many of
+  the carrier's points off, counted the carrier's own way (`encumbrance-points.ts`).
+- `party/`: the Party window, with Roster and Formation tabs. Animals and vehicles are
+  containers on the roster: entries carry `in` and `seat` (aboard / team / teamster).
+  `travel.ts` is the pure arithmetic (riders +5, load past 10 an axle split across the team,
+  Teamster −5 per animal, pace = slowest top-level unit, watches = most burdened one, ships
+  never set the day). `traveller.js` reads Actors into it. Players edit the roster and the
+  formation by `User#query` to the active GM; shares stay Referee-only. The pure parts are `roster.ts`
+  (roles, shares, seats), `xp-split.ts` (an XP award by shares, posted to chat
   and never written to sheets) and `formation.ts` (named marching-order layouts). `store.js`
-  keeps all of it in one world setting. Only the Referee writes it. Players edit the formation
-  by sending a `FormationOp` to the active GM via `User#query` (`CONFIG.queries`), so no system
+  keeps all of it in one world setting. Only the Referee's client writes it, so no system
   socket is needed. This replaced OSE's Party Sheet and its per-actor `party` flag, which
   `adoptLegacyParty` reads in once.
 - `upload-guard.ts` keeps player uploads in one folder.

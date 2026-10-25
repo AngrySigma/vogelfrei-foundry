@@ -144,6 +144,39 @@
                 {{/each}}
             </ol>
         </div>
+        {{#if system.burden.enabled}}
+        {{!-- Beast of burden: Time and Movement.md#mounts --}}
+        <div class="attribute-group vf-burden">
+            <ul class="attributes flexrow">
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{localize 'VF.burden.BardingHint'}}">{{localize "VF.burden.Barding"}}</h4>
+                    <div class="attribute-value">
+                        <select name="system.burden.barding">
+                            {{selectOptions config.barding selected=system.burden.barding localize=true}}
+                        </select>
+                    </div>
+                </li>
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{localize 'VF.burden.OffsetHint'}}">{{localize "VF.burden.Offset"}}</h4>
+                    <div class="attribute-value">
+                        <input name="system.burden.offset" type="text" value="{{system.burden.offset}}" placeholder="0" data-dtype="Number" />
+                    </div>
+                </li>
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{localize 'VF.burden.SpeedFactorHint'}}">{{localize "VF.burden.SpeedFactor"}}</h4>
+                    <div class="attribute-value">
+                        <input name="system.burden.speedFactor" type="text" value="{{system.burden.speedFactor}}" placeholder="1" data-dtype="Number" />
+                    </div>
+                </li>
+                <li class="attribute">
+                    <h4 class="attribute-name box-title" title="{{localize 'VF.burden.PointsHint'}}">{{localize "VF.burden.Points"}}</h4>
+                    <div class="attribute-value" data-tooltip="{{localize system.burden.stateLabel}}">
+                        <span>{{system.burden.points}}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        {{/if}}
         {{!-- Saving throws --}}
         <div class="attribute-group">
             <ul class="attributes">
