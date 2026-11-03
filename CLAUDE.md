@@ -72,11 +72,12 @@ Quench module is installed in the dev instance.
 
 ### Releasing
 
-Bump `version` in **both** `package.json` and `system.json`, and the tag inside
-`system.json`'s `download` URL. Commit as `Release X.Y.Z`, then push tag `X.Y.Z`.
-`.github/workflows/release.yml` triggers on the tag push. It builds, substitutes the
-manifest/download URLs, zips (`system.json` at the zip root), and creates the GitHub Release
-with `system.json` and `system.zip`. Prod then updates through Foundry's own updater.
+Bump `version` in `package.json`, `system.json` and `packages/setup-theme/module.json`, and
+the tag inside both manifests' `download` URLs. Commit as `Release X.Y.Z`, then push tag
+`X.Y.Z`. `.github/workflows/release.yml` triggers on the tag push. It builds, substitutes the
+manifest/download URLs, and creates the GitHub Release with the system and companion-module
+manifests plus `system.zip` and `vogelfrei-setup-theme.zip` (each manifest at its zip root).
+Prod then updates the system through Foundry's own updater.
 
 ## Architecture
 
