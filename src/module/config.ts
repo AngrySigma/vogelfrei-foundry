@@ -237,6 +237,12 @@ export const OSE = {
     "Orcish",
     "Pixie",
   ],
+  ammunition: {
+    arrow: "VF.ammunition.arrow",
+    bolt: "VF.ammunition.bolt",
+    slingBullet: "VF.ammunition.slingBullet",
+    firearm: "VF.ammunition.firearm",
+  },
   /** Weapon/item quality tag labels, as localization keys, keyed by tag. */
   tags: {
     melee: "VF.items.Melee",

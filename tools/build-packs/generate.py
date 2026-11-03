@@ -345,6 +345,15 @@ def weapon_traits(path: Path) -> dict[str, str]:
     return traits
 
 
+RANGED_AMMUNITION = {
+    "Bow": "arrow",
+    "Longbow": "arrow",
+    "Light crossbow": "bolt",
+    "Heavy crossbow": "bolt",
+    "Sling": "slingBullet",
+}
+
+
 def weapon_system(
     cell: tables.Cell,
     row: dict[str, str],
@@ -353,6 +362,7 @@ def weapon_system(
     melee: bool,
     tags: list[dict],
     description: str,
+    ammunition: str = "",
     city_key: str = "Cost City",
     rural_key: str = "Rural",
 ) -> dict:
@@ -376,6 +386,11 @@ def weapon_system(
             "description": description,
         }
     )
+    if not melee and not ammunition:
+        firearm = any(tag["value"] == "Firearm" for tag in tags)
+        ammunition = "firearm" if firearm else RANGED_AMMUNITION.get(cell.clean, "")
+    if ammunition:
+        system["ammunition"] = ammunition
     return system
 
 
@@ -459,6 +474,8 @@ def firearms(path: Path) -> list[Item]:
         system = physical(cell, row.get("Cost", ""), "")
         system["costRural"] = system["cost"]
         system.update({"treasure": False, "description": markdown_html(row.get("Notes", ""))})
+        if cell.clean.startswith(("Powder and ball, one", "Powder and shot, twenty")):
+            system["ammunition"] = "firearm"
         if cell.clean.startswith("Powder and ball, one"):
             # Small things of one kind stack, as arrows do.
             system["stackSize"] = 20
@@ -646,16 +663,17 @@ Time and Movement.md says multiple small items of the same type (spikes,
 arrows) count as one item. A stack of twenty is the working figure.
 """
 AMMUNITION = [
-    ("Arrows", 5, "icons/svg/sword.svg"),
-    ("Crossbow Bolts", 5, "icons/svg/sword.svg"),
-    ("Sling Bullets", 2, "icons/svg/sword.svg"),
+    ("Arrows", "arrow", 5, "icons/svg/sword.svg"),
+    ("Crossbow Bolts", "bolt", 5, "icons/svg/sword.svg"),
+    ("Sling Bullets", "slingBullet", 2, "icons/svg/sword.svg"),
 ]
 
 
 def ammunition() -> list[Item]:
     items = []
-    for name, price, img in AMMUNITION:
+    for name, ammunition_type, price, img in AMMUNITION:
         system = {
+            "ammunition": ammunition_type,
             "cost": price,
             "costRural": price,
             "costMinimum": False,

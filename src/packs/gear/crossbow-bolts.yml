@@ -4,6 +4,7 @@ name: "Crossbow Bolts"
 type: "item"
 img: "icons/svg/sword.svg"
 system:
+  ammunition: "bolt"
   cost: 5
   costRural: 5
   costMinimum: false

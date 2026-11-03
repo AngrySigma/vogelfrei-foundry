@@ -227,6 +227,7 @@
         "physical"
       ],
       "treasure": false,
+      "ammunition": "",
       "isContainer": false
     },
     "container": {
@@ -256,6 +257,7 @@
       "tags": [],
       "slow": false,
       "missile": false,
+      "ammunition": "",
       "melee": true,
       "counter": {
         "value": 0,

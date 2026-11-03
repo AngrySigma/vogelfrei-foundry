@@ -4,6 +4,7 @@ name: "Arrows"
 type: "item"
 img: "icons/svg/sword.svg"
 system:
+  ammunition: "arrow"
   cost: 5
   costRural: 5
   costMinimum: false

@@ -34,6 +34,7 @@ export default class OseCharacterCreator extends FormApplication {
       id: "character-creator",
       template: `${OSE.systemPath()}/templates/actors/dialogs/character-creation.html`,
       width: 300,
+      height: 400,
     });
   }
 

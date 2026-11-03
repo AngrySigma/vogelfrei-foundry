@@ -595,6 +595,15 @@ export default class OseActor extends Actor {
     // alone; step 4 adds no ability modifier to it.
     const isMissile = options.type === "missile";
     const firearm = isMissile && isFirearm(attData.item);
+    const ammunitionType = isMissile ? attData.item?.system?.ammunition : "";
+    const ammunition = ammunitionType
+      ? this.items
+          .filter(
+            (item) =>
+              item.type === "item" && item.system.ammunition === ammunitionType && item.system.quantity.value > 0,
+          )
+          .map((item) => ({ id: item.id, name: item.name, quantity: item.system.quantity.value }))
+      : [];
     let attackMods = [];
     if (!firearm) attackMods = isMissile ? [data.bs] : [data.ws];
 
@@ -609,6 +618,8 @@ export default class OseActor extends Actor {
       itemId: attData.item?._id,
       roll: {
         type: options.type,
+        ammunitionType,
+        ammunition,
         // A shot is answered by the target's firearm AC -- no Agility, and
         // armour only as far as its firearm rating. The dialog can still
         // change it.

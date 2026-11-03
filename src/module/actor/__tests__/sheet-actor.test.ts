@@ -187,6 +187,18 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
       expect(categoryElement?.style.display).equal("");
     });
 
+    it("keeps the item category hidden after the sheet rerenders", async () => {
+      await clickCategory();
+      await waitUntil(() => document.querySelector(".tab[data-tab='inventory'] .item-list")?.style.display === "none");
+
+      await openWindows("sheet")[0].render(true);
+      await waitUntil(() => !!document.querySelector(".tab[data-tab='inventory'] .item-list"));
+
+      const categoryElement = document.querySelector(".tab[data-tab='inventory'] .item-list");
+      expect(categoryElement?.style.display).equal("none");
+      expect(openWindows("sheet")[0]._collapsed.size).equal(1);
+    });
+
     after(async () => {
       await cleanUpActorsByKey(key);
       await closeSheets();

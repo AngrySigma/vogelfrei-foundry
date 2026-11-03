@@ -5,6 +5,22 @@ import OSE from "../config";
 import OseDice from "../helpers-dice";
 import { getRollMode } from "../helpers-message-mode";
 
+const LEGACY_WEAPON_AMMUNITION = {
+  Bow: "arrow",
+  Longbow: "arrow",
+  "Light crossbow": "bolt",
+  "Heavy crossbow": "bolt",
+  Sling: "slingBullet",
+};
+
+const LEGACY_ITEM_AMMUNITION = {
+  Arrows: "arrow",
+  "Crossbow Bolts": "bolt",
+  "Sling Bullets": "slingBullet",
+  "Powder and ball, one prepared charge": "firearm",
+  "Powder and shot, twenty loose charges": "firearm",
+};
+
 /**
  * Override and extend the basic :class:`Item` implementation
  */
@@ -36,6 +52,18 @@ export default class OseItem extends Item {
       if ((source?.system?.tags ?? []).some((tag) => tag.value === "Two-handed") && source?.type === "weapon")
         source.system.itemslots = 2;
       if (source?.system?.type === "heavy" && source.type === "armor") source.system.itemslots = 2;
+    }
+    if (source?.system?.ammunition === undefined) {
+      const firearm = (source.system.tags ?? []).some((tag) => tag.value === "Firearm");
+      const ammunition =
+        source.type === "weapon"
+          ? firearm
+            ? "firearm"
+            : LEGACY_WEAPON_AMMUNITION[source.name]
+          : source.type === "item"
+            ? LEGACY_ITEM_AMMUNITION[source.name]
+            : undefined;
+      if (ammunition) source.system.ammunition = ammunition;
     }
 
     return source;

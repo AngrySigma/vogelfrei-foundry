@@ -13,6 +13,13 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
    */
   _expanded = new Set();
 
+  /**
+   * IDs for item categories on the sheet that have been collapsed.
+   * @type {Set<string>}
+   * @protected
+   */
+  _collapsed = new Set();
+
   async getData() {
     const data = foundry.utils.deepClone(super.getData().data);
     for (const item of this.actor.items) {
@@ -69,12 +76,14 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
       const el = $(event.currentTarget).find(".fas.fa-caret-right");
       el.removeClass("fa-caret-right");
       el.addClass("fa-caret-down");
+      this._collapsed.delete(targetCategory.attr("id"));
 
       items.slideDown(200);
     } else {
       const el = $(event.currentTarget).find(".fas.fa-caret-down");
       el.removeClass("fa-caret-down");
       el.addClass("fa-caret-right");
+      this._collapsed.add(targetCategory.attr("id"));
 
       items.slideUp(200);
     }
@@ -504,6 +513,12 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
   async _renderInner(...args) {
     const html = await super._renderInner(...args);
     this.form = html[0];
+
+    for (const id of this._collapsed) {
+      const category = html.find(`#${id}.item-category-title`);
+      category.find(".fas.fa-caret-down").removeClass("fa-caret-down").addClass("fa-caret-right");
+      category.next(".item-list").hide();
+    }
 
     // Resize resizable classes
     const resizable = html.find(".resizable");
