@@ -52,7 +52,7 @@ export function travellerOf(entry, actor = fromUuidSync(entry.uuid)) {
   const perTurn = Number(system?.movement?.base);
   const hasMovement = Number.isFinite(perTurn);
   const toughness = actor.type === "character" ? Number(system?.scores?.toughness?.mod) || 0 : 0;
-  // Only the points scheme has the book's breakpoints; OSE's weights do not.
+  // Only the points scheme has the book's breakpoints; legacy weights do not.
   const points =
     actor.type === "character" && system.encumbrance?.variant === "vogelfrei" ? system.encumbrance.value : null;
   return {

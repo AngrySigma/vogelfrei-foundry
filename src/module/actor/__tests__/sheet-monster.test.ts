@@ -14,10 +14,10 @@ import {
   openV2Dialogs,
   waitForInput,
 } from "../../../e2e/testUtils";
-import type OseActorSheetMonster from "../monster-sheet";
+import type VogelfreiActorSheetMonster from "../monster-sheet";
 
-export const key = "ose.actor.sheet.monster";
-export const options = { displayName: "OSE: Actor: Sheet: Monster" };
+export const key = "vf.actor.sheet.monster";
+export const options = { displayName: "VF: Actor: Sheet: Monster" };
 
 export default ({ describe, it, expect, after, before }: QuenchMethods) => {
   const orginalCtrlSetting = game.settings.get(game.system.id, "invertedCtrlBehavior");
@@ -31,9 +31,9 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
   describe("defaultOptions()", () => {
     it("Has correctly set defaultOptions", async () => {
       const actor = await createMockActorKey("monster", {}, key);
-      const sheet = actor?.sheet as unknown as OseActorSheetMonster;
+      const sheet = actor?.sheet as unknown as VogelfreiActorSheetMonster;
 
-      expect(sheet.options.classes).contain("ose");
+      expect(sheet.options.classes).contain("vf");
       expect(sheet.options.classes).contain("sheet");
       expect(sheet.options.classes).contain("actor");
       expect(sheet.options.classes).contain("monster");
@@ -211,7 +211,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
   });
 
   describe("_cycleAttackPatterns(event)", () => {
-    const colors = Object.keys(CONFIG.OSE.colors);
+    const colors = Object.keys(CONFIG.VF.colors);
     colors.push("transparent");
 
     before(async () => {

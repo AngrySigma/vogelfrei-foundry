@@ -2,13 +2,13 @@
  * @file The sheet for Actors of type Vehicle: what it is, how it moves, and
  *       what it carries.
  */
-import OSE from "../config";
+import VF from "../config";
 
-export default class OseActorSheetVehicle extends foundry.appv1.sheets.ActorSheet {
+export default class VogelfreiActorSheetVehicle extends foundry.appv1.sheets.ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(foundry.appv1.sheets.ActorSheet.defaultOptions, {
-      classes: ["ose", "sheet", "vehicle", "actor"],
-      template: `${OSE.systemPath()}/templates/actors/vehicle-sheet.html`,
+      classes: ["vf", "sheet", "vehicle", "actor"],
+      template: `${VF.systemPath()}/templates/actors/vehicle-sheet.html`,
       width: 460,
       height: 520,
       resizable: true,
@@ -18,7 +18,7 @@ export default class OseActorSheetVehicle extends foundry.appv1.sheets.ActorShee
   async getData() {
     const data = await super.getData();
     data.system = this.actor.system;
-    data.config = CONFIG.OSE;
+    data.config = CONFIG.VF;
     data.owner = this.actor.isOwner;
     data.editable = this.isEditable;
     data.holds = this.actor.system.holds.map((item) => ({

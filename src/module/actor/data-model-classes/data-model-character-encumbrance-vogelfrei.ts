@@ -5,7 +5,7 @@
  *
  * The arithmetic lives in ../encumbrance-points.ts; this class is the shape the
  * rest of the system expects around it. The breakpoints it reports are what
- * OseDataModelCharacterMove turns into movement rates, and they line up exactly
+ * VogelfreiDataModelCharacterMove turns into movement rates, and they line up exactly
  * with the book's table:
  *
  *   0-1 points  unencumbered   full speed   120' turn / 40' round / 24 miles
@@ -23,10 +23,10 @@ import {
   encumbranceBreakdown,
   encumbranceStateLabel,
 } from "../encumbrance-points";
-import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
-export default class OseDataModelCharacterEncumbranceVogelfrei
-  extends OseDataModelCharacterEncumbrance
+export default class VogelfreiDataModelCharacterEncumbranceVogelfrei
+  extends VogelfreiDataModelCharacterEncumbrance
   implements CharacterEncumbrance
 {
   /** Points at which movement stops. Doubles as the bar's full width. */
@@ -57,7 +57,7 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
     { coins }: { coins?: Partial<Coins> } = {},
     strengthMod = 0,
   ) {
-    super(OseDataModelCharacterEncumbranceVogelfrei.type, ENCUMBRANCE_LIMIT);
+    super(VogelfreiDataModelCharacterEncumbranceVogelfrei.type, ENCUMBRANCE_LIMIT);
     this.#breakdown = encumbranceBreakdown(items, coinCount(coins), strengthMod);
   }
 
@@ -67,7 +67,7 @@ export default class OseDataModelCharacterEncumbranceVogelfrei
 
     return new SchemaField({
       variant: new StringField({
-        initial: OseDataModelCharacterEncumbranceVogelfrei.type,
+        initial: VogelfreiDataModelCharacterEncumbranceVogelfrei.type,
       }),
       enabled: new BooleanField({ initial: true }),
       encumbered: new BooleanField({ initial: false }),

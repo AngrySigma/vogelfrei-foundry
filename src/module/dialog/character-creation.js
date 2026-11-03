@@ -8,15 +8,15 @@
  * It sets ability scores and nothing else. Class, Wounds, Stamina and skills all
  * need class data the system does not carry yet.
  */
-import OseDataModelCharacterScores from "../actor/data-model-classes/data-model-character-scores";
-import OSE from "../config";
+import VogelfreiDataModelCharacterScores from "../actor/data-model-classes/data-model-character-scores";
+import VF from "../config";
 
 /** The six abilities, in the order they are rolled and displayed. */
 const ABILITIES = ["strength", "intelligence", "willpower", "agility", "toughness", "leadership"];
 
 /** The modifier a score confers, from the same table the character sheet uses. */
 export const scoreModifier = (value) =>
-  OseDataModelCharacterScores.valueFromTable(OseDataModelCharacterScores.standardAttributeMods, value);
+  VogelfreiDataModelCharacterScores.valueFromTable(VogelfreiDataModelCharacterScores.standardAttributeMods, value);
 
 /**
  * An array is playable when its modifiers do not sum below zero.
@@ -27,12 +27,12 @@ export const scoreModifier = (value) =>
 export const arrayIsValid = (scores) =>
   Object.values(scores).reduce((total, value) => total + scoreModifier(value), 0) >= 0;
 
-export default class OseCharacterCreator extends FormApplication {
+export default class VogelfreiCharacterCreator extends FormApplication {
   static get defaultOptions() {
     return foundry.utils.mergeObject(FormApplication.defaultOptions, {
-      classes: ["ose", "dialog", "creator"],
+      classes: ["vf", "dialog", "creator"],
       id: "character-creator",
-      template: `${OSE.systemPath()}/templates/actors/dialogs/character-creation.html`,
+      template: `${VF.systemPath()}/templates/actors/dialogs/character-creation.html`,
       width: 300,
     });
   }
@@ -62,7 +62,7 @@ export default class OseCharacterCreator extends FormApplication {
 
   constructor(...args) {
     super(...args);
-    const pending = game.user?.getFlag(game.system.id, OseCharacterCreator.FLAG);
+    const pending = game.user?.getFlag(game.system.id, VogelfreiCharacterCreator.FLAG);
     if (pending?.scores) {
       this.scores = { ...pending.scores };
       this.swapUsed = Boolean(pending.swapUsed);
@@ -71,7 +71,7 @@ export default class OseCharacterCreator extends FormApplication {
 
   /** Remember the array against the player until it is accepted. */
   async #persist() {
-    await game.user?.setFlag(game.system.id, OseCharacterCreator.FLAG, {
+    await game.user?.setFlag(game.system.id, VogelfreiCharacterCreator.FLAG, {
       scores: this.scores,
       swapUsed: this.swapUsed,
     });
@@ -80,7 +80,7 @@ export default class OseCharacterCreator extends FormApplication {
   getData() {
     const data = foundry.utils.deepClone(this.object);
     data.user = game.user;
-    data.config = CONFIG.OSE;
+    data.config = CONFIG.VF;
 
     const rolled = Object.keys(this.scores).length > 0;
     data.rolled = rolled;
@@ -156,7 +156,7 @@ export default class OseCharacterCreator extends FormApplication {
       mod: scoreModifier(this.scores[key]),
     }));
     const content = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/chat/roll-creation.html`,
+      `${VF.systemPath()}/templates/chat/roll-creation.html`,
       {
         title: game.i18n.localize(titleKey),
         scores: summary,
@@ -199,7 +199,7 @@ export default class OseCharacterCreator extends FormApplication {
     });
 
     // The array is spent: the next generator opens fresh.
-    await game.user?.unsetFlag(game.system.id, OseCharacterCreator.FLAG);
+    await game.user?.unsetFlag(game.system.id, VogelfreiCharacterCreator.FLAG);
     await this.#announce("VF.dialog.generator");
 
     this.object.sheet.render(true);

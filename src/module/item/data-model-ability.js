@@ -1,9 +1,9 @@
 /**
  * @file The data model for Items of type Ability
  */
-import OseTags from "../helpers-tags";
+import VogelfreiTags from "../helpers-tags";
 
-export default class OseDataModelAbility extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelAbility extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
     return {
@@ -27,12 +27,12 @@ export default class OseDataModelAbility extends foundry.abstract.TypeDataModel 
 
     const rollLabel = game.i18n.localize("VF.items.Roll");
 
-    const rollFormula = OseTags.rollTagFormula({
+    const rollFormula = VogelfreiTags.rollTagFormula({
       actor: this.parent?.actor,
       data: this._source,
     });
 
-    const rollTarget = OseTags.rollTagTarget({
+    const rollTarget = VogelfreiTags.rollTagTarget({
       rollType: this.rollType,
       rollTarget: this.rollTarget,
     });
@@ -46,7 +46,7 @@ export default class OseDataModelAbility extends foundry.abstract.TypeDataModel 
     if (!this.save) return null;
 
     return {
-      label: CONFIG.OSE.saves_long[this.save],
+      label: CONFIG.VF.saves_long[this.save],
       icon: "fa-skull",
     };
   }

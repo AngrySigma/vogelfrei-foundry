@@ -2,8 +2,8 @@
  * @file A collection of helper utils for chat cards
  */
 
-import type { OseContextMenuEntry } from "../global";
-import OseActor from "./actor/entity";
+import type { VogelfreiContextMenuEntry } from "../global";
+import VogelfreiActor from "./actor/entity";
 
 /**
  * Apply damage to a target actor
@@ -21,7 +21,7 @@ async function applyDamageToTarget(
   nameOrId: string,
   critical = false,
 ) {
-  if (!game.user?.isGM || !(actor instanceof OseActor)) {
+  if (!game.user?.isGM || !(actor instanceof VogelfreiActor)) {
     ui.notifications?.error(game.i18n.format("VF.error.cantDealDamageTo", { nameOrId }));
     return;
   }
@@ -45,18 +45,18 @@ function applyChatCardDamage(html: HTMLElement, multiplier: 1 | -1) {
   // either that card or the chat message wrapping it, so check both.
   const critical =
     multiplier > 0 && (html.matches?.("[data-critical]") || html.querySelector("[data-critical]") !== null);
-  if (dmgTgt === CONFIG.OSE.apply_damage_options.originalTarget) {
+  if (dmgTgt === CONFIG.VF.apply_damage_options.originalTarget) {
     const victimId = (html.querySelector(".chat-target") as HTMLElement)?.dataset.id;
     (async () => {
       const actor = ((await fromUuid(victimId || "")) as TokenDocument)?.actor;
       await applyDamageToTarget(actor, amount, multiplier, actor?.name || victimId || "original target", critical);
     })();
   }
-  if (dmgTgt === CONFIG.OSE.apply_damage_options.targeted) {
+  if (dmgTgt === CONFIG.VF.apply_damage_options.targeted) {
     // biome-ignore lint/suspicious/useIterableCallbackReturn: async function called for side effects, promises intentionally not awaited
     game.user?.targets.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name, critical));
   }
-  if (dmgTgt === CONFIG.OSE.apply_damage_options.selected) {
+  if (dmgTgt === CONFIG.VF.apply_damage_options.selected) {
     // biome-ignore lint/suspicious/useIterableCallbackReturn: async function called for side effects, promises intentionally not awaited
     canvas.tokens?.controlled.forEach((t) => applyDamageToTarget(t.actor, amount, multiplier, t.name, critical));
   }
@@ -73,16 +73,16 @@ function canApplyDamage(html: HTMLElement) {
   if (!html.querySelector(".dice-total")) return false;
   const applyDamageOption = game.settings.get(game.system.id, "applyDamageOption");
   switch (applyDamageOption) {
-    case CONFIG.OSE.apply_damage_options.originalTarget: {
+    case CONFIG.VF.apply_damage_options.originalTarget: {
       const chatTargets = html.querySelectorAll(".chat-target");
       const lastChatTarget = chatTargets[chatTargets.length - 1] as HTMLElement;
       return !!lastChatTarget?.dataset.id;
     }
 
-    case CONFIG.OSE.apply_damage_options.targeted:
+    case CONFIG.VF.apply_damage_options.targeted:
       return !!game.user?.targets?.size;
 
-    case CONFIG.OSE.apply_damage_options.selected:
+    case CONFIG.VF.apply_damage_options.selected:
       return !!canvas.tokens?.controlled.length;
 
     default:
@@ -96,7 +96,7 @@ function canApplyDamage(html: HTMLElement) {
   }
 }
 
-const canApply: OseContextMenuEntry["condition"] = (li) => canApplyDamage(li);
+const canApply: VogelfreiContextMenuEntry["condition"] = (li) => canApplyDamage(li);
 
 /**
  * This function is used to hook into the Chat Log context menu to add additional options to each message
@@ -106,7 +106,7 @@ const canApply: OseContextMenuEntry["condition"] = (li) => canApplyDamage(li);
  * @param {Array} options - The list of context menu options
  * @returns {undefined}
  */
-export const addChatMessageContextOptions = (_: HTMLElement, options: OseContextMenuEntry[]) => {
+export const addChatMessageContextOptions = (_: HTMLElement, options: VogelfreiContextMenuEntry[]) => {
   options.push(
     {
       name: game.i18n.localize("VF.messages.applyDamage"),

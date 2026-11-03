@@ -15,19 +15,19 @@ import { rollTreasure } from "./helpers-treasure";
  * @param {number} slot - The hotbar slot to use
  * @returns {Promise} - Promise of assigned macro or a notification
  */
-export async function createOseMacro(data, slot) {
+export async function createVogelfreiMacro(data, slot) {
   if (data.type === "Macro") {
     return game.user.assignHotbarMacro(await fromUuid(data.uuid), slot);
   }
   if (data.type === "RollTable") {
-    const command = `game.ose.rollTableMacro("${data.uuid}");`;
+    const command = `game.vf.rollTableMacro("${data.uuid}");`;
     const table = await fromUuid(data.uuid);
     const macro = await Macro.create({
       name: table.name,
       type: "script",
       img: table.img,
       command,
-      flags: { "ose.tableMacro": true },
+      flags: { "vogelfrei.tableMacro": true },
     });
     return game.user.assignHotbarMacro(macro, slot);
   }
@@ -37,7 +37,7 @@ export async function createOseMacro(data, slot) {
   const { item } = data;
 
   // Create the macro command
-  const command = `game.ose.rollItemMacro("${item.name}");`;
+  const command = `game.vf.rollItemMacro("${item.name}");`;
   let macro = game.macros.contents.find((m) => m.name === item.name && m.command === command);
   if (!macro || macro.ownership[game.userId] === undefined) {
     macro = await Macro.create({
@@ -45,7 +45,7 @@ export async function createOseMacro(data, slot) {
       type: "script",
       img: item.img,
       command,
-      flags: { "ose.itemMacro": true },
+      flags: { "vogelfrei.itemMacro": true },
     });
   }
   return game.user.assignHotbarMacro(macro, slot);

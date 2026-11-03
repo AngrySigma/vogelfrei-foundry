@@ -1,12 +1,12 @@
 /**
  * @file Extend the basic ActorSheet with some very simple modifications
  */
-import OSE from "../config";
-import OseCharacterCreator from "../dialog/character-creation";
-import OseCharacterGpCost from "../dialog/character-gp-cost";
-import OseCharacterModifiers from "../dialog/character-modifiers";
+import VF from "../config";
+import VogelfreiCharacterCreator from "../dialog/character-creation";
+import VogelfreiCharacterGpCost from "../dialog/character-gp-cost";
+import VogelfreiCharacterModifiers from "../dialog/character-modifiers";
 import { coinCount, coinItems } from "../purse";
-import OseActorSheet from "./actor-sheet";
+import VogelfreiActorSheet from "./actor-sheet";
 import { prepareExplorationSkills } from "./exploration-skills";
 import pickCharacterIcon from "./icon-picker";
 import { STANCE_KINDS, stanceAllowed } from "./stance";
@@ -21,21 +21,21 @@ import { clearStance, currentStance, setStance } from "./stance-store";
  * @returns {Record<string, string>} Value to label, for selectOptions.
  */
 function dieChoices(current) {
-  const dice = [...CONFIG.OSE.dice];
+  const dice = [...CONFIG.VF.dice];
   if (current && !dice.includes(current)) dice.push(current);
   return Object.fromEntries([["", "\u2014"], ...dice.map((die) => [die, die.replace(/^1d/, "d")])]);
 }
 
-export default class OseActorSheetCharacter extends OseActorSheet {
+export default class VogelfreiActorSheetCharacter extends VogelfreiActorSheet {
   /**
    * Extend and override the default options used by the 5e Actor Sheet
    *
    * @returns {object} - The default options for this sheet.
    */
   static get defaultOptions() {
-    return foundry.utils.mergeObject(OseActorSheet.defaultOptions, {
-      classes: ["ose", "sheet", "actor", "character"],
-      template: `${OSE.systemPath()}/templates/actors/character-sheet.html`,
+    return foundry.utils.mergeObject(VogelfreiActorSheet.defaultOptions, {
+      classes: ["vf", "sheet", "actor", "character"],
+      template: `${VF.systemPath()}/templates/actors/character-sheet.html`,
       width: 450,
       height: 530,
       resizable: true,
@@ -103,7 +103,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
   }
 
   generateScores() {
-    new OseCharacterCreator(this.actor, {
+    new VogelfreiCharacterCreator(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);
@@ -148,11 +148,11 @@ export default class OseActorSheetCharacter extends OseActorSheet {
   }
 
   async _chooseLang() {
-    const choices = CONFIG.OSE.languages;
+    const choices = CONFIG.VF.languages;
 
     const templateData = { choices };
     const dlg = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/actors/dialogs/lang-create.html`,
+      `${VF.systemPath()}/templates/actors/dialogs/lang-create.html`,
       templateData,
     );
     // Create Dialog window
@@ -185,7 +185,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
     const data = this.actor.system;
     let update = data[table]; // V10 compatibility
     this._chooseLang().then((dialogInput) => {
-      const name = CONFIG.OSE.languages[dialogInput.choice];
+      const name = CONFIG.VF.languages[dialogInput.choice];
       if (update.value) {
         update.value.push(name);
       } else {
@@ -210,7 +210,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
 
   _onShowModifiers(event) {
     event.preventDefault();
-    new OseCharacterModifiers(this.actor, {
+    new VogelfreiCharacterModifiers(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);
@@ -224,7 +224,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
 
     // Filter out items that have been marked as paid
     const filterUnpaidItems = (items) => {
-      return items.filter((item) => !item.flags?.ose?.paid);
+      return items.filter((item) => !(item.flags?.vogelfrei?.paid ?? item.flags?.ose?.paid));
     };
 
     // Create a filtered copy of the data with only unpaid items
@@ -247,7 +247,7 @@ export default class OseActorSheetCharacter extends OseActorSheet {
   async _onShowGpCost(event) {
     event.preventDefault();
     const cartData = await this._prepareShoppingCartData();
-    new OseCharacterGpCost(this.actor, cartData, {
+    new VogelfreiCharacterGpCost(this.actor, cartData, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);

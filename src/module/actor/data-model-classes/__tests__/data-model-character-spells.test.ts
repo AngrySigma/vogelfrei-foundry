@@ -2,11 +2,11 @@
  * @file Quench unit tests for the data model class that drives actor spells.
  */
 import type { QuenchMethods } from "../../../../e2e";
-import OseDataModelCharacterSpells from "../data-model-character-spells";
+import VogelfreiDataModelCharacterSpells from "../data-model-character-spells";
 
-export const key = "ose.actor.datamodel.character.spells";
+export const key = "vf.actor.datamodel.character.spells";
 export const options = {
-  displayName: "OSE: Actor: Data Model: Character Spells",
+  displayName: "VF: Actor: Data Model: Character Spells",
 };
 
 const createMockSpell = (lvl: number, spellOptions?: Record<string, unknown>): Item =>
@@ -31,7 +31,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   describe("Spell levels", () => {
     it("Sorts the incoming spell list into an object with spell level keys", () => {
       const spells = createMockSpellList({}, ...spellsPerLevel);
-      const spellData = new OseDataModelCharacterSpells({}, spells);
+      const spellData = new VogelfreiDataModelCharacterSpells({}, spells);
       spellsPerLevel.forEach((lv) => {
         expect(spellData.spellList[lv].length).to.equal(lv);
       });
@@ -42,21 +42,21 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     describe("Shows committed and max spell slots per level", () => {
       it("with no spells prepared", () => {
         const spells = [createMockSpell(1)];
-        const spellData = new OseDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
         expect(spellData.slots[1].used).to.equal(0);
         expect(spellData.slots[1].max).to.equal(1);
       });
 
       it("with spells prepared, not cast", () => {
         const spells = [createMockSpell(1, { memorized: 1, cast: 1 })];
-        const spellData = new OseDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
         expect(spellData.slots[1].used).to.equal(1);
         expect(spellData.slots[1].max).to.equal(1);
       });
 
       it("with spells prepared and cast", () => {
         const spells = [createMockSpell(1, { memorized: 1, cast: 0 })];
-        const spellData = new OseDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 1: { max: 1 } }, spells as Item[]);
         expect(spellData.slots[1].used).to.equal(0);
         expect(spellData.slots[1].max).to.equal(1);
       });
@@ -64,14 +64,14 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
     describe("Keys slots by numeric level", () => {
       it("for a single-level caster", () => {
-        const spellData = new OseDataModelCharacterSpells({ 1: { max: 2 } }, []);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 1: { max: 2 } }, []);
         expect(Object.keys(spellData.slots)).to.not.contain("NaN");
         expect(spellData.slots[1]).to.not.be.undefined;
         expect(spellData.slots[1].max).to.equal(2);
       });
 
       it("across multiple levels", () => {
-        const spellData = new OseDataModelCharacterSpells({ 1: { max: 3 }, 2: { max: 2 }, 3: { max: 1 } }, []);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 1: { max: 3 }, 2: { max: 2 }, 3: { max: 1 } }, []);
         expect(Object.keys(spellData.slots)).to.not.contain("NaN");
         for (const lvl of [1, 2, 3]) {
           expect(spellData.slots[lvl]).to.not.be.undefined;
@@ -82,7 +82,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       });
 
       it("including spell level 0 (cantrips)", () => {
-        const spellData = new OseDataModelCharacterSpells({ 0: { max: 4 }, 1: { max: 2 } }, []);
+        const spellData = new VogelfreiDataModelCharacterSpells({ 0: { max: 4 }, 1: { max: 2 } }, []);
         expect(Object.keys(spellData.slots)).to.not.contain("NaN");
         expect(spellData.slots[0]).to.not.be.undefined;
         expect(spellData.slots[1]).to.not.be.undefined;
@@ -94,15 +94,15 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   // Sanity check: can we cast spells?
   describe("Checking for spellcasting", () => {
     it("Can cast spells when spellcasting is enabled", () => {
-      const spellData = new OseDataModelCharacterSpells({ enabled: true }, []);
+      const spellData = new VogelfreiDataModelCharacterSpells({ enabled: true }, []);
       expect(spellData.enabled).to.be.true;
     });
     it("Cannot cast spells when spellcasting is disabled", () => {
-      const spellData = new OseDataModelCharacterSpells({ enabled: false }, []);
+      const spellData = new VogelfreiDataModelCharacterSpells({ enabled: false }, []);
       expect(spellData.enabled).to.be.false;
     });
     it("Can toggle between being able and unable to cast spells", () => {
-      const spellData = new OseDataModelCharacterSpells({ enabled: true }, []);
+      const spellData = new VogelfreiDataModelCharacterSpells({ enabled: true }, []);
       expect(spellData.enabled).to.be.true;
       spellData.enabled = false;
       expect(spellData.enabled).to.be.false;

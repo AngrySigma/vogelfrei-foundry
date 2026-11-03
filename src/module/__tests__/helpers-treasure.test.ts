@@ -8,9 +8,9 @@ import { functionsForTesting } from "../helpers-treasure";
 
 const { drawTreasure, rollTreasure } = functionsForTesting;
 
-export const key = "ose.helpers.treasure";
+export const key = "vf.helpers.treasure";
 export const options = {
-  displayName: "OSE: Helpers: Treasure",
+  displayName: "VF: Helpers: Treasure",
 };
 
 const createMockTable = async () =>

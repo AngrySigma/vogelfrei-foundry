@@ -35,7 +35,7 @@ const shield = () =>
 
 const many = (count: number, make: () => unknown) => Array.from({ length: count }, make) as never[];
 
-/** Movement, exactly as OseDataModelCharacterMove derives it from breakpoints. */
+/** Movement, exactly as VogelfreiDataModelCharacterMove derives it from breakpoints. */
 const feetPerTurn = (points: number, base = 120) => {
   if (points >= ENCUMBRANCE_LIMIT) return 0;
   if (points >= 4) return base * 0.25;

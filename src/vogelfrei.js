@@ -1,40 +1,40 @@
 /**
- * @file The entry point for the OSE system
+ * @file The entry point for the Vogelfrei system
  *       We should handle most of our setup here.
  */
 
-import OseActorSheetCharacter from "./module/actor/character-sheet";
+import VogelfreiActorSheetCharacter from "./module/actor/character-sheet";
 import { migrateCoinItems, registerCoinItemHook } from "./module/actor/coin-items";
-import OseDataModelCharacter from "./module/actor/data-model-character";
-import OseDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
-import OseDataModelMonster from "./module/actor/data-model-monster";
-import OseDataModelVehicle from "./module/actor/data-model-vehicle";
+import VogelfreiDataModelCharacter from "./module/actor/data-model-character";
+import VogelfreiDataModelCharacterEncumbranceVogelfrei from "./module/actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
+import VogelfreiDataModelMonster from "./module/actor/data-model-monster";
+import VogelfreiDataModelVehicle from "./module/actor/data-model-vehicle";
 import registerActorDirectoryButton from "./module/actor/directory-button";
-import OseActor from "./module/actor/entity";
-import OseActorSheetMonster from "./module/actor/monster-sheet";
-import OseActorSheetVehicle from "./module/actor/vehicle-sheet";
+import VogelfreiActor from "./module/actor/entity";
+import VogelfreiActorSheetMonster from "./module/actor/monster-sheet";
 import { registerStanceHooks } from "./module/actor/stance-store";
-import TokenRulerOSE from "./module/actor/token-ruler";
+import TokenRulerVF from "./module/actor/token-ruler";
+import VogelfreiActorSheetVehicle from "./module/actor/vehicle-sheet";
 import ChronicleApp from "./module/chronicle/chronicle-app";
 import { getChronicle, registerChronicleSetting, syncWorldTime } from "./module/chronicle/store";
-import { OSECombat } from "./module/combat/combat";
-import OSECombatTracker from "./module/combat/combat-tracker";
-import { OSECombatant } from "./module/combat/combatant";
-import { OSE } from "./module/config";
+import { VFCombat } from "./module/combat/combat";
+import VFCombatTracker from "./module/combat/combat-tracker";
+import { VFCombatant } from "./module/combat/combatant";
+import { VF } from "./module/config";
 import registerFVTTModuleAPIs from "./module/fvttModuleAPIs";
 import * as chat from "./module/helpers-chat";
 import handlebarsHelpers from "./module/helpers-handlebars";
 import * as macros from "./module/helpers-macros";
 import * as treasure from "./module/helpers-treasure";
-import OseDataModelAbility from "./module/item/data-model-ability";
-import OseDataModelArmor from "./module/item/data-model-armor";
-import OseDataModelContainer from "./module/item/data-model-container";
-import OseDataModelItem from "./module/item/data-model-item";
-import OseDataModelSpell from "./module/item/data-model-spell";
-import OseDataModelWeapon from "./module/item/data-model-weapon";
-import OseItem from "./module/item/entity";
+import VogelfreiDataModelAbility from "./module/item/data-model-ability";
+import VogelfreiDataModelArmor from "./module/item/data-model-armor";
+import VogelfreiDataModelContainer from "./module/item/data-model-container";
+import VogelfreiDataModelItem from "./module/item/data-model-item";
+import VogelfreiDataModelSpell from "./module/item/data-model-spell";
+import VogelfreiDataModelWeapon from "./module/item/data-model-weapon";
+import VogelfreiItem from "./module/item/entity";
 import registerArmourEquipHooks from "./module/item/equip-armour";
-import OseItemSheet from "./module/item/item-sheet";
+import VogelfreiItemSheet from "./module/item/item-sheet";
 import { migratePlaytestRules, registerPlaytestRulesMigration } from "./module/migrate-playtest-rules";
 import registerPartyDirectoryButton from "./module/party/directory-button";
 import PartyApp from "./module/party/party-app";
@@ -52,14 +52,14 @@ import "./e2e";
 /* -------------------------------------------- */
 
 Hooks.once("init", async () => {
-  CONFIG.OSE = OSE;
+  CONFIG.VF = VF;
 
   // Give modules a chance to add encumbrance schemes
   // They can do so by adding their encumbrance schemes
-  // to CONFIG.OSE.encumbranceOptions
-  Hooks.call("ose-setup-encumbrance");
+  // to CONFIG.VF.encumbranceOptions
+  Hooks.call("vf-setup-encumbrance");
 
-  if (game.system.id === "ose-dev") {
+  if (game.system.id === "vogelfrei-dev") {
     CONFIG.debug = {
       ...CONFIG.debug,
       combat: true,
@@ -74,22 +74,24 @@ Hooks.once("init", async () => {
   registerStanceHooks();
   registerPlaytestRulesMigration();
 
-  CONFIG.Combat.documentClass = OSECombat;
-  CONFIG.Combatant.documentClass = OSECombatant;
+  CONFIG.Combat.documentClass = VFCombat;
+  CONFIG.Combatant.documentClass = VFCombatant;
   const isGroupInitiative = game.settings.get(game.system.id, "initiative") === "group";
   CONFIG.Combat.initiative = {
     decimals: 2,
-    formula: isGroupInitiative ? OSECombat.GROUP_FORMULA : OSECombat.FORMULA,
+    formula: isGroupInitiative ? VFCombat.GROUP_FORMULA : VFCombat.FORMULA,
   };
 
   CONFIG.Combat.fallbackTurnMarker = "icons/svg/circle.svg";
-  CONFIG.ui.combat = OSECombatTracker;
-  CONFIG.Token.rulerClass = TokenRulerOSE;
+  CONFIG.ui.combat = VFCombatTracker;
+  CONFIG.Token.rulerClass = TokenRulerVF;
 
-  game.ose = {
+  game.vf = {
     rollItemMacro: macros.rollItemMacro,
     rollTableMacro: macros.rollTableMacro,
   };
+  // Macros created by earlier Vogelfrei releases used the old API name.
+  game.ose = game.vf;
 
   registerPartyHooks();
   registerPartyDirectoryButton();
@@ -103,43 +105,43 @@ Hooks.once("init", async () => {
   registerCoinItemHook();
   registerActorDirectoryButton();
 
-  CONFIG.Actor.documentClass = OseActor;
-  CONFIG.Item.documentClass = OseItem;
+  CONFIG.Actor.documentClass = VogelfreiActor;
+  CONFIG.Item.documentClass = VogelfreiItem;
 
   CONFIG.Actor.dataModels = {
-    character: OseDataModelCharacter,
-    monster: OseDataModelMonster,
-    vehicle: OseDataModelVehicle,
+    character: VogelfreiDataModelCharacter,
+    monster: VogelfreiDataModelMonster,
+    vehicle: VogelfreiDataModelVehicle,
   };
   CONFIG.Item.dataModels = {
-    weapon: OseDataModelWeapon,
-    armor: OseDataModelArmor,
-    item: OseDataModelItem,
-    spell: OseDataModelSpell,
-    ability: OseDataModelAbility,
-    container: OseDataModelContainer,
+    weapon: VogelfreiDataModelWeapon,
+    armor: VogelfreiDataModelArmor,
+    item: VogelfreiDataModelItem,
+    spell: VogelfreiDataModelSpell,
+    ability: VogelfreiDataModelAbility,
+    container: VogelfreiDataModelContainer,
   };
 
   // Register sheet application classes
   foundry.documents.collections.Actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
-  foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetCharacter, {
+  foundry.documents.collections.Actors.registerSheet(game.system.id, VogelfreiActorSheetCharacter, {
     types: ["character"],
     makeDefault: true,
     label: "VF.SheetClassCharacter",
   });
-  foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetMonster, {
+  foundry.documents.collections.Actors.registerSheet(game.system.id, VogelfreiActorSheetMonster, {
     types: ["monster"],
     makeDefault: true,
     label: "VF.SheetClassMonster",
   });
-  foundry.documents.collections.Actors.registerSheet(game.system.id, OseActorSheetVehicle, {
+  foundry.documents.collections.Actors.registerSheet(game.system.id, VogelfreiActorSheetVehicle, {
     types: ["vehicle"],
     makeDefault: true,
     label: "VF.SheetClassVehicle",
   });
 
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
-  foundry.documents.collections.Items.registerSheet(game.system.id, OseItemSheet, {
+  foundry.documents.collections.Items.registerSheet(game.system.id, VogelfreiItemSheet, {
     makeDefault: true,
     label: "VF.SheetClassItem",
   });
@@ -153,7 +155,7 @@ Hooks.once("init", async () => {
 Hooks.once("setup", () => {
   // Localize CONFIG objects once up-front
   ["saves_short", "saves_long", "scores", "armor", "colors", "tags"].forEach((o) => {
-    CONFIG.OSE[o] = Object.entries(CONFIG.OSE[o]).reduce((obj, e) => {
+    CONFIG.VF[o] = Object.entries(CONFIG.VF[o]).reduce((obj, e) => {
       obj[e[0]] = game.i18n.localize(e[1]);
       return obj;
     }, {});
@@ -163,14 +165,14 @@ Hooks.once("setup", () => {
   const languages = game.settings.get(game.system.id, "languages");
   if (languages !== "") {
     const langArray = languages.split(",").map((s) => s.trim());
-    CONFIG.OSE.languages = langArray;
+    CONFIG.VF.languages = langArray;
   }
 });
 
 Hooks.once("ready", async () => {
   Hooks.on("hotbarDrop", (_bar, data, slot) => {
     if (["Macro", "RollTable", "Item"].includes(data.type)) {
-      macros.createOseMacro(data, slot);
+      macros.createVogelfreiMacro(data, slot);
       // Returning false to stop the rest of hotbarDrop handling.
       return false;
     }
@@ -188,7 +190,7 @@ Hooks.once("ready", async () => {
 });
 
 /**
- * Move a world off whichever OSE weight scheme it was created with, once.
+ * Move a world off whichever legacy weight scheme it was created with, once.
  *
  * Settings store the value a world was made with, so raising the registered
  * default leaves existing worlds weighing coins: the new per-item fields show
@@ -203,9 +205,9 @@ async function adoptVogelfreiEncumbrance() {
   await game.settings.set(game.system.id, "encumbranceSchemeAdopted", true);
 
   const current = game.settings.get(game.system.id, "encumbranceOption");
-  if (current === OseDataModelCharacterEncumbranceVogelfrei.type) return;
+  if (current === VogelfreiDataModelCharacterEncumbranceVogelfrei.type) return;
 
-  await game.settings.set(game.system.id, "encumbranceOption", OseDataModelCharacterEncumbranceVogelfrei.type);
+  await game.settings.set(game.system.id, "encumbranceOption", VogelfreiDataModelCharacterEncumbranceVogelfrei.type);
   ui.notifications?.info(game.i18n.localize("VF.messages.EncumbranceAdopted"));
 }
 
@@ -215,18 +217,18 @@ async function adoptVogelfreiEncumbrance() {
  */
 Hooks.on("renderSettings", async (_app, html) => {
   const gamesystem = html.querySelector("section.info");
-  const template = `${OSE.systemPath()}/templates/chat/license.html`;
+  const template = `${VF.systemPath()}/templates/chat/license.html`;
   const rendered = await foundry.applications.handlebars.renderTemplate(template);
   gamesystem.insertAdjacentHTML("afterend", rendered);
 });
 
-Hooks.on("renderChatLog", (_app, html) => OseItem.chatListeners(html));
+Hooks.on("renderChatLog", (_app, html) => VogelfreiItem.chatListeners(html));
 Hooks.on("getChatLogEntryContext", chat.addChatMessageContextOptions);
 Hooks.on("getChatMessageContextOptions", chat.addChatMessageContextOptions);
 Hooks.on("renderChatMessageHTML", chat.addChatMessageButtons);
 Hooks.on("renderRollTableSheet", treasure.augmentTable);
 /**
- * @param {OSECombatTracker} app - The combat tracker application
+ * @param {VFCombatTracker} app - The combat tracker application
  * @param {HTMLElement} html - The HTML element of the combat tracker
  */
 Hooks.on("renderCombatTracker", (app, html) => app.renderGroups(html instanceof HTMLElement ? html : html[0]));
@@ -236,7 +238,7 @@ Hooks.on("renderCombatTracker", (app, html) => app.renderGroups(html instanceof 
 Hooks.on("updateCombatantGroup", async (combatantGroup) => {
   await combatantGroup.parent?.onUpdateCombatantGroup();
 });
-/** @param {OSECombatant} combatant */
+/** @param {VFCombatant} combatant */
 Hooks.on("createCombatant", (combatant) => {
   if (game.settings.get(game.system.id, "initiative") !== "group" || !game.user.isGM) {
     return;

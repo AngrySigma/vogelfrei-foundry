@@ -43,7 +43,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Ignores other packages' compendia, world items and junk", () => {
-      expect(compendiumOrigin("Compendium.ose.weapons.Item.AAAAAAAAAAAAAAAA", "vogelfrei")).equal(null);
+      expect(compendiumOrigin("Compendium.vf.weapons.Item.AAAAAAAAAAAAAAAA", "vogelfrei")).equal(null);
       expect(compendiumOrigin("Item.AAAAAAAAAAAAAAAA", "vogelfrei")).equal(null);
       expect(compendiumOrigin(null, "vogelfrei")).equal(null);
     });

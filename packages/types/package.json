@@ -1,7 +1,7 @@
 {
-  "name": "@ose-foundry-core/types",
+  "name": "@vogelfrei/types",
   "version": "0.0.1",
-  "description": "TypeScript type definitions for the Old-School Essentials (OSE) Foundry VTT system — actor/item data shapes, config unions, and character helper-class interfaces.",
+  "description": "TypeScript type definitions for the Vogelfrei Foundry VTT system — actor/item data shapes, config unions, and character helper-class interfaces.",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "types": "./index.d.ts",
@@ -17,16 +17,15 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NecroticGnome/ose-foundry-core.git",
+    "url": "git+https://github.com/AngrySigma/vogelfrei-foundry.git",
     "directory": "packages/types"
   },
-  "homepage": "https://github.com/NecroticGnome/ose-foundry-core/tree/main/packages/types#readme",
-  "bugs": "https://github.com/NecroticGnome/ose-foundry-core/issues",
+  "homepage": "https://github.com/AngrySigma/vogelfrei-foundry/tree/main/packages/types#readme",
+  "bugs": "https://github.com/AngrySigma/vogelfrei-foundry/issues",
   "keywords": [
     "foundry-vtt",
     "foundryvtt",
-    "ose",
-    "old-school-essentials",
+    "vogelfrei",
     "types",
     "typescript"
   ],

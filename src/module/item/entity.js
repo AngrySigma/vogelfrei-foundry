@@ -1,36 +1,36 @@
 /**
  * @file The system-specific Item entity, containing logic for operating on all available Item types.
  */
-import OSE from "../config";
-import OseDice from "../helpers-dice";
+import VF from "../config";
+import VogelfreiDice from "../helpers-dice";
 import { getRollMode } from "../helpers-message-mode";
 
 /**
  * Override and extend the basic :class:`Item` implementation
  */
-export default class OseItem extends Item {
+export default class VogelfreiItem extends Item {
   // Replacing default image */
   static get defaultIcons() {
     return {
-      spell: `${OSE.assetsPath}/default/spell.png`,
-      ability: `${OSE.assetsPath}/default/ability.png`,
-      armor: `${OSE.assetsPath}/default/armor.png`,
-      weapon: `${OSE.assetsPath}/default/weapon.png`,
-      item: `${OSE.assetsPath}/default/item.png`,
-      container: `${OSE.assetsPath}/default/bag.png`,
+      spell: `${VF.assetsPath}/default/spell.png`,
+      ability: `${VF.assetsPath}/default/ability.png`,
+      armor: `${VF.assetsPath}/default/armor.png`,
+      weapon: `${VF.assetsPath}/default/weapon.png`,
+      item: `${VF.assetsPath}/default/item.png`,
+      container: `${VF.assetsPath}/default/bag.png`,
     };
   }
 
   static async create(data, context = {}) {
     if (data.img === undefined) {
-      data.img = OseItem.defaultIcons[data.type];
+      data.img = VogelfreiItem.defaultIcons[data.type];
     }
     return Item.create(data, context);
   }
 
   static migrateData(source) {
     if (source?.img === "" && source.type) {
-      source.img = OseItem.defaultIcons[source.type];
+      source.img = VogelfreiItem.defaultIcons[source.type];
     }
     if (source?.system?.itemslots === undefined) {
       if ((source?.system?.tags ?? []).some((tag) => tag.value === "Two-handed") && source?.type === "weapon")
@@ -58,12 +58,12 @@ export default class OseItem extends Item {
     html.addEventListener("click", (event) => {
       const button = event.target.closest(".card-buttons button");
       if (button) {
-        OseItem._onChatCardAction(event);
+        VogelfreiItem._onChatCardAction(event);
       }
 
       const itemName = event.target.closest(".item-name");
       if (itemName) {
-        OseItem._onChatCardToggleContent(event);
+        VogelfreiItem._onChatCardToggleContent(event);
       }
     });
   }
@@ -172,7 +172,7 @@ export default class OseItem extends Item {
     }
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data: rollData,
@@ -203,7 +203,7 @@ export default class OseItem extends Item {
   _getRollTag(data) {
     if (data.roll) {
       const roll = `${data.roll}${
-        data.rollTarget ? CONFIG.OSE.roll_type[data.rollType] : ""
+        data.rollTarget ? CONFIG.VF.roll_type[data.rollType] : ""
       }${data.rollTarget ? data.rollTarget : ""}`;
       return {
         label: `${game.i18n.localize("VF.items.Roll")} ${roll}`,
@@ -214,7 +214,7 @@ export default class OseItem extends Item {
   _getSaveTag(data) {
     if (data.save) {
       return {
-        label: CONFIG.OSE.saves_long[data.save],
+        label: CONFIG.VF.saves_long[data.save],
         icon: "fa-skull",
       };
     }
@@ -248,7 +248,7 @@ export default class OseItem extends Item {
       }
 
       case "armor": {
-        tagList.push({ label: CONFIG.OSE.armor[data.type], icon: "fa-tshirt" });
+        tagList.push({ label: CONFIG.VF.armor[data.type], icon: "fa-tshirt" });
         break;
       }
 
@@ -286,7 +286,7 @@ export default class OseItem extends Item {
    * will be checked, and the tag will be added to the list with the title "Bulky".
    *
    * @param {string[]} values - The values of the tags to add.
-   * @returns {Promise<OseItem|undefined>>} - The updated Document instance, or undefined if not updated
+   * @returns {Promise<VogelfreiItem|undefined>>} - The updated Document instance, or undefined if not updated
    */
   async pushManualTag(values) {
     const data = this?.system;
@@ -310,17 +310,17 @@ export default class OseItem extends Item {
       }
       // Auto fill checkboxes
       switch (title.toLowerCase()) {
-        case CONFIG.OSE.tags.melee.toLowerCase(): {
+        case CONFIG.VF.tags.melee.toLowerCase(): {
           newData.melee = true;
           break;
         }
 
-        case CONFIG.OSE.tags.slow.toLowerCase(): {
+        case CONFIG.VF.tags.slow.toLowerCase(): {
           newData.slow = true;
           break;
         }
 
-        case CONFIG.OSE.tags.missile.toLowerCase(): {
+        case CONFIG.VF.tags.missile.toLowerCase(): {
           newData.missile = true;
           break;
         }
@@ -347,7 +347,7 @@ export default class OseItem extends Item {
    * Remove a manual tag from the item.
    *
    * @param {string} value - The value of the tag to remove.
-   * @returns {Promise<OseItem|undefined>} - The updated Document instance, or undefined if not updated
+   * @returns {Promise<VogelfreiItem|undefined>} - The updated Document instance, or undefined if not updated
    */
   popManualTag(value) {
     const itemData = this.system;
@@ -411,13 +411,13 @@ export default class OseItem extends Item {
       hasDamage: this.hasDamage,
       isSpell: itemType === "spell",
       hasSave: this.hasSave,
-      config: CONFIG.OSE,
+      config: CONFIG.VF,
     };
     templateData.rollFormula = new Roll(templateData.data.roll, templateData).formula;
     templateData.data.properties = this.system.autoTags;
 
     // Render the chat card template
-    const template = `${OSE.systemPath()}/templates/chat/item-card.html`;
+    const template = `${VF.systemPath()}/templates/chat/item-card.html`;
     const html = await foundry.applications.handlebars.renderTemplate(template, templateData);
 
     // Basic chat message data
@@ -476,7 +476,7 @@ export default class OseItem extends Item {
     if (!(isTargetted || game.user.isGM || message.isAuthor)) return;
 
     // Get the Actor from a synthetic Token
-    const actor = OseItem._getChatCardActor(card);
+    const actor = VogelfreiItem._getChatCardActor(card);
     if (!actor) return;
 
     // Get the Item
@@ -493,7 +493,7 @@ export default class OseItem extends Item {
     // Get card targets
     let targets = [];
     if (isTargetted) {
-      targets = OseItem._getChatCardTargets(card);
+      targets = VogelfreiItem._getChatCardTargets(card);
     }
 
     // Attack and Damage Rolls

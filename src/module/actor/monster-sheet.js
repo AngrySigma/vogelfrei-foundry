@@ -1,22 +1,22 @@
 /**
  * @file The sheet class for Actors of type Monster
  */
-import OSE from "../config";
-import OseActorSheet from "./actor-sheet";
+import VF from "../config";
+import VogelfreiActorSheet from "./actor-sheet";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
  */
-export default class OseActorSheetMonster extends OseActorSheet {
+export default class VogelfreiActorSheetMonster extends VogelfreiActorSheet {
   /**
    * Extend and override the default options used by the Actor Sheet
    *
    * @returns {object} - The sheet's default options
    */
   static get defaultOptions() {
-    return foundry.utils.mergeObject(OseActorSheet.defaultOptions, {
-      classes: ["ose", "sheet", "monster", "actor"],
-      template: `${OSE.systemPath()}/templates/actors/monster-sheet.html`,
+    return foundry.utils.mergeObject(VogelfreiActorSheet.defaultOptions, {
+      classes: ["vf", "sheet", "monster", "actor"],
+      template: `${VF.systemPath()}/templates/actors/monster-sheet.html`,
       width: 450,
       height: 560,
       resizable: true,
@@ -84,11 +84,11 @@ export default class OseActorSheetMonster extends OseActorSheet {
    * Monster creation helpers
    */
   async generateSave() {
-    const choices = CONFIG.OSE.monster_saves;
+    const choices = CONFIG.VF.monster_saves;
 
     const templateData = { choices };
     const dlg = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/actors/dialogs/monster-saves.html`,
+      `${VF.systemPath()}/templates/actors/dialogs/monster-saves.html`,
       templateData,
     );
     // Create Dialog window
@@ -171,8 +171,8 @@ export default class OseActorSheetMonster extends OseActorSheet {
   _cycleAttackPatterns(event) {
     const item = super._getItemFromActor(event);
     const currentColor = item.system.pattern;
-    // Attack patterns include all OSE colors and transparent
-    const colors = Object.keys(CONFIG.OSE.colors);
+    // Attack patterns include all VF colors and transparent
+    const colors = Object.keys(CONFIG.VF.colors);
     colors.push("transparent");
     let index = colors.indexOf(currentColor);
     if (index + 1 === colors.length) {

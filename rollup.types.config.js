@@ -1,6 +1,6 @@
 /**
  * @file Bundles the tsc-emitted declaration tree into the single, tree-shaken
- * `packages/types/index.d.ts` shipped by the @ose-foundry-core/types package.
+ * `packages/types/index.d.ts` shipped by the @vogelfrei/types package.
  *
  * Run after `tsc -p tsconfig.types.json` (see the `build:types` script).
  *

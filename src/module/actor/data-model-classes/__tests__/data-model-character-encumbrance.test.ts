@@ -1,17 +1,17 @@
 /**
- * @file Tests for encumbrance schemes that are part of the Old School Essentials SRD
+ * @file Tests for the legacy encumbrance schemes.
  */
 import type { QuenchMethods } from "../../../../e2e";
-import OseDataModelCharacterEncumbrance from "../data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance from "../data-model-character-encumbrance";
 import EncumbranceBasic from "../data-model-character-encumbrance-basic";
 import EncumbranceComplete from "../data-model-character-encumbrance-complete";
 import EncumbranceDetailed from "../data-model-character-encumbrance-detailed";
 import EncumbranceDisabled from "../data-model-character-encumbrance-disabled";
 import EncumbranceItemBased from "../data-model-character-encumbrance-item-based";
 
-export const key = "ose.actor.datamodel.character.encumbrance";
+export const key = "vf.actor.datamodel.character.encumbrance";
 export const options = {
-  displayName: "OSE: Actor: Data Model: Character Encumbrance",
+  displayName: "VF: Actor: Data Model: Character Encumbrance",
 };
 
 const toPct = (value: number, max: number) => Math.clamp((100 * value) / max, 0, 100);
@@ -26,7 +26,7 @@ const createMockItem = (type: string, weight: number, quantity: number, itemOpti
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("Disabled Encumbrance", () => {
     it("Is disabled", () => {
-      let enc = new OseDataModelCharacterEncumbrance();
+      let enc = new VogelfreiDataModelCharacterEncumbrance();
       expect(enc.enabled).to.be.false;
 
       enc = new EncumbranceDisabled();
@@ -130,7 +130,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(enc.max).to.equal(setMax);
 
       enc = new EncumbranceBasic();
-      expect(enc.max).to.equal(OseDataModelCharacterEncumbrance.baseEncumbranceCap);
+      expect(enc.max).to.equal(VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap);
     });
   });
 
@@ -141,7 +141,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
     it("Returns the appropriate encumbrance steps", () => {
       const enc = new EncumbranceDetailed();
-      expect(enc.steps).to.have.members(Object.values(OseDataModelCharacterEncumbrance.encumbranceSteps));
+      expect(enc.steps).to.have.members(Object.values(VogelfreiDataModelCharacterEncumbrance.encumbranceSteps));
     });
     describe("Returns current carried weight", () => {
       it("As Percentage", () => {
@@ -212,7 +212,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(enc.max).to.equal(setMax);
 
       enc = new EncumbranceDetailed();
-      expect(enc.max).to.equal(OseDataModelCharacterEncumbrance.baseEncumbranceCap);
+      expect(enc.max).to.equal(VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap);
     });
   });
 
@@ -224,7 +224,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     it("Returns the appropriate encumbrance steps", () => {
       const enc = new EncumbranceComplete();
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      expect(enc.steps).to.have.members(Object.values(OseDataModelCharacterEncumbrance.encumbranceSteps));
+      expect(enc.steps).to.have.members(Object.values(VogelfreiDataModelCharacterEncumbrance.encumbranceSteps));
     });
     describe("Returns current carried weight", () => {
       it("As Percentage", () => {
@@ -300,7 +300,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
       enc = new EncumbranceComplete();
 
-      expect(enc.max).to.equal(OseDataModelCharacterEncumbrance.baseEncumbranceCap);
+      expect(enc.max).to.equal(VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap);
     });
   });
 

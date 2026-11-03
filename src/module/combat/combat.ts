@@ -1,9 +1,9 @@
 /**
  * @file System-level modifications to the way combat works
  */
-import { OSE } from "../config";
+import { VF } from "../config";
 import { getRollMode } from "../helpers-message-mode";
-import OSECombatGroupSelector from "./combat-set-groups";
+import VFCombatGroupSelector from "./combat-set-groups";
 
 export const actionGroups = {
   slow: "VF.items.Slow",
@@ -15,14 +15,14 @@ export const actionGroups = {
  *
  * @todo Use a single chat card for rolling group initiative
  */
-export class OSECombat extends foundry.documents.Combat {
+export class VFCombat extends foundry.documents.Combat {
   static FORMULA = "1d6 + @init";
 
   static GROUP_FORMULA = "1d6";
 
   static get GROUPS() {
     return {
-      ...OSE.colors,
+      ...VF.colors,
       ...Object.entries(actionGroups).reduce((acc, [key, value]) => {
         (acc as Record<string, string>)[key] = game.i18n.localize(value);
         return acc;
@@ -61,7 +61,7 @@ export class OSECombat extends foundry.documents.Combat {
    * @private
    */
   async #rollAbsolutelyEveryone({ excludeAlreadyRolled = false, updateTurn = false } = {}) {
-    const formula = this.isGroupInitiative ? OSECombat.GROUP_FORMULA : OSECombat.FORMULA;
+    const formula = this.isGroupInitiative ? VFCombat.GROUP_FORMULA : VFCombat.FORMULA;
 
     await this.rollInitiative(
       this.combatants.filter((c) => !c.defeated && (!excludeAlreadyRolled || c.initiative === null)).map((c) => c.id),
@@ -93,7 +93,7 @@ export class OSECombat extends foundry.documents.Combat {
         continue;
       }
 
-      const roll = new Roll(OSECombat.GROUP_FORMULA);
+      const roll = new Roll(VFCombat.GROUP_FORMULA);
       await roll.evaluate();
       updates.push({ _id: group.id, initiative: roll.total });
 
@@ -228,10 +228,10 @@ export class OSECombat extends foundry.documents.Combat {
    * This method prevents multiple groups being created due to the async nature
    * of Foundry VTT.
    *
-   * @param {OSECombatant} combatant - The combatant to assign to the group.
+   * @param {VFCombatant} combatant - The combatant to assign to the group.
    * @param {string} groupName - The name of the group to assign the combatant to.
    */
-  async assignGroup(combatant: OSECombatant, groupName: string) {
+  async assignGroup(combatant: VFCombatant, groupName: string) {
     if (!groupName) {
       return;
     }
@@ -254,7 +254,7 @@ export class OSECombat extends foundry.documents.Combat {
   /**
    * Determine which group each combatant should be added to, or if a new group should be created.
    *
-   * @returns {Map<string, { combatants: OSECombatant[], expanded: boolean }>}
+   * @returns {Map<string, { combatants: VFCombatant[], expanded: boolean }>}
    */
   async createGroups() {
     for (const combatant of this.combatants) {
@@ -273,7 +273,7 @@ export class OSECombat extends foundry.documents.Combat {
    * Prompts to set the combatant groups.
    */
   setCombatantGroups() {
-    new OSECombatGroupSelector().render(true, { focus: true });
+    new VFCombatGroupSelector().render(true, { focus: true });
   }
 
   /** @override */
@@ -287,7 +287,7 @@ export class OSECombat extends foundry.documents.Combat {
 
     // If still tied, sort by group name if available
     if (a.group?.name && b.group?.name && a.group?.name !== b.group?.name) {
-      const colorsKeys = Object.keys(OSECombat.GROUPS);
+      const colorsKeys = Object.keys(VFCombat.GROUPS);
       const indexA = colorsKeys.indexOf(a.group.name);
       const indexB = colorsKeys.indexOf(b.group.name);
 

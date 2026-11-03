@@ -1,9 +1,9 @@
-import { OSE } from "../config";
-import type { OSECombatant } from "./combatant";
+import { VF } from "../config";
+import type { VFCombatant } from "./combatant";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
-export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(ApplicationV2) {
+export default class VFCombatGroupSelector extends HandlebarsApplicationMixin(ApplicationV2) {
   _highlighted;
 
   // ===========================================================================
@@ -48,7 +48,7 @@ export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(A
   /** @inheritDoc */
   async _prepareContext(_options) {
     return {
-      groups: OSE.colors,
+      groups: VF.colors,
       combatants: game.combat?.combatants || [],
     };
   }
@@ -73,7 +73,7 @@ export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(A
     event.stopPropagation();
     const input = event.target as HTMLInputElement;
     if (!input?.name || !input?.value) return;
-    const combatant = game.combat?.combatants.get(input.name) as OSECombatant;
+    const combatant = game.combat?.combatants.get(input.name) as VFCombatant;
     if (!combatant) return;
     await combatant.assignGroup(input.value);
   }
@@ -88,7 +88,7 @@ export default class OSECombatGroupSelector extends HandlebarsApplicationMixin(A
     const li = event.currentTarget as HTMLLIElement;
     const { combatantId } = li.dataset;
     if (!combatantId) return;
-    const combatant = game.combat?.combatants.get(combatantId) as OSECombatant;
+    const combatant = game.combat?.combatants.get(combatantId) as VFCombatant;
     const token = combatant.token?.object as Token;
     if (token?.isVisible) {
       if (!token.controlled) {

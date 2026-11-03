@@ -3,7 +3,7 @@
  */
 import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 import costFields from "./cost-fields";
-export default class OseDataModelContainer extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelContainer extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, ArrayField, ObjectField, BooleanField } = foundry.data.fields;
     return {
@@ -56,14 +56,14 @@ export default class OseDataModelContainer extends foundry.abstract.TypeDataMode
   get manualTags() {
     if (!this.tags) return null;
 
-    const tagNames = new Set(Object.values(CONFIG.OSE.auto_tags).map(({ label }) => label));
+    const tagNames = new Set(Object.values(CONFIG.VF.auto_tags).map(({ label }) => label));
     return this.tags
       .filter(({ value }) => !tagNames.has(value))
       .map(({ title, value }) => ({ title, value, label: value }));
   }
 
   get autoTags() {
-    const tagNames = Object.values(CONFIG.OSE.auto_tags);
+    const tagNames = Object.values(CONFIG.VF.auto_tags);
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 

@@ -1,4 +1,4 @@
-export default class TokenRulerOSE extends foundry.canvas.placeables.tokens.TokenRuler {
+export default class TokenRulerVF extends foundry.canvas.placeables.tokens.TokenRuler {
   /** @override */
   _getGridHighlightStyle(waypoint, offset) {
     const style = super._getGridHighlightStyle(waypoint, offset);

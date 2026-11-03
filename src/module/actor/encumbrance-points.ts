@@ -65,7 +65,7 @@ export const ARMOUR_POINTS: Readonly<Record<string, number>> = {
 
 /**
  * The encumbrance states, in order. Each names the movement multiplier the
- * character sheet applies; see OseDataModelCharacterMove.
+ * character sheet applies; see VogelfreiDataModelCharacterMove.
  */
 export const ENCUMBRANCE_STATES: readonly { maxPoints: number; label: string }[] = [
   { maxPoints: 1, label: "VF.encumbrance.unencumbered" },
@@ -274,6 +274,7 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, s
  * @returns The localization key naming the state those points put you in.
  */
 export function encumbranceStateLabel(points: number): string {
-  const state = ENCUMBRANCE_STATES.find(({ maxPoints }) => points <= maxPoints);
-  return (state ?? ENCUMBRANCE_STATES[ENCUMBRANCE_STATES.length - 1]).label;
+  const state = ENCUMBRANCE_STATES.find(({ maxPoints }) => points <= maxPoints) ?? ENCUMBRANCE_STATES.at(-1);
+  if (!state) throw new Error("No encumbrance states configured");
+  return state.label;
 }

@@ -3,14 +3,14 @@
  */
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
-import OseDataModelWeapon from "../data-model-weapon";
+import VogelfreiDataModelWeapon from "../data-model-weapon";
 
-export const key = "ose.item.datamodel.weapon";
-export const options = { displayName: "OSE: Item: Data Model: Weapon" };
+export const key = "vf.item.datamodel.weapon";
+export const options = { displayName: "VF: Item: Data Model: Weapon" };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("manualTags()", () => {
-    const item = new OseDataModelWeapon();
+    const item = new VogelfreiDataModelWeapon();
     it("By default return empty array", () => {
       expect(item.manualTags.length).equal(0);
     });
@@ -34,13 +34,13 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
   describe("qualities()", () => {
     it("By default returns an array with Melee tag", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       expect(item.qualities.length).equal(1);
       expect(item.qualities[0].label).equal("Melee");
     });
 
     it("Given a manual tag, it returns an array containing said tag", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.tags = [{ value: "slow", label: "slow" }];
       expect(item.qualities.length).equal(2);
       expect(Object.keys(item.qualities[1]).length).equal(2);
@@ -49,7 +49,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Given an autoTag, it returns an array containing said autoTag", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.slow = true;
       expect(item.qualities.length).equal(2);
       expect(Object.keys(item.qualities[1]).length).equal(4);
@@ -62,7 +62,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
 
   describe("autotags()", () => {
     it("Returns a flattened array with damage and autotags; a new weapon deals d8", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       expect(item.autoTags.length).equal(2);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
       expect(item.autoTags[0].icon).equal("fa-tint");
@@ -70,7 +70,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("Damage is present in flattened array", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.damage = "1d13";
       expect(item.autoTags.length).equal(2);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
@@ -79,7 +79,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("A melee tag is returned as expected", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.melee = true;
       expect(item.autoTags.length).equal(2);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
@@ -92,7 +92,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("A missile tag is returned as expected", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.melee = false;
       item.missile = true;
       expect(item.autoTags.length).equal(3);
@@ -109,7 +109,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("A missile tag with ranges is returned as expected", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.melee = false;
       item.missile = true;
       item.range.short = 30;
@@ -129,7 +129,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("A slow tag is returned as expected", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.slow = true;
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);
@@ -142,7 +142,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     });
 
     it("A save tag is returned as expected", () => {
-      const item = new OseDataModelWeapon();
+      const item = new VogelfreiDataModelWeapon();
       item.save = "poison";
       expect(item.autoTags.length).equal(3);
       expect(Object.keys(item.autoTags[0]).length).equal(2);

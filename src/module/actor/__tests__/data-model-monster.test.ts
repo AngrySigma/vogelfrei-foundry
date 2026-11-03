@@ -4,15 +4,15 @@
 // eslint-disable-next-line import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
 import { cleanUpActorsByKey, createMockActorKey, getMockActorKey } from "../../../e2e/testUtils";
-import OseDataModelMonster from "../data-model-monster";
+import VogelfreiDataModelMonster from "../data-model-monster";
 
-export const key = "ose.actor.datamodel.monster";
-export const options = { displayName: "OSE: Actor: Data Model: Monster" };
+export const key = "vf.actor.datamodel.monster";
+export const options = { displayName: "VF: Actor: Data Model: Monster" };
 
 const createMockActor = () => createMockActorKey("monster", {}, key);
 
 export default ({ describe, it, expect, after, afterEach, before }: QuenchMethods) => {
-  const dataModel = new OseDataModelMonster();
+  const dataModel = new VogelfreiDataModelMonster();
   const ascendingACSetting = game.settings.get(game.system.id, "ascendingAC");
   const initiativeSetting = game.settings.get(game.system.id, "initiative");
 

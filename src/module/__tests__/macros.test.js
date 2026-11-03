@@ -1,6 +1,6 @@
-import { createOseMacro } from "../macros";
+import { createVogelfreiMacro } from "../macros";
 
-export const key = "ose.macro";
+export const key = "vf.macro";
 export const options = { displayName: "Macro" };
 
 const createMockMacro = () =>
@@ -31,7 +31,7 @@ export default ({ describe, it, expect }) => {
       const data = { type: "Macro", uuid: macro.uuid };
       const macroSlot = 9;
 
-      await createOseMacro(data, macroSlot);
+      await createVogelfreiMacro(data, macroSlot);
       const hotbar = game.user.getHotbarMacros(1);
 
       expect(hotbar[macroSlot - 1].macro).equal(macro);

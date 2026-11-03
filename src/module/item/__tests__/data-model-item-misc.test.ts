@@ -3,14 +3,14 @@
  */
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
-import OseDataModelItem from "../data-model-item";
+import VogelfreiDataModelItem from "../data-model-item";
 
-export const key = "ose.item.datamodel.misc";
-export const options = { displayName: "OSE: Item: Data Model: Misc" };
+export const key = "vf.item.datamodel.misc";
+export const options = { displayName: "VF: Item: Data Model: Misc" };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("manualTags()", () => {
-    const miscItem = new OseDataModelItem();
+    const miscItem = new VogelfreiDataModelItem();
     it("By default return empty array", () => {
       expect(miscItem.manualTags.length).equal(0);
     });
@@ -33,17 +33,17 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("autoTags()", () => {
-    const miscItem = new OseDataModelItem();
+    const miscItem = new VogelfreiDataModelItem();
     it("By default return no auto-tags", () => {
       expect(miscItem.autoTags.length).equal(0);
     });
 
     it("Can create autoTags", () => {
-      miscItem.tags = [{ value: CONFIG.OSE.tags.blunt }];
+      miscItem.tags = [{ value: CONFIG.VF.tags.blunt }];
       expect(miscItem.tags.length).equal(1);
-      expect(miscItem.autoTags[0].label).equal(CONFIG.OSE.tags.blunt);
+      expect(miscItem.autoTags[0].label).equal(CONFIG.VF.tags.blunt);
       expect(miscItem.autoTags[0].icon).equal("fa-hammer-crash");
-      expect(miscItem.autoTags[0].image).equal(`${CONFIG.OSE.assetsPath}/blunt.png`);
+      expect(miscItem.autoTags[0].image).equal(`${CONFIG.VF.assetsPath}/blunt.png`);
     });
   });
 };

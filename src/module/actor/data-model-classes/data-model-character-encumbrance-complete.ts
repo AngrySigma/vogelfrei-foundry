@@ -1,16 +1,16 @@
 /**
- * @file A class representing the "Complete" encumbrance scheme from Old School Essentials: Classic Fantasy
+ * @file The legacy "Complete" weight-based encumbrance scheme.
  */
-import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
-// import { OSE } from '../../config';
+// import { VF } from '../../config';
 
 /**
  * @todo Add template path for encumbrance bar
  * @todo Add template path for inventory item row
  */
-export default class OseDataModelCharacterEncumbranceComplete
-  extends OseDataModelCharacterEncumbrance
+export default class VogelfreiDataModelCharacterEncumbranceComplete
+  extends VogelfreiDataModelCharacterEncumbrance
   implements CharacterEncumbrance
 {
   static templateEncumbranceBar = "";
@@ -29,8 +29,8 @@ export default class OseDataModelCharacterEncumbranceComplete
 
   #weight;
 
-  constructor(max = OseDataModelCharacterEncumbrance.baseEncumbranceCap, items: Item[] = []) {
-    super(OseDataModelCharacterEncumbranceComplete.type, max);
+  constructor(max = VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap, items: Item[] = []) {
+    super(VogelfreiDataModelCharacterEncumbranceComplete.type, max);
     this.#weight = items.reduce((acc, { type, system: { quantity, weight } }: Item) => {
       if (type === "item") return acc + quantity.value * weight;
       if (["weapon", "armor", "container"].includes(type)) return acc + weight;
@@ -44,7 +44,7 @@ export default class OseDataModelCharacterEncumbranceComplete
 
     return new SchemaField({
       variant: new StringField({
-        initial: OseDataModelCharacterEncumbranceComplete.type,
+        initial: VogelfreiDataModelCharacterEncumbranceComplete.type,
       }),
       enabled: new BooleanField({ initial: true }),
       encumbered: new BooleanField({ initial: false }),
@@ -53,7 +53,7 @@ export default class OseDataModelCharacterEncumbranceComplete
       value: new NumberField({ integer: false }),
       max: new NumberField({
         integer: false,
-        initial: OseDataModelCharacterEncumbrance.baseEncumbranceCap,
+        initial: VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap,
       }),
       atFirstBreakpoint: new BooleanField({ initial: false }),
       atSecondBreakpoint: new BooleanField({ initial: false }),
@@ -63,7 +63,7 @@ export default class OseDataModelCharacterEncumbranceComplete
 
   // eslint-disable-next-line class-methods-use-this
   get steps() {
-    return Object.values(OseDataModelCharacterEncumbrance.encumbranceSteps);
+    return Object.values(VogelfreiDataModelCharacterEncumbrance.encumbranceSteps);
   }
 
   get value(): number {

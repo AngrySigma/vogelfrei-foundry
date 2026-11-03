@@ -1,14 +1,14 @@
 /**
  * @file An application used for setting up roll modifiers
  */
-import OSE from "../config";
+import VF from "../config";
 
-export default class OseCharacterModifiers extends FormApplication {
+export default class VogelfreiCharacterModifiers extends FormApplication {
   static get defaultOptions() {
     return foundry.utils.mergeObject(FormApplication.defaultOptions, {
-      classes: ["ose", "dialog", "modifiers"],
+      classes: ["vf", "dialog", "modifiers"],
       id: "sheet-modifiers",
-      template: `${OSE.systemPath()}/templates/actors/dialogs/modifiers-dialog.html`,
+      template: `${VF.systemPath()}/templates/actors/dialogs/modifiers-dialog.html`,
       width: 240,
     });
   }

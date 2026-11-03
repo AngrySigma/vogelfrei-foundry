@@ -1,60 +1,59 @@
 /**
- * @file System-wide configuration settings. Should be reachable elsewhere in the system at `CONFIG.OSE`
+ * @file System-wide configuration settings. Should be reachable elsewhere in the system at `CONFIG.VF`
  */
-import OseDataModelCharacterEncumbranceBasic from "./actor/data-model-classes/data-model-character-encumbrance-basic";
-import OseDataModelCharacterEncumbranceComplete from "./actor/data-model-classes/data-model-character-encumbrance-complete";
-import OseDataModelCharacterEncumbranceDetailed from "./actor/data-model-classes/data-model-character-encumbrance-detailed";
-import OseDataModelCharacterEncumbranceDisabled from "./actor/data-model-classes/data-model-character-encumbrance-disabled";
-import OseDataModelCharacterEncumbranceItemBased from "./actor/data-model-classes/data-model-character-encumbrance-item-based";
-import OseDataModelCharacterEncumbranceVogelfrei from "./actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
+import VogelfreiDataModelCharacterEncumbranceBasic from "./actor/data-model-classes/data-model-character-encumbrance-basic";
+import VogelfreiDataModelCharacterEncumbranceComplete from "./actor/data-model-classes/data-model-character-encumbrance-complete";
+import VogelfreiDataModelCharacterEncumbranceDetailed from "./actor/data-model-classes/data-model-character-encumbrance-detailed";
+import VogelfreiDataModelCharacterEncumbranceDisabled from "./actor/data-model-classes/data-model-character-encumbrance-disabled";
+import VogelfreiDataModelCharacterEncumbranceItemBased from "./actor/data-model-classes/data-model-character-encumbrance-item-based";
+import VogelfreiDataModelCharacterEncumbranceVogelfrei from "./actor/data-model-classes/data-model-character-encumbrance-vogelfrei";
 import { ITEM_ENCUMBRANCE_TYPES } from "./actor/encumbrance-points";
-import { CLASSIC_FANTASY_CLASSES } from "./classes/classic-fantasy-classes";
 import { BARDING_POINTS } from "./party/travel";
 
 /**
- * The shape of the system's global configuration object, `OSE` (exposed at
- * runtime as `CONFIG.OSE`). Most string values are localization keys to be
+ * The shape of the system's global configuration object, `VF` (exposed at
+ * runtime as `CONFIG.VF`). Most string values are localization keys to be
  * passed through `game.i18n`, not display text. Several derived unions below
  * (e.g. {@link Save}, {@link Attribute}) are keyed off this shape.
  */
-export type OseConfig = typeof OSE;
+export type VogelfreiConfig = typeof VF;
 
 /** An ability-score key: `strength`, `intelligence`, `willpower`, `agility`, `toughness`, or `leadership`. */
-export type Attribute = keyof OseConfig["scores"];
+export type Attribute = keyof VogelfreiConfig["scores"];
 
 /** An exploration skill key (e.g. listen at doors, open doors, forage, hunt). */
-export type ExplorationSkill = keyof OseConfig["exploration_skills"];
+export type ExplorationSkill = keyof VogelfreiConfig["exploration_skills"];
 
 /** How a roll is compared against its target: exact result, at or above, or at or below. */
-export type RollType = keyof OseConfig["roll_type"];
+export type RollType = keyof VogelfreiConfig["roll_type"];
 
 /** A saving-throw category key: `paralysis`, `poison`, `breath`, `device`, or `magic`, in the book's order. */
-export type Save = keyof OseConfig["saves_long"];
+export type Save = keyof VogelfreiConfig["saves_long"];
 
 /** An armour category key: `unarmored`, `light`, `heavy`, or `shield`. */
-export type Armor = keyof OseConfig["armor"];
+export type Armor = keyof VogelfreiConfig["armor"];
 
 /** An alignment key: `order`, `neutrality`, or `chaos`. */
-export type Alignment = keyof OseConfig["alignments"];
+export type Alignment = keyof VogelfreiConfig["alignments"];
 
 /** A UI colour key used by the system's theming. */
-export type Color = keyof OseConfig["colors"];
+export type Color = keyof VogelfreiConfig["colors"];
 
 /** A weapon/item quality tag key (e.g. `melee`, `missile`, `slow`, `twohanded`). */
-export type InventoryItemTag = keyof OseConfig["tags"];
+export type InventoryItemTag = keyof VogelfreiConfig["tags"];
 
 /** An encumbrance-scheme key: `vogelfrei`, `basic`, `detailed`, `complete`, `disabled`, or `itembased`. */
-export type EncumbranceOption = keyof OseConfig["encumbranceOptions"];
+export type EncumbranceOption = keyof VogelfreiConfig["encumbranceOptions"];
 
 /** Which token(s) damage is applied to: the `selected`, the `targeted`, or the `originalTarget`. */
-export type ApplyDamageOption = keyof OseConfig["apply_damage_options"];
+export type ApplyDamageOption = keyof VogelfreiConfig["apply_damage_options"];
 
-export const OSE = {
+export const VF = {
   /** Path for system dist */
   systemPath(): string {
     return `${this.systemRoot}/dist`;
   },
-  /** Root path for OSE system */
+  /** Root path for the Vogelfrei system */
   get systemRoot(): string {
     return `/systems/${game.system.id}`;
   },
@@ -67,21 +66,17 @@ export const OSE = {
    * its data-model class. Falls back to the disabled scheme if unset.
    */
   get encumbrance() {
-    const variant = game.settings.get(game.system.id, "encumbranceOption") as keyof typeof OSE.encumbranceOptions;
+    const variant = game.settings.get(game.system.id, "encumbranceOption") as keyof typeof VF.encumbranceOptions;
     return this.encumbranceOptions[variant] || this.encumbranceOptions.disabled;
-  },
-  /** Character class definitions, grouped by rules setting (e.g. classic fantasy). */
-  classes: {
-    classic: CLASSIC_FANTASY_CLASSES,
   },
   /** The available encumbrance schemes, keyed by setting value to their data-model class. */
   encumbranceOptions: {
-    basic: OseDataModelCharacterEncumbranceBasic,
-    detailed: OseDataModelCharacterEncumbranceDetailed,
-    complete: OseDataModelCharacterEncumbranceComplete,
-    disabled: OseDataModelCharacterEncumbranceDisabled,
-    itembased: OseDataModelCharacterEncumbranceItemBased,
-    vogelfrei: OseDataModelCharacterEncumbranceVogelfrei,
+    basic: VogelfreiDataModelCharacterEncumbranceBasic,
+    detailed: VogelfreiDataModelCharacterEncumbranceDetailed,
+    complete: VogelfreiDataModelCharacterEncumbranceComplete,
+    disabled: VogelfreiDataModelCharacterEncumbranceDisabled,
+    itembased: VogelfreiDataModelCharacterEncumbranceItemBased,
+    vogelfrei: VogelfreiDataModelCharacterEncumbranceVogelfrei,
   },
   /**
    * How an Item counts towards encumbrance, as localization keys. See
@@ -253,64 +248,64 @@ export const OSE = {
   auto_tags: {
     get melee() {
       return {
-        label: CONFIG.OSE.tags.melee,
-        image: `${CONFIG.OSE.assetsPath}/melee.png`,
+        label: CONFIG.VF.tags.melee,
+        image: `${CONFIG.VF.assetsPath}/melee.png`,
         icon: "fa-sword",
       };
     },
     get missile() {
       return {
-        label: CONFIG.OSE.tags.missile,
-        image: `${CONFIG.OSE.assetsPath}/missile.png`,
+        label: CONFIG.VF.tags.missile,
+        image: `${CONFIG.VF.assetsPath}/missile.png`,
         icon: "fa-bow-arrow",
       };
     },
     get slow() {
       return {
-        label: CONFIG.OSE.tags.slow,
-        image: `${CONFIG.OSE.assetsPath}/slow.png`,
+        label: CONFIG.VF.tags.slow,
+        image: `${CONFIG.VF.assetsPath}/slow.png`,
         icon: "fa-weight-hanging",
       };
     },
     get twohanded() {
       return {
-        label: CONFIG.OSE.tags.twohanded,
-        image: `${CONFIG.OSE.assetsPath}/twohanded.png`,
+        label: CONFIG.VF.tags.twohanded,
+        image: `${CONFIG.VF.assetsPath}/twohanded.png`,
         icon: "fa-hands-holding",
       };
     },
     get blunt() {
       return {
-        label: CONFIG.OSE.tags.blunt,
-        image: `${CONFIG.OSE.assetsPath}/blunt.png`,
+        label: CONFIG.VF.tags.blunt,
+        image: `${CONFIG.VF.assetsPath}/blunt.png`,
         icon: "fa-hammer-crash",
       };
     },
     get brace() {
       return {
-        label: CONFIG.OSE.tags.brace,
-        image: `${CONFIG.OSE.assetsPath}/brace.png`,
+        label: CONFIG.VF.tags.brace,
+        image: `${CONFIG.VF.assetsPath}/brace.png`,
         icon: "fa-block-brick",
       };
     },
     get splash() {
       return {
-        label: CONFIG.OSE.tags.splash,
-        image: `${CONFIG.OSE.assetsPath}/splash.png`,
+        label: CONFIG.VF.tags.splash,
+        image: `${CONFIG.VF.assetsPath}/splash.png`,
         icon: "fa-burst",
       };
     },
     get reload() {
       return {
-        label: CONFIG.OSE.tags.reload,
-        image: `${CONFIG.OSE.assetsPath}/reload.png`,
+        label: CONFIG.VF.tags.reload,
+        image: `${CONFIG.VF.assetsPath}/reload.png`,
         icon: "fa-gear",
       };
     },
     get charge() {
       return {
-        label: CONFIG.OSE.tags.charge,
-        image: `${CONFIG.OSE.assetsPath}/charge.png`,
+        label: CONFIG.VF.tags.charge,
+        image: `${CONFIG.VF.assetsPath}/charge.png`,
         icon: "fa-person-running",
       };
     },
@@ -318,31 +313,31 @@ export const OSE = {
   /** Icon/image path for each item tag, derived on access. */
   tag_images: {
     get melee() {
-      return `${CONFIG.OSE.assetsPath}/melee.png`;
+      return `${CONFIG.VF.assetsPath}/melee.png`;
     },
     get missile() {
       return "fa-bow-arrow";
     },
     get slow() {
-      return `${CONFIG.OSE.assetsPath}/slow.png`;
+      return `${CONFIG.VF.assetsPath}/slow.png`;
     },
     get twohanded() {
-      return `${CONFIG.OSE.assetsPath}/twohanded.png`;
+      return `${CONFIG.VF.assetsPath}/twohanded.png`;
     },
     get blunt() {
-      return `${CONFIG.OSE.assetsPath}/blunt.png`;
+      return `${CONFIG.VF.assetsPath}/blunt.png`;
     },
     get brace() {
-      return `${CONFIG.OSE.assetsPath}/brace.png`;
+      return `${CONFIG.VF.assetsPath}/brace.png`;
     },
     get splash() {
-      return `${CONFIG.OSE.assetsPath}/splash.png`;
+      return `${CONFIG.VF.assetsPath}/splash.png`;
     },
     get reload() {
-      return `${CONFIG.OSE.assetsPath}/reload.png`;
+      return `${CONFIG.VF.assetsPath}/reload.png`;
     },
     get charge() {
-      return `${CONFIG.OSE.assetsPath}/charge.png`;
+      return `${CONFIG.VF.assetsPath}/charge.png`;
     },
   },
   /**
@@ -399,8 +394,8 @@ export const OSE = {
       b: 3,
       s: 6,
     },
-    // Monsters and NPCs.md stops at "19+", every save 2. OSE carried on to
-    // 22 with Spells at 4 in between; the book has no such row.
+    // Monsters and NPCs.md stops at "19+", every save 2. Earlier versions
+    // carried on to 22 with Spells at 4 in between; the book has no such row.
     19: {
       d: 2,
       w: 2,
@@ -430,4 +425,4 @@ export const OSE = {
   },
 };
 
-export default OSE;
+export default VF;

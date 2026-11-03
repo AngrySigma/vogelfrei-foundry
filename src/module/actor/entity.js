@@ -1,6 +1,6 @@
 import skipRollDialogCheck from "../helpers-behaviour";
-import OseDice from "../helpers-dice";
-import OseItem from "../item/entity";
+import VogelfreiDice from "../helpers-dice";
+import VogelfreiItem from "../item/entity";
 import { WEAPON_DAMAGE } from "../item/weapon-damage";
 import { applyDamageToPools } from "./damage";
 import { explorationSkillTotal, skillDice, skillRollMode } from "./exploration-skills";
@@ -16,7 +16,7 @@ const removeFalsyElements = (arr) => arr.filter((b) => b);
 /**
  * Damage for a blow struck with no weapon Item behind it: a fist, a rock, a
  * chair leg. Melee Weapons.md lists Improvised at d8-3, at least 1, length 0.
- * OSE defaulted this to 1d6.
+ * Earlier versions defaulted this to 1d6.
  */
 const IMPROVISED_DAMAGE = WEAPON_DAMAGE.improvised;
 
@@ -25,12 +25,12 @@ const IMPROVISED_DAMAGE = WEAPON_DAMAGE.improvised;
  * Firearms.md and Curious Firearms.md "Firearm"; a hand-made Item takes the
  * same tag to be treated as one.
  *
- * @param {OseItem | undefined} item - The weapon, if any.
+ * @param {VogelfreiItem | undefined} item - The weapon, if any.
  * @returns {boolean} True when the weapon is tagged as a firearm.
  */
 const isFirearm = (item) => (item?.system?.tags ?? []).some(({ value }) => String(value).toLowerCase() === "firearm");
 
-export default class OseActor extends Actor {
+export default class VogelfreiActor extends Actor {
   static migrateData(source) {
     // Fixing missing img
     if (source?.img === "") {
@@ -50,15 +50,12 @@ export default class OseActor extends Actor {
 
   async update(data, options = {}) {
     const newData = { ...data };
-    const {
-      "system.thac0.bba": bbaValue,
-      "system.thac0.value": thac0Value,
-    } = newData;
+    const { "system.thac0.bba": bbaValue, "system.thac0.value": thac0Value } = newData;
 
-    // OSE kept ac and aac mirrored, each 19 minus the other, so a world could
-    // be played either way round. Vogelfrei is ascending-only and its AC is
-    // derived from armour, Agility, Weapon Skill and a modifier, so mirroring
-    // it would write nonsense over the modifier the sheet just set.
+    // Earlier versions kept ac and aac mirrored, each 19 minus the other, so a
+    // world could be played either way round. Vogelfrei is ascending-only and
+    // its AC is derived from armour, Agility, Weapon Skill and a modifier, so
+    // mirroring it would write nonsense over the modifier the sheet just set.
 
     // Compute Thac0 from BBA
     if (thac0Value !== undefined) {
@@ -73,7 +70,7 @@ export default class OseActor extends Actor {
   async createEmbeddedDocuments(embeddedName, data = [], context = {}) {
     data.forEach((item) => {
       if (item.img === undefined) {
-        item.img = OseItem.defaultIcons[item.type];
+        item.img = VogelfreiItem.defaultIcons[item.type];
       }
     });
     return super.createEmbeddedDocuments(embeddedName, data, context);
@@ -146,7 +143,7 @@ export default class OseActor extends Actor {
     // Compute saves
     let saves = {};
     for (let i = 0; i <= parsedHd; i++) {
-      const tmp = CONFIG.OSE.monster_saves[i];
+      const tmp = CONFIG.VF.monster_saves[i];
       if (tmp) {
         saves = tmp;
       }
@@ -154,9 +151,9 @@ export default class OseActor extends Actor {
 
     // Compute Thac0
     let thac0 = 20;
-    Object.keys(CONFIG.OSE.monster_thac0).forEach((k) => {
+    Object.keys(CONFIG.VF.monster_thac0).forEach((k) => {
       if (hd < Number.parseInt(k, 10)) return;
-      thac0 = CONFIG.OSE.monster_thac0[k];
+      thac0 = CONFIG.VF.monster_thac0[k];
     });
 
     this.update({
@@ -214,7 +211,7 @@ export default class OseActor extends Actor {
       details: game.i18n.format("VF.roll.details.save", { save: label }),
     };
 
-    const rollMethod = actorType === "character" ? OseDice.RollSave : OseDice.Roll;
+    const rollMethod = actorType === "character" ? VogelfreiDice.RollSave : VogelfreiDice.Roll;
 
     // Roll and return
     return rollMethod({
@@ -243,7 +240,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -269,7 +266,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -308,7 +305,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -342,7 +339,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -373,7 +370,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -404,7 +401,7 @@ export default class OseActor extends Actor {
     }
 
     const label = game.i18n.localize("VF.roll.staminaDie");
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: [`max(${die} + ${this.system.scores.toughness.mod}, 1)`],
       data: { actor: this, roll: { type: "hitdice" } },
@@ -440,7 +437,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -456,7 +453,7 @@ export default class OseActor extends Actor {
    * @param {object} options - roll options
    * @param {Event} [options.event] - the originating UI event, used to position the roll dialog
    * @param {boolean} [options.fastForward] - whether to skip the roll dialog
-   * @returns {OseDice.Roll | undefined} - the roll, or nothing for a non-character actor
+   * @returns {VogelfreiDice.Roll | undefined} - the roll, or nothing for a non-character actor
    */
   rollExploration(expl, options = {}) {
     const actorType = this.type;
@@ -483,7 +480,7 @@ export default class OseActor extends Actor {
     };
 
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data,
@@ -495,8 +492,6 @@ export default class OseActor extends Actor {
   }
 
   async rollDamage(attData, options = {}) {
-    const data = this.system;
-
     const rollData = {
       actor: this,
       item: attData.item,
@@ -513,12 +508,12 @@ export default class OseActor extends Actor {
     }
 
     // Damage is the weapon die alone. Combat Actions.md step 4 adds no ability
-    // modifier to it, where OSE added Strength in melee. To restore it, push
+    // modifier to it, where earlier versions added Strength in melee. To restore it, push
     // data.scores.strength.mod here and in rollAttack's dmgParts -- both, or
     // the same weapon deals different damage depending on which path rolled it.
 
     // Damage roll
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: dmgParts,
       data: rollData,
@@ -547,15 +542,15 @@ export default class OseActor extends Actor {
    * Constructs the attack roll formula for an attack
    *
    * @param {object} attData - the attack data
-   * @param {OseItem} attData.item - the item being used in the attack
-   * @param {OseActor} attData.actor - this actor (at least it should be!)
+   * @param {VogelfreiItem} attData.item - the item being used in the attack
+   * @param {VogelfreiActor} attData.actor - this actor (at least it should be!)
    * @param {object} attData.roll - the attack roll data
    * @param {string} attData.roll.save - the save roll that may be used against the attack
-   * @param {OseActor} attData.roll.target - the target of the attack
+   * @param {VogelfreiActor} attData.roll.target - the target of the attack
    * @param {object} options - the type of attack and whether to skip the dialog
    * @param {string} options.type - the type of attack, i.e. melee or missile
    * @param {boolean} options.skipDialog - whether to skip the dialog
-   * @returns {OseDice.Roll} - the attack roll with completed rollParts and other data
+   * @returns {VogelfreiDice.Roll} - the attack roll with completed rollParts and other data
    */
   rollAttack(attData, options = {}) {
     const data = this.system;
@@ -615,7 +610,7 @@ export default class OseActor extends Actor {
         acVariant: firearm ? "firearm" : undefined,
         firearm,
         // Capped against the target's Armour Rating once the target is known,
-        // in OseDice.sendAttackRoll. A gun has none.
+        // in VogelfreiDice.sendAttackRoll. A gun has none.
         armourModifier: firearm ? 0 : (attData.item?.system?.armourModifier ?? 0),
         // Press and Defensive Fighting want Weapon Skill 1+ and a melee blow.
         stances: this.type === "character" && !isMissile && (data.ws ?? 0) >= 1,
@@ -625,14 +620,14 @@ export default class OseActor extends Actor {
       },
     };
     // Roll and return
-    return OseDice.Roll({
+    return VogelfreiDice.Roll({
       event: options.event,
       parts: rollParts,
       data: rollData,
       skipDialog: options.skipDialog,
       speaker: ChatMessage.getSpeaker({ actor: this }),
       flavor: label,
-      flags: { ose: { roll: "attack", itemId: attData.item?._id } },
+      flags: { vogelfrei: { roll: "attack", itemId: attData.item?._id } },
       title: label,
     });
   }

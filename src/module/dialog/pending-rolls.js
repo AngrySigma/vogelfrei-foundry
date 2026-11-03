@@ -5,18 +5,18 @@
  * closing the generator cannot buy a fresh one. That is the point, but it needs
  * an override: a Referee who agrees to a rewrite has to be able to release one.
  */
-import OseCharacterCreator, { scoreModifier } from "./character-creation";
-import OSE from "../config";
+import VF from "../config";
+import VogelfreiCharacterCreator, { scoreModifier } from "./character-creation";
 
 const ABILITIES = ["strength", "intelligence", "willpower", "agility", "toughness", "leadership"];
 
-export default class OsePendingRolls extends FormApplication {
+export default class VogelfreiPendingRolls extends FormApplication {
   static get defaultOptions() {
     return foundry.utils.mergeObject(FormApplication.defaultOptions, {
-      classes: ["ose", "dialog", "pending-rolls"],
+      classes: ["vf", "dialog", "pending-rolls"],
       id: "vf-pending-rolls",
       title: game.i18n.localize("VF.dialog.pendingRolls"),
-      template: `${OSE.systemPath()}/templates/apps/pending-rolls.html`,
+      template: `${VF.systemPath()}/templates/apps/pending-rolls.html`,
       width: 420,
       height: "auto",
     });
@@ -24,7 +24,7 @@ export default class OsePendingRolls extends FormApplication {
 
   getData() {
     const rows = game.users
-      .map((user) => ({ user, pending: user.getFlag(game.system.id, OseCharacterCreator.FLAG) }))
+      .map((user) => ({ user, pending: user.getFlag(game.system.id, VogelfreiCharacterCreator.FLAG) }))
       .filter(({ pending }) => pending?.scores && Object.keys(pending.scores).length > 0)
       .map(({ user, pending }) => {
         const scores = ABILITIES.map((key) => ({
@@ -54,7 +54,7 @@ export default class OsePendingRolls extends FormApplication {
       const { userId } = ev.currentTarget.dataset;
       const user = game.users.get(userId);
       if (!user) return;
-      await user.unsetFlag(game.system.id, OseCharacterCreator.FLAG);
+      await user.unsetFlag(game.system.id, VogelfreiCharacterCreator.FLAG);
       ui.notifications?.info(game.i18n.format("VF.dialog.releasedFor", { name: user.name }));
       this.render();
     });
@@ -69,7 +69,7 @@ export default class OsePendingRolls extends FormApplication {
       if (!confirmed) return;
       for (const user of game.users) {
         // eslint-disable-next-line no-await-in-loop
-        await user.unsetFlag(game.system.id, OseCharacterCreator.FLAG);
+        await user.unsetFlag(game.system.id, VogelfreiCharacterCreator.FLAG);
       }
       this.render();
     });
