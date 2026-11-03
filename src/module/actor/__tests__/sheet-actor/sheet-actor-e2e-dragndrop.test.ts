@@ -16,12 +16,12 @@ import {
   waitForInput,
   waitUntil, // eslint-disable-next-line prettier/prettier
 } from "../../../../e2e/testUtils";
-import type OseItem from "../../../item/entity";
-import type OseActor from "../../entity";
+import type VogelfreiItem from "../../../item/entity";
+import type VogelfreiActor from "../../entity";
 
-export const key = "ose.actor.sheet.e2e.dragndrop";
+export const key = "vf.actor.sheet.e2e.dragndrop";
 export const options = {
-  displayName: "OSE: Actor: Sheet E2E Drag'n'Drop",
+  displayName: "VF: Actor: Sheet E2E Drag'n'Drop",
   preSelected: true,
 };
 
@@ -29,7 +29,7 @@ export const options = {
 /* Types for storing data between tests          */
 /* --------------------------------------------- */
 type DragNDropItem = {
-  item: OseItem | undefined;
+  item: VogelfreiItem | undefined;
   itemElement: Element | null;
 };
 
@@ -81,13 +81,13 @@ const waitForStored = (items: DragNDropItems) =>
   waitUntil(() => {
     const container = items.target.item;
     if (!container?.system.itemIds.length) return false;
-    return !!container.parent?.items.some((item: OseItem) => item.system.containerId === container.id);
+    return !!container.parent?.items.some((item: VogelfreiItem) => item.system.containerId === container.id);
   });
 
 export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
   describe("_onDragStart(event)", () => {
     it("populates dataTransfer correctly", async () => {
-      const actor = (await createMockActorKey("character", {}, key)) as OseActor;
+      const actor = (await createMockActorKey("character", {}, key)) as VogelfreiActor;
       expect(actor).not.undefined;
 
       await actor.sheet?.render(true);
@@ -241,12 +241,12 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           documents.compendium?.render(true);
 
           const inventoryTab = await waitForElement<HTMLElement>(
-            `#OseActorSheetCharacter-Actor-${documents.actor.id} nav.sheet-tabs a[data-tab="inventory"]`,
+            `#VogelfreiActorSheetCharacter-Actor-${documents.actor.id} nav.sheet-tabs a[data-tab="inventory"]`,
           );
           inventoryTab?.click();
 
           items.target.itemElement = await waitForElement(
-            `#OseActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.target.item?.id}"]`,
+            `#VogelfreiActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.target.item?.id}"]`,
           );
         });
 
@@ -257,13 +257,13 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           [items.source.item] = await createActorTestItem(documents.actor, itemType);
 
           items.source.itemElement = await waitForElement(
-            `#OseActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.source.item?.id}"]`,
+            `#VogelfreiActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.source.item?.id}"]`,
           );
 
           if (!items.target.itemElement?.isConnected) {
             // Reallocate the target item element after the re-render.
             items.target.itemElement = await waitForElement(
-              `#OseActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.target.item?.id}"]`,
+              `#VogelfreiActorSheetCharacter-Actor-${documents.actor.id} .inventory li.item[data-item-id="${items.target.item?.id}"]`,
             );
           }
 
@@ -283,7 +283,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           dragNDropSanityChecks(documents, items);
 
           // Create item in sidebar
-          items.source.item = (await createWorldTestItem(itemType)) as OseItem;
+          items.source.item = (await createWorldTestItem(itemType)) as VogelfreiItem;
 
           items.source.itemElement = await waitForElement(`#items li.item[data-entry-id="${items.source.item?.id}"]`);
 
@@ -296,7 +296,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           await waitForStored(items);
 
           // Store new item as it recreates in the character sheet
-          items.source.item = documents.actor?.items.getName(items.source.item?.name) as OseItem;
+          items.source.item = documents.actor?.items.getName(items.source.item?.name) as VogelfreiItem;
 
           // Perform post-flight checks
           dragNDropCasePostflightCheck(documents, items);
@@ -306,7 +306,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           dragNDropSanityChecks(documents, items);
 
           // Create item in compendium
-          const worldItem = (await createWorldTestItem(itemType)) as OseItem;
+          const worldItem = (await createWorldTestItem(itemType)) as VogelfreiItem;
           items.source.item = await documents.compendium?.importDocument(worldItem);
 
           items.source.itemElement = await waitForElement(
@@ -322,7 +322,7 @@ export default ({ describe, it, expect, after, beforeEach }: QuenchMethods) => {
           await waitForStored(items);
 
           // Store new item as it recreates in the character sheet
-          items.source.item = documents.actor?.items.getName(items.source.item?.name) as OseItem;
+          items.source.item = documents.actor?.items.getName(items.source.item?.name) as VogelfreiItem;
 
           // Perform post-flight checks
           dragNDropCasePostflightCheck(documents, items);

@@ -1,4 +1,4 @@
-export class OSECombatant extends Combatant {
+export class VFCombatant extends Combatant {
   static INITIATIVE_VALUE_SLOWED = -789;
 
   static INITIATIVE_VALUE_DEFEATED = -790;
@@ -34,8 +34,8 @@ export class OSECombatant extends Combatant {
 
   getInitiativeRoll(formula: string) {
     let term = formula || CONFIG.Combat.initiative.formula;
-    if (this.isSlow) term = `${OSECombatant.INITIATIVE_VALUE_SLOWED}`;
-    if (this.isDefeated) term = `${OSECombatant.INITIATIVE_VALUE_DEFEATED}`;
+    if (this.isSlow) term = `${VFCombatant.INITIATIVE_VALUE_SLOWED}`;
+    if (this.isDefeated) term = `${VFCombatant.INITIATIVE_VALUE_DEFEATED}`;
     const rollData = this.actor?.getRollData() || {};
     return new Roll(term, rollData);
   }

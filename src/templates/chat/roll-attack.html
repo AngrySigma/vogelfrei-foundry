@@ -1,7 +1,7 @@
-<div class="ose chat-card item-card" data-actor-id="{{data.actor._id}}" data-item-id="{{data.item._id}}"
+<div class="vf chat-card item-card" data-actor-id="{{data.actor._id}}" data-item-id="{{data.item._id}}"
     {{#if result.isCritical}}data-critical="true" {{/if}}
     {{#if tokenId}}data-token-id="{{tokenId}}" {{/if}}>
-    <div class="ose chat-block">
+    <div class="vf chat-block">
         <div class="flexrow chat-header">
             <div class="chat-title">
                 <h2>{{title}}</h2>
@@ -21,7 +21,7 @@
             <div class="chat-details">
                 <div class="roll-result">{{{result.details}}}</div>
             </div>
-            {{#if rollOSE}}<div>{{{rollOSE}}}</div>{{/if}}
+            {{#if rollVF}}<div>{{{rollVF}}}</div>{{/if}}
             {{#if result.isSuccess}}
             <div class="chat-details">
                 <div class="roll-result"><b>{{localize 'VF.messages.InflictsDamage'}}</b></div>

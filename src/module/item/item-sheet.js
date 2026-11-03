@@ -1,7 +1,7 @@
 /**
  * @file The system-level sheet for items of any type
  */
-import OSE from "../config";
+import VF from "../config";
 import { formatMoney, parseMoney } from "../money";
 import { WEAPON_DAMAGE, weaponDamageGrade } from "./weapon-damage";
 
@@ -14,7 +14,7 @@ const MONEY_FIELDS = ["system.cost", "system.costRural"];
 /**
  * Extend the basic ItemSheet with some very simple modifications
  */
-export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
+export default class VogelfreiItemSheet extends foundry.appv1.sheets.ItemSheet {
   /**
    * Extend and override the default options used by the Simple Item Sheet
    *
@@ -22,7 +22,7 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
    */
   static get defaultOptions() {
     return foundry.utils.mergeObject(foundry.appv1.sheets.ItemSheet.defaultOptions, {
-      classes: ["ose", "sheet", "item"],
+      classes: ["vf", "sheet", "item"],
       width: 520,
       height: 390,
       resizable: true,
@@ -40,7 +40,7 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
 
   /** @override */
   get template() {
-    const path = `${OSE.systemPath()}/templates/items`;
+    const path = `${VF.systemPath()}/templates/items`;
     return `${path}/${this.item.type}-sheet.html`;
   }
 
@@ -54,7 +54,7 @@ export default class OseItemSheet extends foundry.appv1.sheets.ItemSheet {
     const { data } = super.getData();
     data.editable = this.document.sheet.isEditable;
     data.config = {
-      ...CONFIG.OSE,
+      ...CONFIG.VF,
       encumbrance: game.settings.get(game.system.id, "encumbranceOption"),
     };
     data.enriched = {

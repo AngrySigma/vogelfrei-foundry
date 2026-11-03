@@ -4,16 +4,16 @@
 // eslint-disable-next-line import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
 import { cleanUpActorsByKey, createMockActorKey, getMockActorKey } from "../../../e2e/testUtils";
-import OseDataModelCharacter from "../data-model-character";
-import OseDataModelCharacterScores from "../data-model-classes/data-model-character-scores";
+import VogelfreiDataModelCharacter from "../data-model-character";
+import VogelfreiDataModelCharacterScores from "../data-model-classes/data-model-character-scores";
 
-export const key = "ose.actor.datamodel.character";
-export const options = { displayName: "OSE: Actor: Data Model: Character" };
+export const key = "vf.actor.datamodel.character";
+export const options = { displayName: "VF: Actor: Data Model: Character" };
 
 const createMockActor = () => createMockActorKey("character", {}, key);
 
 export default ({ describe, it, expect, after, before }: QuenchMethods) => {
-  const dataModel = new OseDataModelCharacter();
+  const dataModel = new VogelfreiDataModelCharacter();
   const ascendingACSetting = game.settings.get(game.system.id, "ascendingAC");
   const initiativeSetting = game.settings.get(game.system.id, "initiative");
   const encumbranceSetting = game.settings.get(game.system.id, "encumbranceOption");
@@ -134,7 +134,20 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     const recursiveFields = [
       { field: "wounds", subFields: ["hd", "value", "max"] },
       { field: "stamina", subFields: ["value", "max"] },
-      { field: "exploration", subFields: ["architecture", "bushcraft", "climbing", "languages", "search", "sleightOfHand", "stealth", "tinkering", "doors"] },
+      {
+        field: "exploration",
+        subFields: [
+          "architecture",
+          "bushcraft",
+          "climbing",
+          "languages",
+          "search",
+          "sleightOfHand",
+          "stealth",
+          "tinkering",
+          "doors",
+        ],
+      },
       { field: "retainer", subFields: ["enabled", "loyalty", "wage"] },
     ];
     recursiveFields.forEach(({ field, subFields }) => {
@@ -734,7 +747,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       before(async () => {
         await game.settings.set(game.system.id, "initiative", "individual");
         // Initialise the scores with a "standard" dexterity score
-        dataModel.scores = new OseDataModelCharacterScores({
+        dataModel.scores = new VogelfreiDataModelCharacterScores({
           agility: { value: 9, bonus: 0, mod: 0 },
         });
       });
@@ -761,7 +774,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
       });
 
       it("returns correctly with dex mod init set", async () => {
-        // See the Ability Scores section in the OSE SRD for how dexterity affects initiative
+        // Agility modifiers apply directly to initiative.
         dataModel.scores.agility = { value: 18 };
         expect(dataModel.init).equal(2);
         dataModel.scores.agility = { value: 9 };
@@ -789,12 +802,12 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     const bookOrder = ["paralysis", "poison", "breath", "device", "magic"];
 
     it("Lists the saves in the book's order in config", () => {
-      expect(Object.keys(CONFIG.OSE.saves_short)).deep.equal(bookOrder);
-      expect(Object.keys(CONFIG.OSE.saves_long)).deep.equal(bookOrder);
+      expect(Object.keys(CONFIG.VF.saves_short)).deep.equal(bookOrder);
+      expect(Object.keys(CONFIG.VF.saves_long)).deep.equal(bookOrder);
     });
 
     it("Declares the saves in the book's order in the schema", () => {
-      const saves = OseDataModelCharacter.defineSchema().saves as unknown as { fields: Record<string, unknown> };
+      const saves = VogelfreiDataModelCharacter.defineSchema().saves as unknown as { fields: Record<string, unknown> };
       expect(Object.keys(saves.fields)).deep.equal(bookOrder);
     });
   });

@@ -41,7 +41,7 @@ export interface CharacterEncumbrance {
 /**
  * A class to handle character encumbrance.
  */
-export default class OseDataModelCharacterEncumbrance implements CharacterEncumbrance {
+export default class VogelfreiDataModelCharacterEncumbrance implements CharacterEncumbrance {
   static baseEncumbranceCap = 1600;
 
   // Default encumbrance steps used by the 'complete' and 'detailed' encumbrance variants
@@ -64,7 +64,7 @@ export default class OseDataModelCharacterEncumbrance implements CharacterEncumb
    * @param {number} max - The max weight this character can carry
    * @param {Item[]} items - The items this character is carrying. Note: we're not using this in the base class.
    */
-  constructor(variant = "disabled", max = OseDataModelCharacterEncumbrance.baseEncumbranceCap) {
+  constructor(variant = "disabled", max = VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap) {
     this.#encumbranceVariant = variant;
     this.#max = max;
   }
@@ -82,7 +82,7 @@ export default class OseDataModelCharacterEncumbrance implements CharacterEncumb
       value: new NumberField({ integer: false }),
       max: new NumberField({
         integer: false,
-        initial: OseDataModelCharacterEncumbrance.baseEncumbranceCap,
+        initial: VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap,
       }),
       atFirstBreakpoint: new BooleanField({ initial: false }),
       atSecondBreakpoint: new BooleanField({ initial: false }),
@@ -124,20 +124,20 @@ export default class OseDataModelCharacterEncumbrance implements CharacterEncumb
   }
 
   get atThirdBreakpoint() {
-    return this.pct > OseDataModelCharacterEncumbrance.encumbranceSteps.half;
+    return this.pct > VogelfreiDataModelCharacterEncumbrance.encumbranceSteps.half;
   }
 
   get atSecondBreakpoint() {
-    return this.pct > OseDataModelCharacterEncumbrance.encumbranceSteps.threeEighths;
+    return this.pct > VogelfreiDataModelCharacterEncumbrance.encumbranceSteps.threeEighths;
   }
 
   get atFirstBreakpoint() {
-    return this.pct > OseDataModelCharacterEncumbrance.encumbranceSteps.quarter;
+    return this.pct > VogelfreiDataModelCharacterEncumbrance.encumbranceSteps.quarter;
   }
 
   // eslint-disable-next-line class-methods-use-this
   get defaultMax() {
-    return (this.constructor as typeof OseDataModelCharacterEncumbrance).baseEncumbranceCap;
+    return (this.constructor as typeof VogelfreiDataModelCharacterEncumbrance).baseEncumbranceCap;
   }
 
   get alternateMax() {

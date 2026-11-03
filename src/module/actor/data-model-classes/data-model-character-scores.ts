@@ -73,7 +73,7 @@ export interface CharacterScores {
 /**
  * A class representing a character's ability scores
  */
-export default class OseDataModelCharacterScores implements CharacterScores {
+export default class VogelfreiDataModelCharacterScores implements CharacterScores {
   /**
    * Standard modifiers, from -3 to 3.
    *
@@ -201,12 +201,11 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #strMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#strength.value,
     ) as number;
   }
-
 
   get intelligence() {
     return {
@@ -226,22 +225,22 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #intMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#intelligence.value,
     ) as number;
   }
 
   get #intLiteracyMod(): string {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.literacyMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.literacyMods,
       this.#intelligence.value,
     ) as string;
   }
 
   get #intSpokenLanguagesMod(): string {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.spokenMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.spokenMods,
       this.#intelligence.value,
     ) as string;
   }
@@ -262,8 +261,8 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #wisMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#willpower.value,
     ) as number;
   }
@@ -285,15 +284,15 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #dexMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#agility.value,
     ) as number;
   }
 
   get #dexInitMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.cappedAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.cappedAttributeMods,
       this.#agility.value,
     ) as number;
   }
@@ -314,8 +313,8 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #conMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#toughness.value,
     ) as number;
   }
@@ -339,15 +338,15 @@ export default class OseDataModelCharacterScores implements CharacterScores {
   }
 
   get #chaMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.standardAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.standardAttributeMods,
       this.#leadership.value,
     ) as number;
   }
 
   get #chaReactionMod(): number {
-    return OseDataModelCharacterScores.valueFromTable(
-      OseDataModelCharacterScores.cappedAttributeMods,
+    return VogelfreiDataModelCharacterScores.valueFromTable(
+      VogelfreiDataModelCharacterScores.cappedAttributeMods,
       this.#leadership.value,
     ) as number;
   }

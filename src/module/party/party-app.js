@@ -7,11 +7,14 @@
  * another member puts it ahead of them. Each member carries the shares an XP
  * split divides by.
  *
- * The Referee edits; players see the same window without the controls, and
- * `updateParty` refuses them a second time behind that.
+ * Animals and vehicles are containers: drop a member onto a horse to ride
+ * it, into a wagon's harness, onto its box as Teamster, or aboard. Anyone
+ * may arrange the roster -- a player's change goes through the Referee, see
+ * store.js -- but only the Referee sets shares.
  *
- * At the top is the party's pace: the slowest member per Turn and per day,
- * named, since "who is holding us back" is the question being asked.
+ * At the top is the party's pace and day: the slowest unit per Turn and per
+ * day, and the most burdened one's watches, named, since "who is holding us
+ * back" is the question being asked. See travel.ts.
  *
  * The second tab is the marching order, which is the players' sandbox: any
  * number of named layouts, any of them edited by anyone, one of them marked
@@ -21,8 +24,10 @@
  */
 
 import { layoutOf, MAX_WIDTH, placed, ranks } from "./formation";
-import { milesPerDay, placeMember, ROLES, removeMember, setShares, slowest } from "./roster";
-import { editFormation, getParty, refreshOnChange, updateParty } from "./store";
+import { ROLES, replaceMember, setShares } from "./roster";
+import { editFormation, editRoster, getParty, refreshOnChange, updateParty } from "./store";
+import { assess, canSit } from "./travel";
+import { travellerOf } from "./traveller";
 import { splitXP } from "./xp-split";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -37,45 +42,77 @@ function formatShares(shares) {
   return String(Math.round(shares * 100) / 100);
 }
 
+/** The seats each kind of container has, in the order the window shows them. */
+const SEATS_OF = {
+  animal: ["aboard"],
+  drawn: ["team", "teamster", "aboard"],
+  vessel: ["aboard"],
+};
+
+/** Encumbrance band labels, unencumbered to over. */
+const BAND_LABELS = [
+  "VF.encumbrance.unencumbered",
+  "VF.encumbrance.light",
+  "VF.encumbrance.heavy",
+  "VF.encumbrance.severe",
+  "VF.encumbrance.over",
+];
+
 /**
- * What the window shows of one member.
+ * What the window shows of every member: its row, where it sits, and -- for
+ * a horse or a wagon -- who is in it.
  *
- * @param {import("./roster").RosterEntry} entry - The roster entry.
- * @returns {object} Its row, and the figures the pace is worked out from.
+ * @param {import("./roster").Party} party - The roster.
+ * @returns {{members: object[], travel: ReturnType<typeof assess>}} The rows, and the arithmetic behind them.
  */
-function describeMember(entry) {
-  const actor = fromUuidSync(entry.uuid);
-  if (!actor) {
-    return {
+function describeMembers(party) {
+  const actors = new Map(party.members.map((entry) => [entry.uuid, fromUuidSync(entry.uuid)]));
+  const travellers = party.members.map((entry) => travellerOf(entry, actors.get(entry.uuid)));
+  const travel = assess(travellers);
+  const nameOf = (uuid) => actors.get(uuid)?.name ?? game.i18n.localize("VF.party.Missing");
+
+  const members = party.members.map((entry, index) => {
+    const actor = actors.get(entry.uuid);
+    const { kind } = travellers[index];
+    const figures = travel.members.get(entry.uuid);
+    const row = {
       uuid: entry.uuid,
       role: entry.role,
-      missing: true,
-      name: game.i18n.localize("VF.party.Missing"),
-      img: "icons/svg/hazard.svg",
+      kind,
       shares: formatShares(entry.shares),
-      walker: { name: "", role: entry.role, perTurn: null, perDay: null },
+      in: entry.in ? { uuid: entry.in, name: nameOf(entry.in), seat: `VF.party.seat.${entry.seat}` } : null,
     };
-  }
+    if (!actor) {
+      return { ...row, missing: true, name: nameOf(entry.uuid), img: "icons/svg/hazard.svg" };
+    }
 
-  const perTurn = Number(actor.system?.movement?.base);
-  const hasMovement = Number.isFinite(perTurn);
-  const toughness = actor.type === "character" ? Number(actor.system?.scores?.toughness?.mod) || 0 : 0;
-  const perDay = hasMovement ? milesPerDay(perTurn, toughness) : null;
-  const encumbrance = actor.type === "character" ? actor.system?.encumbrance?.stateLabel : null;
+    // A walker shows its sheet's own state; an animal or wagon its load with
+    // riders and team, which only the roster knows.
+    let load = null;
+    if (kind === "walker" && actor.type === "character") load = actor.system?.encumbrance?.stateLabel ?? null;
+    if (kind === "animal" && figures?.band !== null) load = BAND_LABELS[figures.band];
+    const seats = (SEATS_OF[kind] ?? []).map((seat) => ({
+      seat,
+      label: `VF.party.seat.${seat}`,
+      occupants: party.members
+        .filter((other) => other.in === entry.uuid && (other.seat ?? "aboard") === seat)
+        .map((other) => ({ uuid: other.uuid, name: nameOf(other.uuid) })),
+    }));
 
-  return {
-    uuid: entry.uuid,
-    role: entry.role,
-    missing: false,
-    name: actor.name,
-    img: actor.img,
-    canOpen: actor.testUserPermission(game.user, "LIMITED"),
-    shares: formatShares(entry.shares),
-    perTurn: hasMovement ? perTurn : null,
-    perDay,
-    encumbrance: encumbrance ? game.i18n.localize(encumbrance) : null,
-    walker: { name: actor.name, role: entry.role, perTurn: hasMovement ? perTurn : null, perDay },
-  };
+    return {
+      ...row,
+      missing: false,
+      name: actor.name,
+      img: actor.img,
+      canOpen: actor.testUserPermission(game.user, "LIMITED"),
+      perTurn: figures?.perTurn ?? null,
+      points: kind === "walker" ? null : (figures?.points ?? null),
+      load: load ? game.i18n.localize(load) : null,
+      seats,
+    };
+  });
+
+  return { members, travel };
 }
 
 /**
@@ -206,24 +243,80 @@ async function onClearSquare(_event, target) {
 /** Strike a member off the roster. */
 async function onRemoveMember(_event, target) {
   const { uuid } = target.closest("[data-uuid]").dataset;
-  await updateParty((party) => removeMember(party, uuid));
+  await editRoster({ type: "remove", uuid });
 }
 
 /**
- * The party's pace: the slowest member per Turn and per day, by name.
- *
- * @param {object[]} [members] - Described members; the roster's own by default.
- * @returns {{perTurn: object|null, perDay: object|null}} Each a value and the names holding it, or null.
+ * Turn a character standing in for a wagon into a real vehicle: same name,
+ * picture, folder, owners and cargo, and its place on the roster. The old
+ * character is left where it is, for the Referee to delete.
  */
-export function partyPace(members = getParty().members.map(describeMember)) {
-  const pace = (key) => {
-    const found = slowest(
-      members.map((member) => member.walker),
-      key,
-    );
-    return found ? { value: found.value, names: found.names.join(", ") } : null;
-  };
-  return { perTurn: pace("perTurn"), perDay: pace("perDay") };
+async function onMakeVehicle(_event, target) {
+  const { uuid } = target.closest("[data-uuid]").dataset;
+  const old = fromUuidSync(uuid);
+  if (!old || !game.user.isGM) return;
+  const confirmed = await foundry.applications.api.DialogV2.confirm({
+    window: { title: game.i18n.localize("VF.party.MakeVehicle") },
+    content: `<p>${game.i18n.format("VF.party.MakeVehicleConfirm", { name: foundry.utils.escapeHTML(old.name) })}</p>`,
+  });
+  if (!confirmed) return;
+
+  const vehicle = await Actor.implementation.create({
+    name: old.name,
+    type: "vehicle",
+    img: old.img,
+    folder: old.folder?.id ?? null,
+    ownership: old.toObject().ownership,
+  });
+  // Containers first, so what was in them can be put back in by new id.
+  const items = old.items.map((item) => item.toObject());
+  const created = await vehicle.createEmbeddedDocuments(
+    "Item",
+    items.map(({ _id, ...item }) => ({ ...item, system: { ...item.system, containerId: "" } })),
+  );
+  const newId = new Map(items.map((item, index) => [item._id, created[index]?.id]));
+  const nesting = items
+    .map((item, index) => {
+      const update = { _id: created[index]?.id };
+      const container = newId.get(item.system.containerId);
+      if (container) update["system.containerId"] = container;
+      if (Array.isArray(item.system.itemIds)) {
+        update["system.itemIds"] = item.system.itemIds.map((id) => newId.get(id)).filter(Boolean);
+      }
+      return update;
+    })
+    .filter((update) => update._id && Object.keys(update).length > 1);
+  if (nesting.length) await vehicle.updateEmbeddedDocuments("Item", nesting);
+
+  await updateParty((party) => replaceMember(party, uuid, vehicle.uuid));
+  ui.notifications.info(game.i18n.format("VF.party.MadeVehicle", { name: old.name }));
+  vehicle.sheet.render(true);
+}
+
+/** Take someone off their horse, out of the wagon or off the ship. */
+async function onAlight(_event, target) {
+  await editRoster({ type: "alight", uuid: target.closest("[data-occupant]").dataset.occupant });
+}
+
+/**
+ * The party's pace and day: the slowest top-level unit per Turn and per day,
+ * and the most burdened one's watches, each with who sets it.
+ *
+ * @param {ReturnType<typeof assess>} [travel] - Worked out already; the roster's own by default.
+ * @returns {{perTurn: object|null, perDay: object|null, watches: object|null}} Each a value and names, or null.
+ */
+export function partyPace(travel = describeMembers(getParty()).travel) {
+  const named = (limit) => (limit ? { value: limit.value, names: limit.names.join(", ") } : null);
+  return { perTurn: named(travel.perTurn), perDay: named(travel.perDay), watches: named(travel.watches) };
+}
+
+/**
+ * How many watches the party's day holds, set by its most burdened unit.
+ *
+ * @returns {{value: number, names: string}|null} Watches per day and who sets it, or null if nobody counts.
+ */
+export function partyWatches() {
+  return partyPace().watches;
 }
 
 /**
@@ -298,6 +391,8 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
     actions: {
       openSheet: onOpenSheet,
       removeMember: onRemoveMember,
+      alight: onAlight,
+      makeVehicle: onMakeVehicle,
       splitXP: onSplitXP,
       viewLayout: onViewLayout,
       activateLayout: onActivateLayout,
@@ -342,12 +437,12 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
     const context = await super._prepareContext(options);
     const party = getParty();
     const isReferee = game.user.isGM;
-    const members = party.members.map(describeMember);
+    const { members, travel } = describeMembers(party);
 
     return Object.assign(context, {
       isReferee,
       empty: members.length === 0,
-      pace: partyPace(members),
+      pace: partyPace(travel),
       roles: ROLES.map((role) => {
         const list = members.filter((member) => member.role === role);
         const total = list.reduce((sum, member) => sum + Number(member.shares), 0);
@@ -375,10 +470,13 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
   _onRender(context, options) {
     super._onRender(context, options);
     this.#bindFormation();
-    if (game.user.isGM) this.#bindRoster();
+    this.#bindRoster();
   }
 
-  /** The Referee's controls on the roster tab: shares, and dragging Actors between roles. */
+  /**
+   * The roster tab's controls: dragging Actors between roles and into seats,
+   * for everyone, and shares for the Referee.
+   */
   #bindRoster() {
     for (const input of this.element.querySelectorAll('input[name="shares"]')) {
       input.addEventListener("change", (event) => {
@@ -394,9 +492,53 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
       });
     }
 
+    for (const chip of this.element.querySelectorAll(".occupant[data-occupant]")) {
+      chip.addEventListener("dragstart", (event) => {
+        event.stopPropagation();
+        event.dataTransfer.setData("text/plain", JSON.stringify({ type: "Actor", uuid: chip.dataset.occupant }));
+        event.dataTransfer.effectAllowed = "move";
+      });
+    }
+
     for (const list of this.element.querySelectorAll(".role[data-role]")) {
       dropZone(list, (event) => this.#onDropOnRole(event, list.dataset.role));
     }
+
+    for (const zone of this.element.querySelectorAll(".seat[data-seat]")) {
+      dropZone(zone, (event) => this.#onDropOnSeat(event, zone.closest("[data-uuid]").dataset.uuid, zone.dataset.seat));
+    }
+  }
+
+  /**
+   * A member dropped into a seat: onto a horse, into harness, onto the box.
+   * Only members can sit; an Actor straight from the sidebar joins the roster
+   * first, as a vehicle if it is one and as an NPC otherwise.
+   *
+   * @param {DragEvent} event - The drop.
+   * @param {string} container - The container's uuid.
+   * @param {import("./travel").Seat} seat - The seat.
+   */
+  async #onDropOnSeat(event, container, seat) {
+    const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+    if (data?.type !== "Actor" || !data.uuid) return;
+    const actor = await worldActor(data.uuid);
+    if (!actor || actor.uuid === container) return;
+
+    const party = getParty();
+    const holder = party.members.find((entry) => entry.uuid === container);
+    let entry = party.members.find((member) => member.uuid === actor.uuid);
+    const role = entry?.role ?? (actor.type === "vehicle" || actor.system?.burden?.enabled ? "vehicle" : "npc");
+    const kind = (member, who) => travellerOf(member, who).kind;
+    if (!holder || !canSit(kind(holder, fromUuidSync(container)), seat, kind({ uuid: actor.uuid, role }, actor))) {
+      ui.notifications.warn(game.i18n.localize("VF.party.CannotSit"));
+      return;
+    }
+
+    if (!entry) {
+      await editRoster({ type: "place", uuids: [actor.uuid], role });
+      entry = { uuid: actor.uuid };
+    }
+    await editRoster({ type: "board", uuid: entry.uuid, container, seat });
   }
 
   /** Everyone's controls on the formation tab: names, widths, and dragging people onto squares. */
@@ -468,7 +610,7 @@ export default class PartyApp extends HandlebarsApplicationMixin(ApplicationV2) 
     }
     if (actors.length === 0) return;
 
-    await updateParty((party) => actors.reduce((next, actor) => placeMember(next, actor.uuid, role, before), party));
+    await editRoster({ type: "place", uuids: actors.map((actor) => actor.uuid), role, before });
   }
 }
 

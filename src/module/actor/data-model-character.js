@@ -4,22 +4,22 @@
 
 import { purseValue } from "../purse";
 import { normaliseAlignment } from "./alignment";
-import OseDataModelCharacterAC from "./data-model-classes/data-model-character-ac";
-import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
-import OseDataModelCharacterScores from "./data-model-classes/data-model-character-scores";
-import OseDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
+import VogelfreiDataModelCharacterAC from "./data-model-classes/data-model-character-ac";
+import VogelfreiDataModelCharacterMove from "./data-model-classes/data-model-character-move";
+import VogelfreiDataModelCharacterScores from "./data-model-classes/data-model-character-scores";
+import VogelfreiDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
 import { stanceAc } from "./stance";
 import { currentStance } from "./stance-store";
 
 const getItemsOfActorOfType = (actor, filterType, filterFn = null) =>
   actor.items.filter(({ type }) => type === filterType).filter(filterFn || (() => true));
 
-export default class OseDataModelCharacter extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelCharacter extends foundry.abstract.TypeDataModel {
   prepareDerivedData() {
-    this.scores = new OseDataModelCharacterScores(this.scores);
+    this.scores = new VogelfreiDataModelCharacterScores(this.scores);
 
     // eslint-disable-next-line new-cap
-    this.encumbrance = new CONFIG.OSE.encumbrance(
+    this.encumbrance = new CONFIG.VF.encumbrance(
       this.encumbrance.max,
       [...this.parent.items],
       {
@@ -30,7 +30,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       this.scores.strength.mod,
     );
 
-    this.movement = new OseDataModelCharacterMove(this.encumbrance, this.config.movementAuto, this.movement.base);
+    this.movement = new VogelfreiDataModelCharacterMove(this.encumbrance, this.config.movementAuto, this.movement.base);
 
     // @todo Once we create the new character sheet,
     //       we shouldn't need to list both AC schemes
@@ -41,7 +41,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
     const armed =
       equippedArmour.some(({ system }) => system.type === "shield") ||
       getItemsOfActorOfType(this.parent, "weapon", (w) => w.system.equipped).length > 0;
-    this.ac = new OseDataModelCharacterAC(
+    this.ac = new VogelfreiDataModelCharacterAC(
       equippedArmour,
       this.scores.agility.mod,
       this.ws,
@@ -49,7 +49,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       stanceAc(currentStance(this.parent), { weaponSkill: this.ws ?? 0, armed }),
     );
 
-    this.spells = new OseDataModelCharacterSpells(this.spells, this.#spellList);
+    this.spells = new VogelfreiDataModelCharacterSpells(this.spells, this.#spellList);
   }
 
   // @todo define schema options; stuff like min/max values and so on.
@@ -64,7 +64,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       aac: new ObjectField(),
       ws: new NumberField({ integer: true, initial: 0 }),
       bs: new NumberField({ integer: true, initial: 0 }),
-      encumbrance: CONFIG.OSE.encumbrance.defineSchema(),
+      encumbrance: CONFIG.VF.encumbrance.defineSchema(),
       movement: new ObjectField(),
       config: new ObjectField(),
       initiative: new SchemaField({
@@ -91,7 +91,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),
-      // In the book's order: see CONFIG.OSE.saves_short.
+      // In the book's order: see CONFIG.VF.saves_short.
       saves: new SchemaField({
         paralysis: new SchemaField({ value: new NumberField({ integer: true }) }),
         poison: new SchemaField({ value: new NumberField({ integer: true }) }),
@@ -122,7 +122,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
    * @inheritdoc
    */
   static migrateData(source) {
-    OseDataModelCharacter.#migrateCantrips(source);
+    VogelfreiDataModelCharacter.#migrateCantrips(source);
 
     // Two save bonuses, one per source. Ability Scores.md gives Intelligence to
     // saves against spells and Willpower to everything else; these are the flat
@@ -151,7 +151,7 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
 
   /**
    * Ensure cantrips (level 0 spells) exist in the spells object.
-   * @param {OseDataModelCharacter} source - Source data to migrate
+   * @param {VogelfreiDataModelCharacter} source - Source data to migrate
    */
   static #migrateCantrips(source) {
     const spells = source.spells ?? {};
@@ -200,8 +200,8 @@ export default class OseDataModelCharacter extends foundry.abstract.TypeDataMode
 
   /** What the carried treasure is worth, in whole brass pieces. */
   get carriedTreasure() {
-    // Brass is the smallest coin, so the total is always whole. OSE rounded to
-    // two decimals here because its prices were decimal gold; ours are not.
+    // Brass is the smallest coin, so the total is always whole. Earlier versions
+    // rounded to two decimals because their prices were decimal gold; ours are not.
     const goods = this.treasures.reduce((acc, { system: { quantity, cost } }) => acc + quantity.value * cost, 0);
     return goods + purseValue(this.coins);
   }

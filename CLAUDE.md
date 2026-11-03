@@ -81,23 +81,24 @@ with `system.json` and `system.zip`. Prod then updates through Foundry's own upd
 ## Architecture
 
 Entry point: `src/vogelfrei.js` registers settings, document classes, data models, sheets and
-hooks. Internal names still say OSE (`OseActor`, `OseItem`, `CONFIG.OSE`, `OseDataModel*`),
-which is a leftover of the fork and not a sign of untouched code. User-facing strings live in
-`src/lang/en.json` under the **`VF.*`** namespace.
+hooks. Runtime names use Vogelfrei (`VogelfreiActor`, `VogelfreiItem`, `CONFIG.VF`,
+`VogelfreiDataModel*`). The legacy `game.ose` alias and `flags.ose` reads only keep existing
+Vogelfrei worlds and macros working. User-facing strings live in `src/lang/en.json` under the
+**`VF.*`** namespace.
 
 **Data model.** `template.json` plus the TypeDataModels in `src/module/actor/data-model-*.js`
 and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relabelled:
 - scores: `strength, toughness, agility, intelligence, willpower, leadership`
 - saves, in the book's order: `paralysis, poison, breath, device, magic`
 - `wounds` (was `hp`) and `stamina` pools, plus `ws` / `bs` (Weapon / Ballistic Skill)
-- `exploration` holds the nine x-in-6 skills listed in `CONFIG.OSE.exploration_skills`
+- `exploration` holds the nine x-in-6 skills listed in `CONFIG.VF.exploration_skills`
   (`src/module/config.ts`). Their sheet view, and the 2d6 roll at 6-in-6 or 0-in-6, are in
   `actor/exploration-skills.ts`.
 - `ac`/`aac`/`thac0` remain in `template.json` as legacy fields. Vogelfrei AC does not come from them.
 
 **Rules modules.** These are pure and Foundry-free where possible, so they can be tested:
 - `actor/damage.ts`: the Wounds/Stamina pipeline (Stamina first, coupled loss, crits/bypass
-  straight to Wounds, no Stamina for monsters). `OseActor#applyDamage` in `actor/entity.js` is
+  straight to Wounds, no Stamina for monsters). `VogelfreiActor#applyDamage` in `actor/entity.js` is
   a thin wrapper around it.
 - `actor/data-model-classes/data-model-character-ac.ts`: `ARMOUR_CLASS_VARIANTS` is the single
   table of AC formulas (melee, meleeMonster, ranged, firearm, surprised), all from
@@ -128,11 +129,20 @@ and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relab
   runtime dependency.
 - `chronicle/`: Vogelfrei-specific calendar, watch/turn clocks, encounters and upkeep. It has
   no OSE counterpart.
-- `party/`: the Party window, with Roster and Formation tabs. The pure parts are `roster.ts`
-  (roles, shares, slowest-member pace), `xp-split.ts` (an XP award by shares, posted to chat
+- Vehicles: the `vehicle` Actor type (`actor/data-model-vehicle.js`, `vehicle-sheet.js`) is drawn
+  by a team (axles) or self-propelled (typed-in miles per day), with cargo as Items. Animals
+  are monsters with `system.burden.enabled` (mount table: barding, mule/pony offset, speed
+  factor). A handcart is a container Item with `relief` 10, which takes up to that many of
+  the carrier's points off, counted the carrier's own way (`encumbrance-points.ts`).
+- `party/`: the Party window, with Roster and Formation tabs. Animals and vehicles are
+  containers on the roster: entries carry `in` and `seat` (aboard / team / teamster).
+  `travel.ts` is the pure arithmetic (riders +5, load past 10 an axle split across the team,
+  Teamster −5 per animal, pace = slowest top-level unit, watches = most burdened one, ships
+  never set the day). `traveller.js` reads Actors into it. Players edit the roster and the
+  formation by `User#query` to the active GM; shares stay Referee-only. The pure parts are `roster.ts`
+  (roles, shares, seats), `xp-split.ts` (an XP award by shares, posted to chat
   and never written to sheets) and `formation.ts` (named marching-order layouts). `store.js`
-  keeps all of it in one world setting. Only the Referee writes it. Players edit the formation
-  by sending a `FormationOp` to the active GM via `User#query` (`CONFIG.queries`), so no system
+  keeps all of it in one world setting. Only the Referee's client writes it, so no system
   socket is needed. This replaced OSE's Party Sheet and its per-actor `party` flag, which
   `adoptLegacyParty` reads in once.
 - `upload-guard.ts` keeps player uploads in one folder.

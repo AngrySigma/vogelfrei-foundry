@@ -41,7 +41,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       expect(normaliseAlignment({})).equal("neutrality");
     });
 
-    it("Reads the B/X words OSE actors carry", () => {
+    it("Reads the B/X words legacy actors carry", () => {
       expect(normaliseAlignment("Lawful")).equal("order");
       expect(normaliseAlignment("Chaotic")).equal("chaos");
       expect(normaliseAlignment("Neutral")).equal("neutrality");

@@ -5,8 +5,8 @@
 import type { QuenchMethods } from "../../../e2e";
 import { cleanUpWorldItems, createWorldTestItem } from "../../../e2e/testUtils";
 
-export const key = "ose.item.sheet";
-export const options = { displayName: "OSE: Item: Sheet" };
+export const key = "vf.item.sheet";
+export const options = { displayName: "VF: Item: Sheet" };
 
 export default ({ describe, it, expect, after, assert }: QuenchMethods) => {
   after(() => {
@@ -19,7 +19,7 @@ export default ({ describe, it, expect, after, assert }: QuenchMethods) => {
       const sheet = item?.sheet;
       expect(sheet).is.not.undefined;
       expect(sheet?.options.classes.length).to.be.above(3); // Foundry adds its own classes
-      expect(sheet?.options.classes).contain("ose");
+      expect(sheet?.options.classes).contain("vf");
       expect(sheet?.options.classes).contain("sheet");
       expect(sheet?.options.classes).contain("item");
       expect(sheet?.options.width).equal(520);

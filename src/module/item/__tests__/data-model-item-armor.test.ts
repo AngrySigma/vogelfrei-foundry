@@ -3,14 +3,14 @@
  */
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
-import OseDataModelArmor from "../data-model-armor";
+import VogelfreiDataModelArmor from "../data-model-armor";
 
-export const key = "ose.item.datamodel.armor";
-export const options = { displayName: "OSE: Item: Data Model: Armor" };
+export const key = "vf.item.datamodel.armor";
+export const options = { displayName: "VF: Item: Data Model: Armor" };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("ArmorTypes", () => {
-    const dataTypes = OseDataModelArmor.ArmorTypes;
+    const dataTypes = VogelfreiDataModelArmor.ArmorTypes;
 
     it("Has 5 armor types", () => {
       expect(Object.keys(dataTypes).length).equal(5);
@@ -30,7 +30,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("manualTags", () => {
-    const item = new OseDataModelArmor();
+    const item = new VogelfreiDataModelArmor();
 
     it("By default return empty array", () => {
       expect(item.manualTags.length).equal(0);
@@ -55,7 +55,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("autoTags", () => {
-    const item = new OseDataModelArmor();
+    const item = new VogelfreiDataModelArmor();
 
     it("By default return auto-tags", () => {
       expect(item.autoTags.length).equal(1);

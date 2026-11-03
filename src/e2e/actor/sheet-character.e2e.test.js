@@ -3,7 +3,7 @@
  */
 import { trashChat, waitForInput } from "../testUtils";
 
-export const key = "ose.sheet.actor.character";
+export const key = "vf.sheet.actor.character";
 export const options = {
   displayName: "Sheet: Character",
 };
@@ -62,7 +62,7 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
 
     await waitForInput();
 
-    const dialog = document.querySelector(".roll-dialog.ose");
+    const dialog = document.querySelector(".roll-dialog.vf");
     dialog.querySelector('[name="bonus"]').value = 20;
     dialog.closest(".window-content").querySelector(".dialog-button.ok").click();
 
@@ -84,7 +84,7 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
 
     await waitForInput();
 
-    const dialog = document.querySelector(".roll-dialog.ose");
+    const dialog = document.querySelector(".roll-dialog.vf");
     expect(dialog).not.equal(null);
 
     dialog.closest(".window-content").querySelector(".dialog-button.ok").click();
@@ -99,7 +99,7 @@ export default ({ before, beforeEach, after, afterEach, describe, it, expect }) 
 
     await waitForInput();
 
-    const dialog = document.querySelector(".roll-dialog.ose");
+    const dialog = document.querySelector(".roll-dialog.vf");
     expect(dialog).not.equal(null);
 
     dialog.closest(".window-content").querySelector(".dialog-button.ok").click();

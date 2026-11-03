@@ -6,21 +6,36 @@
  * the players' windows without a socket of our own. Only the Referee writes
  * the roster -- the players' copy is a readout.
  *
- * The marching order is the exception: it is the players' to arrange. They
- * cannot write a world setting, so a player's change is sent to the active
- * Referee's client as a `User#query`, which applies it. Only formation
- * operations travel that way, so a player still cannot touch the roster.
- * With no Referee connected there is nobody to apply it, and the player is
- * told so.
+ * Players arrange the marching order and who rides in what. They cannot
+ * write a world setting, so a player's change is sent to the active
+ * Referee's client as a `User#query`, which applies it. Only formation and
+ * roster operations travel that way -- joining, leaving, boarding, alighting
+ * -- so shares, and with them the XP split, stay the Referee's. With no
+ * Referee connected there is nobody to apply it, and the player is told so.
  */
 import { applyFormationOp } from "./formation";
-import { defaultParty, inFormation, normaliseParty, placeMember, removeMember } from "./roster";
+import {
+  alight,
+  board,
+  defaultParty,
+  inFormation,
+  isRole,
+  membershipOf,
+  normaliseParty,
+  placeMember,
+  removeMember,
+} from "./roster";
+import { canSit } from "./travel";
+import { kindOf } from "./traveller";
 
 /** The setting key, under the system's namespace. */
 export const SETTING = "party";
 
 /** The query a player's formation change travels as. */
 export const FORMATION_QUERY = "vogelfrei.formation";
+
+/** The query a player's roster change travels as. */
+export const ROSTER_QUERY = "vogelfrei.roster";
 
 /**
  * Writes in flight, one after another. Two players dragging at once would
@@ -48,15 +63,45 @@ export function refresh() {
   }
 }
 
+/** Callbacks for when who is on the roster, or as what, changes. */
+const membershipListeners = new Set();
+
+/** The membership last seen, or null before `ready`. */
+let lastMembership = null;
+
+/**
+ * Be told when someone joins, leaves or changes role -- not when shares or the
+ * marching order move. Fires on every client; the callback decides who acts.
+ *
+ * @param {Function} callback - Called with no arguments.
+ */
+export function onMembershipChange(callback) {
+  membershipListeners.add(callback);
+}
+
+/** Redraw, and tell the membership listeners if the membership moved. */
+function onPartyChange() {
+  refresh();
+  if (lastMembership === null) return;
+  const membership = membershipOf(getParty());
+  if (membership === lastMembership) return;
+  lastMembership = membership;
+  for (const callback of membershipListeners) callback();
+}
+
 /** Register the setting. Called from `init`. */
 export function registerPartySetting() {
   CONFIG.queries[FORMATION_QUERY] = onFormationQuery;
+  CONFIG.queries[ROSTER_QUERY] = onRosterQuery;
   game.settings.register(game.system.id, SETTING, {
     scope: "world",
     config: false,
     type: Object,
     default: defaultParty(),
-    onChange: refresh,
+    onChange: onPartyChange,
+  });
+  Hooks.once("ready", () => {
+    lastMembership = membershipOf(getParty());
   });
 }
 
@@ -144,9 +189,86 @@ async function onFormationQuery(op) {
 }
 
 /**
- * Read in the party OSE kept, once.
+ * A change to who is on the roster and what they ride in.
  *
- * OSE marked membership with a `party` flag on each character. A world that
+ * @typedef {{type: "place", uuids: string[], role: string, before?: string|null}
+ *   | {type: "remove", uuid: string}
+ *   | {type: "board", uuid: string, container: string, seat: import("./travel").Seat}
+ *   | {type: "alight", uuid: string}} RosterOp
+ */
+
+/**
+ * Apply a roster change. A seat that makes no sense -- a man in harness, a
+ * horse on a horse -- leaves the roster as it was.
+ *
+ * @param {import("./roster").Party} party - The roster.
+ * @param {RosterOp} op - The change.
+ * @returns {import("./roster").Party} The changed roster.
+ */
+export function applyRosterOp(party, op) {
+  switch (op?.type) {
+    case "place":
+      if (!isRole(op.role) || !Array.isArray(op.uuids)) return party;
+      return op.uuids.reduce((next, uuid) => placeMember(next, String(uuid), op.role, op.before ?? null), party);
+    case "remove":
+      return removeMember(party, String(op.uuid));
+    case "alight":
+      return alight(party, String(op.uuid));
+    case "board": {
+      const entry = (uuid) => party.members.find((member) => member.uuid === uuid);
+      const passenger = entry(op.uuid);
+      const container = entry(op.container);
+      if (!passenger || !container) return party;
+      const kind = (member) => kindOf(fromUuidSync(member.uuid), member.role);
+      if (!canSit(kind(container), op.seat, kind(passenger))) return party;
+      return board(party, passenger.uuid, container.uuid, op.seat);
+    }
+    default:
+      return party;
+  }
+}
+
+/**
+ * Change who is on the roster or what they ride in, from anyone.
+ *
+ * @param {RosterOp} op - The change.
+ * @returns {Promise<void>} Once it is applied, or refused.
+ */
+export async function editRoster(op) {
+  if (game.user.isGM) {
+    await updateParty((party) => applyRosterOp(party, op));
+    return;
+  }
+
+  const referee = game.users.activeGM;
+  if (!referee) {
+    ui.notifications?.warn(game.i18n.localize("VF.party.NeedsReferee"));
+    return;
+  }
+  try {
+    await referee.query(ROSTER_QUERY, op, { timeout: 10_000 });
+  } catch (error) {
+    console.error("Vogelfrei | The Referee did not apply a roster change.", error);
+    ui.notifications?.warn(game.i18n.localize("VF.party.NotApplied"));
+  }
+}
+
+/**
+ * Receive a player's roster change. Only the active Referee is ever asked.
+ *
+ * @param {RosterOp} op - The change.
+ * @returns {Promise<boolean>} True once applied.
+ */
+async function onRosterQuery(op) {
+  if (!game.user.isGM) throw new Error("Only a Referee applies roster changes");
+  await updateParty((party) => applyRosterOp(party, op));
+  return true;
+}
+
+/**
+ * Read in the party earlier versions kept, once.
+ *
+ * Earlier versions marked membership with a `party` flag on each character. A world that
  * used it opens with those characters already on the roster, as players; the
  * flags are left where they are, since nothing reads them any more.
  *

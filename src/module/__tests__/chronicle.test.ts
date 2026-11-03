@@ -35,6 +35,7 @@ import {
   setTurn,
   suggestedWatches,
   TERRAIN,
+  withWatchesPerDay,
   xpForHitDice,
 } from "../chronicle/chronicle";
 import {
@@ -145,6 +146,16 @@ export default ({ describe, it, expect }: QuenchMethods) => {
     it("Keeps the time of day when the day is cut differently", () => {
       expect(rescaleCalendar({ day: 3, watch: 3 }, 6, 12)).deep.equal({ day: 3, watch: 6 });
       expect(rescaleCalendar({ day: 3, watch: 3 }, 6, 2)).deep.equal({ day: 3, watch: 1 });
+    });
+
+    it("Changes the watches per day, keeping a once-a-day check once a day", () => {
+      const chronicle = { ...defaultChronicle(), day: 3, watch: 3 };
+      const shorter = withWatchesPerDay(chronicle, 4);
+      expect(shorter).include({ day: 3, watch: 2, watchesPerDay: 4 });
+      expect(shorter?.travel.everyWatches).equal(4);
+      const ownCadence = { ...chronicle, travel: { ...chronicle.travel, everyWatches: 2 } };
+      expect(withWatchesPerDay(ownCadence, 4)?.travel.everyWatches).equal(2);
+      expect(withWatchesPerDay(chronicle, 6)).equal(null);
     });
 
     it("Counts watches from the first dawn", () => {

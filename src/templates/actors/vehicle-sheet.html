@@ -1,0 +1,70 @@
+<form class="{{cssClass}} vf-vehicle" autocomplete="off">
+  <header class="sheet-header flexrow">
+    <img class="profile" src="{{actor.img}}" data-edit="img" alt="" />
+    <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'Name'}}" /></h1>
+  </header>
+
+  {{!-- How it moves: Time and Movement.md#mounts --}}
+  <section class="vf-vehicle-body">
+    <div class="form-group">
+      <label>{{localize "VF.vehicle.Propulsion"}}</label>
+      <select name="system.propulsion">
+        {{selectOptions config.propulsion selected=system.propulsion localize=true}}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>{{localize "VF.vehicle.Medium"}}</label>
+      <select name="system.medium">
+        {{selectOptions config.medium selected=system.medium localize=true}}
+      </select>
+    </div>
+    {{#if system.isDrawn}}
+    <div class="form-group">
+      <label data-tooltip="{{localize 'VF.vehicle.AxlesHint'}}">{{localize "VF.vehicle.Axles"}}</label>
+      <input name="system.axles" type="number" min="0" step="1" value="{{system.axles}}" />
+    </div>
+    {{else}}
+    <div class="form-group">
+      <label data-tooltip="{{localize 'VF.vehicle.MilesPerDayHint'}}">{{localize "VF.vehicle.MilesPerDay"}}</label>
+      <input name="system.milesPerDay" type="number" min="0" step="1" value="{{system.milesPerDay}}" />
+    </div>
+    {{/if}}
+    <div class="form-group">
+      <label>{{localize "VF.vehicle.Structure"}}</label>
+      <div class="form-fields">
+        <input name="system.structure.value" type="number" min="0" step="1" value="{{system.structure.value}}" />
+        <span>/</span>
+        <input name="system.structure.max" type="number" min="0" step="1" value="{{system.structure.max}}" />
+      </div>
+    </div>
+
+    <h3 class="cargo-title">
+      {{localize "VF.vehicle.Cargo"}}
+      <span class="cargo-load" data-tooltip="{{localize 'VF.vehicle.CargoHint'}}">
+        {{localize "VF.vehicle.CargoLoad" items=system.cargo.items points=system.cargo.points}}
+      </span>
+    </h3>
+    <ol class="unlist cargo">
+      {{#each holds}}
+      <li class="cargo-item flexrow" data-item-id="{{id}}">
+        <img src="{{img}}" alt="" width="24" height="24" />
+        <span class="name">{{name}}{{#if (eq kind "oversized")}} <em>({{localize "VF.itemEncumbrance.oversized"}})</em>{{/if}}</span>
+        {{#if @root.editable}}
+        <input type="number" name="quantity" min="0" step="1" value="{{quantity}}" />
+        <a class="item-edit" data-tooltip="{{localize 'VF.Edit'}}"><i class="fas fa-edit"></i></a>
+        <a class="item-delete" data-tooltip="{{localize 'VF.Delete'}}"><i class="fas fa-trash"></i></a>
+        {{else}}
+        <span class="quantity">{{quantity}}</span>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "VF.vehicle.CargoEmpty"}}</li>
+      {{/each}}
+    </ol>
+
+    <h3>{{localize "VF.category.notes"}}</h3>
+    <div class="resizable-editor">
+      {{editor enrichedBiography target="system.details.biography" button=true editable=editable engine="prosemirror"}}
+    </div>
+  </section>
+</form>

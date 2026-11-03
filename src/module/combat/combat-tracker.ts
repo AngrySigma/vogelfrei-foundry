@@ -1,14 +1,14 @@
-import { OSE } from "../config";
-import { OSECombatant } from "./combatant";
+import { VF } from "../config";
+import { VFCombatant } from "./combatant";
 
-export default class OSECombatTracker extends foundry.applications.sidebar.tabs.CombatTracker {
+export default class VFCombatTracker extends foundry.applications.sidebar.tabs.CombatTracker {
   /** @inheritDoc */
   static DEFAULT_OPTIONS = {
     ...foundry.applications.sidebar.tabs.CombatTracker.DEFAULT_OPTIONS,
     actions: {
       ...foundry.applications.sidebar.tabs.CombatTracker.DEFAULT_OPTIONS.actions,
-      casting: OSECombatTracker.#onCombatantControl,
-      retreat: OSECombatTracker.#onCombatantControl,
+      casting: VFCombatTracker.#onCombatantControl,
+      retreat: VFCombatTracker.#onCombatantControl,
     },
   };
 
@@ -17,7 +17,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
     await super._prepareTrackerContext(context, options);
     context.turns?.forEach((turn) => {
       const combatant = game.combat.combatants.get(turn.id);
-      turn.isSlowed = turn.initiative === `${OSECombatant.INITIATIVE_VALUE_SLOWED}`;
+      turn.isSlowed = turn.initiative === `${VFCombatant.INITIATIVE_VALUE_SLOWED}`;
       turn.isCasting = !!combatant.getFlag(game.system.id, "prepareSpell");
       turn.isRetreating = !!combatant.getFlag(game.system.id, "moveInCombat");
       turn.isOwnedByUser = !!combatant.actor?.isOwner;
@@ -48,11 +48,11 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
     const action = btn.dataset.control || btn.dataset.action;
     switch (action) {
       case "casting":
-        await this.#toggleFlag(combatant as OSECombatant, "prepareSpell");
+        await this.#toggleFlag(combatant as VFCombatant, "prepareSpell");
         return super._onCombatantControl(event, target);
 
       case "retreat":
-        await this.#toggleFlag(combatant as OSECombatant, "moveInCombat");
+        await this.#toggleFlag(combatant as VFCombatant, "moveInCombat");
         return super._onCombatantControl(event, target);
     }
     return super._onCombatantControl(event, target);
@@ -63,7 +63,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
     super._configureRenderOptions(options);
 
     // Replace the tracker template
-    this.constructor.PARTS.tracker.template = `${OSE.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`;
+    this.constructor.PARTS.tracker.template = `${VF.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`;
 
     return options;
   }
@@ -71,11 +71,11 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
   /**
    * Toggle a boolean flag value on the combatant.
    *
-   * @param {OSECombatant} combatant - The combatant to toggle the flag on.
+   * @param {VFCombatant} combatant - The combatant to toggle the flag on.
    * @param {string} flag - The flag name to toggle.
    * @private
    */
-  async #toggleFlag(combatant: OSECombatant, flag: string) {
+  async #toggleFlag(combatant: VFCombatant, flag: string) {
     const isActive = !!combatant.getFlag(game.system.id, flag);
     await combatant.setFlag(game.system.id, flag, !isActive);
   }
@@ -94,7 +94,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
         icon: '<i class="fas fa-star-of-life"></i>',
         callback: (li: HTMLElement) => {
           const { combatantId } = li.dataset;
-          const turnToActivate = this.viewed.turns.findIndex((t: OSECombatant) => t.id === combatantId);
+          const turnToActivate = this.viewed.turns.findIndex((t: VFCombatant) => t.id === combatantId);
           this.viewed.activateCombatant(turnToActivate);
         },
       },
@@ -114,7 +114,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
 
     const headerButtonContainer = html.querySelector(".combat-tracker-header .control-buttons");
     if (headerButtonContainer) {
-      // Replace the buttons with the OSE versions
+      // Replace the buttons with the VF versions
       const reRollButton = document.createElement("button");
       reRollButton.type = "button";
       reRollButton.classList.add("inline-control", "combat-control", "combat-button", "icon", "fa-solid", "fa-dice");
@@ -147,7 +147,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
 
       const children =
         list?.querySelectorAll(
-          [...combatantGroup.members.map((c: OSECombatant) => `[data-combatant-id="${c?.id}"]`)].join(", "),
+          [...combatantGroup.members.map((c: VFCombatant) => `[data-combatant-id="${c?.id}"]`)].join(", "),
         ) || [];
       if (children.length === 0) {
         continue;
@@ -171,7 +171,7 @@ export default class OSECombatTracker extends foundry.applications.sidebar.tabs.
 
       const groupHeader = document.createElement("div");
       groupHeader.className = "group-header flexrow";
-      groupHeader.style.background = `linear-gradient(90deg, var(--ose-group-color-${label}, ${label}), transparent)`;
+      groupHeader.style.background = `linear-gradient(90deg, var(--vf-group-color-${label}, ${label}), transparent)`;
 
       const tokenName = document.createElement("div");
       tokenName.className = "token-name";

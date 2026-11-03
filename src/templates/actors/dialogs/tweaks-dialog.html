@@ -107,6 +107,13 @@
         data-dtype="Boolean" {{#unless user.isGM}}disabled{{/unless}} />
     </div>
   </div>
+  <div class="form-group">
+    <label for="burdenEnabled" data-tooltip="{{localize 'VF.burden.EnabledHint'}}">{{localize "VF.burden.Enabled"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" name="system.burden.enabled" id="burdenEnabled" {{checked system.burden.enabled}}
+        data-dtype="Boolean" {{#unless user.isGM}}disabled{{/unless}} />
+    </div>
+  </div>
   {{/if}}
   <footer class="sheet-footer">
     <button type="submit">

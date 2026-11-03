@@ -1,9 +1,9 @@
 /**
  * @file The data model for Items of type Spell
  */
-import OseTags from "../helpers-tags";
+import VogelfreiTags from "../helpers-tags";
 
-export default class OseDataModelSpell extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelSpell extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { StringField, NumberField, ArrayField, ObjectField } = foundry.data.fields;
     return {
@@ -25,7 +25,7 @@ export default class OseDataModelSpell extends foundry.abstract.TypeDataModel {
 
     const rollLabel = game.i18n.localize("VF.items.Roll");
 
-    const rollFormula = OseTags.rollTagFormula({
+    const rollFormula = VogelfreiTags.rollTagFormula({
       actor: this.parent?.actor,
       data: this._source,
     });
@@ -39,7 +39,7 @@ export default class OseDataModelSpell extends foundry.abstract.TypeDataModel {
     if (!this.save) return null;
 
     return {
-      label: CONFIG.OSE.saves_long[this.save],
+      label: CONFIG.VF.saves_long[this.save],
       icon: "fa-skull",
     };
   }

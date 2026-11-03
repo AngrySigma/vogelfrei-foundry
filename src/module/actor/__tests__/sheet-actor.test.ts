@@ -21,13 +21,13 @@ import {
   waitForInput,
   waitUntil,
 } from "../../../e2e/testUtils";
-import type OseItem from "../../item/entity";
-import OseActorSheet from "../actor-sheet";
-import type OseActor from "../entity";
+import type VogelfreiItem from "../../item/entity";
+import VogelfreiActorSheet from "../actor-sheet";
+import type VogelfreiActor from "../entity";
 
-export const key = "ose.actor.sheet";
+export const key = "vf.actor.sheet";
 export const options = {
-  displayName: "OSE: Actor: Sheet",
+  displayName: "VF: Actor: Sheet",
   preSelected: true,
 };
 
@@ -35,7 +35,7 @@ export const options = {
 /* Types for storing data between tests          */
 /* --------------------------------------------- */
 type DragNDropItem = {
-  item: OseItem | undefined;
+  item: VogelfreiItem | undefined;
   itemElement: Element | null;
 };
 
@@ -66,8 +66,8 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
   describe("getData()", () => {
     it("returns the expected data", async () => {
-      const actor = (await createMockActorKey("character", {}, key)) as OseActor;
-      const sheet = new OseActorSheet(actor);
+      const actor = (await createMockActorKey("character", {}, key)) as VogelfreiActor;
+      const sheet = new VogelfreiActorSheet(actor);
       const data = await sheet.getData();
 
       expect(data.owner).equal(actor?.isOwner);
@@ -155,7 +155,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     };
 
     before(async () => {
-      const actor = (await createMockActorKey("character", {}, key)) as OseActor;
+      const actor = (await createMockActorKey("character", {}, key)) as VogelfreiActor;
       await actor.update({ system: { spells: { enabled: true } } });
       actor?.sheet?.render(true);
       // Wait for the sheet (and the inventory list) to actually render —
@@ -265,14 +265,16 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     const clickItemSummary = async (tab: string) => {
       const actor = await getActor();
       document
-        .querySelector(`#OseActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-name`)
+        .querySelector(`#VogelfreiActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-name`)
         ?.click();
       await delay(320);
     };
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const clickNavTab = async (tab: string) => {
       const actor = await getActor();
-      document.querySelector(`#OseActorSheetCharacter-Actor-${actor.id} nav.sheet-tabs a[data-tab="${tab}"]`)?.click();
+      document
+        .querySelector(`#VogelfreiActorSheetCharacter-Actor-${actor.id} nav.sheet-tabs a[data-tab="${tab}"]`)
+        ?.click();
       await delay(120);
     };
 
@@ -319,7 +321,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           const actor = await getActor();
           expect(actor?.items.size).equal(1);
           const summaryElement = document.querySelector(
-            `#OseActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
+            `#VogelfreiActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
           );
           expect([...(summaryElement?.classList ?? [])])
             .to.be.an("array")
@@ -339,7 +341,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           expect(actor?.items.size).equal(1);
 
           const summaryElement = document.querySelector(
-            `#OseActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
+            `#VogelfreiActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
           );
           expect([...(summaryElement?.classList ?? [])])
             .to.be.an("array")
@@ -364,7 +366,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           expect(item?.system.description).equal("hello world");
 
           const summaryElement = document.querySelector(
-            `#OseActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
+            `#VogelfreiActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
           );
           expect(summaryElement?.innerHTML.indexOf("hello world") >= 0).is.true;
 
@@ -384,7 +386,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
           await waitForInput();
 
           const summaryElement = document.querySelector(
-            `#OseActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
+            `#VogelfreiActorSheetCharacter-Actor-${actor.id} section .tab[data-tab="${tab}"] .item-summary`,
           );
           expect(summaryElement).is.not.null;
           expect(summaryElement?.querySelector(`a[data-uuid="${macro?.uuid}"]`)).is.not.null;
@@ -394,7 +396,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
         after(async () => {
           const actor = await getActor();
-          actor?.items.forEach(async (i: OseItem) => {
+          actor?.items.forEach(async (i: VogelfreiItem) => {
             await i.delete();
           });
           await cleanUpMacros();
@@ -475,7 +477,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     itemTypes.forEach((itemType) => {
       describe(`${itemType} item`, () => {
         it("can remove item outside container", async () => {
-          const actor = (await getActor()) as OseActor;
+          const actor = (await getActor()) as VogelfreiActor;
           expect(actor?.items.size).equal(0);
 
           await createActorTestItem(actor, itemType);
@@ -659,7 +661,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
     it("resetting spells resets the cast field to maximum", async () => {
       const actor = await getActor();
-      document.querySelector(`#OseActorSheetCharacter-Actor-${actor.id} a[data-action='reset-spells']`)?.click();
+      document.querySelector(`#VogelfreiActorSheetCharacter-Actor-${actor.id} a[data-action='reset-spells']`)?.click();
       await waitForInput();
 
       expect(actor?.items.contents[0].system.cast).equal(actor?.items.contents[0].system.memorized);
@@ -1073,14 +1075,14 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
       it(`add non-actor ${itemType} to sheet`, async () => {
         // Create item in sidebar
-        items.source.item = (await createWorldTestItem(itemType)) as OseItem;
+        items.source.item = (await createWorldTestItem(itemType)) as VogelfreiItem;
         const sourceItemName = items.source.item.name || "test";
 
         // eslint-disable-next-line no-underscore-dangle
         await documents.actor?.sheet?._onDropItemCreate([items.source.item]);
 
         // Store new item as it recreates in the character sheet
-        items.source.item = documents.actor?.items.getName(sourceItemName) as OseItem;
+        items.source.item = documents.actor?.items.getName(sourceItemName) as VogelfreiItem;
 
         expect(items.source.item).not.undefined;
       });
@@ -1119,7 +1121,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
     it("can create custom dialog", async () => {
       const customChoices = ["test", "test2", "test3"];
-      const actor = (await createMockActorKey("monster", {}, key)) as OseActor;
+      const actor = (await createMockActorKey("monster", {}, key)) as VogelfreiActor;
       // eslint-disable-next-line no-underscore-dangle
       actor?.sheet?._chooseItemType(customChoices);
       await waitUntil(() => openV2Dialogs().length === 1);
@@ -1160,7 +1162,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         await waitForInput();
 
         expect(actor?.items.size).equal(1);
-        const item: OseItem = actor?.items.contents[0];
+        const item: VogelfreiItem = actor?.items.contents[0];
         expect(item).not.undefined;
         expect(item?.type).equal(itemType);
       });
@@ -1184,7 +1186,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     it("can add to the quantity", async () => {
       const actor = await createMockActorKey("character", {}, key);
       actor?.sheet?.render(true);
-      const [item] = (await createActorTestItem(actor, "item")) as unknown as OseItem;
+      const [item] = (await createActorTestItem(actor, "item")) as unknown as VogelfreiItem;
       await item.update({ system: { quantity: { value: 2, max: 4 } } });
       await waitForInput();
 
@@ -1201,7 +1203,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     it("can subtract from the quantity", async () => {
       const actor = await createMockActorKey("character", {}, key);
       actor?.sheet?.render(true);
-      const [item] = (await createActorTestItem(actor, "item")) as unknown as OseItem;
+      const [item] = (await createActorTestItem(actor, "item")) as unknown as VogelfreiItem;
       await item.update({ system: { quantity: { value: 2, max: 4 } } });
       await waitForInput();
 
@@ -1235,7 +1237,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         await delay(600);
 
         document
-          .querySelector(`#OseActorSheet${actorType.capitalize()}-Actor-${actor?.id} .configure-actor`)
+          .querySelector(`#VogelfreiActorSheet${actorType.capitalize()}-Actor-${actor?.id} .configure-actor`)
           ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         await waitForInput();
 

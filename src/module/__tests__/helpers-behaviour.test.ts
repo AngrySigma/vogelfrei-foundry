@@ -5,9 +5,9 @@
 import type { QuenchMethods } from "../../e2e";
 import skipRollDialogCheck from "../helpers-behaviour";
 
-export const key = "ose.helpers.behaviour";
+export const key = "vf.helpers.behaviour";
 export const options = {
-  displayName: "OSE: Helpers: Behaviour",
+  displayName: "VF: Helpers: Behaviour",
 };
 
 export default ({ describe, it, before, after, assert }: QuenchMethods) => {

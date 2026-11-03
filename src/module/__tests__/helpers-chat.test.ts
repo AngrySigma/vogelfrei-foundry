@@ -4,9 +4,9 @@
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../e2e";
 
-export const key = "ose.helpers.chat";
+export const key = "vf.helpers.chat";
 export const options = {
-  displayName: "OSE: Helpers: Chat",
+  displayName: "VF: Helpers: Chat",
 };
 
 export default ({ describe }: QuenchMethods) => {

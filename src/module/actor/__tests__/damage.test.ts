@@ -11,12 +11,15 @@ export const options = {
 };
 
 /** A character-shaped target: has a Stamina pool. */
-const character = (wounds: number, stamina: number, woundsMax = 10, staminaMax = 4) =>
-  ({ wounds, woundsMax, stamina, staminaMax });
+const character = (wounds: number, stamina: number, woundsMax = 10, staminaMax = 4) => ({
+  wounds,
+  woundsMax,
+  stamina,
+  staminaMax,
+});
 
 /** A monster-shaped target: no Stamina at all. */
-const monster = (wounds: number, woundsMax = 10) =>
-  ({ wounds, woundsMax, stamina: 0, staminaMax: 0 });
+const monster = (wounds: number, woundsMax = 10) => ({ wounds, woundsMax, stamina: 0, staminaMax: 0 });
 
 export default ({ describe, it, assert }: QuenchMethods) => {
   describe("applyDamageToPools()", () => {

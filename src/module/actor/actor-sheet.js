@@ -1,11 +1,11 @@
 /**
  * @file The base class we use for Character and Monster sheets. Shared behavior goes here!
  */
-import OSE from "../config";
-import OseEntityTweaks from "../dialog/entity-tweaks";
+import VF from "../config";
+import VogelfreiEntityTweaks from "../dialog/entity-tweaks";
 import skipRollDialogCheck from "../helpers-behaviour";
 
-export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
+export default class VogelfreiActorSheet extends foundry.appv1.sheets.ActorSheet {
   /**
    * IDs for items on the sheet that have been expanded.
    * @type {Set<string>}
@@ -26,7 +26,7 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
     data.isOwnerOrObserver = this.actor.isOwnerOrObserver;
 
     data.config = {
-      ...CONFIG.OSE,
+      ...CONFIG.VF,
       ascendingAC: game.settings.get(game.system.id, "ascendingAC"),
       initiative: game.settings.get(game.system.id, "initiative") !== "group",
       encumbrance: game.settings.get(game.system.id, "encumbranceOption"),
@@ -37,8 +37,8 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
     data.isNew = this.actor.isNew();
 
     data.encumbranceTemplate =
-      OSE.encumbrance?.templateEncumbranceBar ||
-      `${OSE.systemPath()}/templates/actors/partials/character-encumbrance.html`;
+      VF.encumbrance?.templateEncumbranceBar ||
+      `${VF.systemPath()}/templates/actors/partials/character-encumbrance.html`;
 
     return data;
   }
@@ -351,7 +351,6 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     const isContainer = this.actor.items.get(item.system.containerId);
 
-    // Issue: https://github.com/vttred/ose/issues/357
     if (item.id === targetId) return;
 
     if (!exists && !targetIsContainer)
@@ -428,7 +427,7 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
       }, {}),
     };
     const dlg = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/items/entity-create.html`,
+      `${VF.systemPath()}/templates/items/entity-create.html`,
       templateData,
     );
     // Create Dialog window
@@ -546,7 +545,7 @@ export default class OseActorSheet extends foundry.appv1.sheets.ActorSheet {
   // eslint-disable-next-line no-underscore-dangle
   _onConfigureActor(event) {
     event.preventDefault();
-    new OseEntityTweaks(this.actor, {
+    new VogelfreiEntityTweaks(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);

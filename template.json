@@ -2,7 +2,8 @@
   "Actor": {
     "types": [
       "character",
-      "monster"
+      "monster",
+      "vehicle"
     ],
     "templates": {
       "common": {
@@ -182,7 +183,8 @@
         "morale": 0
       },
       "attacks": ""
-    }
+    },
+    "vehicle": {}
   },
   "Item": {
     "types": [

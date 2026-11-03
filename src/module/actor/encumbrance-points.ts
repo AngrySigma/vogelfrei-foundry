@@ -65,7 +65,7 @@ export const ARMOUR_POINTS: Readonly<Record<string, number>> = {
 
 /**
  * The encumbrance states, in order. Each names the movement multiplier the
- * character sheet applies; see OseDataModelCharacterMove.
+ * character sheet applies; see VogelfreiDataModelCharacterMove.
  */
 export const ENCUMBRANCE_STATES: readonly { maxPoints: number; label: string }[] = [
   { maxPoints: 1, label: "VF.encumbrance.unencumbered" },
@@ -79,7 +79,16 @@ export const ENCUMBRANCE_STATES: readonly { maxPoints: number; label: string }[]
 export type EncumbranceItem = {
   /** The Foundry Item type: `item`, `weapon`, `armor`, `container`, `spell`, `ability`. */
   type: string;
+  /** The Item's id, which contained items name in `containerId`. */
+  id?: string | null;
   system: {
+    /** The container this item is in, if any. */
+    containerId?: string;
+    /**
+     * For a container that bears its own load, like a handcart: how many of
+     * the carrier's points its contents may take off them. 0 for a sack.
+     */
+    relief?: number;
     encumbrance?: string;
     /** How many of this item make one countable item. 0 or 1 means each counts. */
     stackSize?: number;
@@ -146,6 +155,8 @@ function isWornArmour(item: EncumbranceItem): boolean {
 export type EncumbranceBreakdown = {
   /** Total encumbrance points. */
   points: number;
+  /** Points a handcart or the like takes off, already left out of `points`. */
+  reliefPoints: number;
   /** Ordinary items carried, after stacking, the purse included. */
   itemCount: number;
   /** Of those, how many the purse accounts for. */
@@ -159,16 +170,39 @@ export type EncumbranceBreakdown = {
 };
 
 /**
- * The whole calculation, item by item.
+ * The items held, at any depth, in a container that bears its own load,
+ * and how much relief those containers give between them.
  *
- * @param items - Everything the character holds, including worn armour.
- * @param coins - How many coins the character carries, of any kind. Every
- *   full hundred is one regular item; a part-hundred counts for nothing.
- * @param strengthMod - The Strength modifier: how many items make a point.
- * @returns The point total and where each part of it came from.
+ * @param items - Everything the character holds.
+ * @returns The contained items and the total relief.
  */
-export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, strengthMod = 0): EncumbranceBreakdown {
-  const coinItems = Math.floor(Math.max(0, Math.floor(Number(coins) || 0)) / COINS_PER_ITEM);
+function borneLoad(items: EncumbranceItem[]): { contained: Set<EncumbranceItem>; relief: number } {
+  const byId = new Map(items.filter((item) => item.id).map((item) => [item.id as string, item]));
+  const bearers = new Set(
+    items.filter((item) => item.type === "container" && (item.system.relief ?? 0) > 0).map((item) => item.id),
+  );
+  const contained = new Set<EncumbranceItem>();
+  for (const item of items) {
+    // Walk up through sacks in the cart; a loop of containers stops at once.
+    const seen = new Set<string>();
+    let parent = item.system.containerId;
+    while (parent && !seen.has(parent)) {
+      if (bearers.has(parent)) {
+        contained.add(item);
+        break;
+      }
+      seen.add(parent);
+      parent = byId.get(parent)?.system.containerId;
+    }
+  }
+  const relief = items
+    .filter((item) => bearers.has(item.id))
+    .reduce((sum, item) => sum + Math.max(0, Math.floor(Number(item.system.relief) || 0)), 0);
+  return { contained, relief };
+}
+
+/** One pass over the items: the breakdown before any relief. */
+function tally(items: EncumbranceItem[], coinItems: number, strengthMod: number) {
   let itemCount = coinItems;
   let oversizedPoints = 0;
   let armourPoints = 0;
@@ -202,15 +236,37 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, s
   }
 
   const itemPoints = pointsFromItemCount(itemCount, strengthMod);
+  return { points: itemPoints + oversizedPoints + armourPoints, itemCount, itemPoints, oversizedPoints, armourPoints };
+}
 
-  return {
-    points: itemPoints + oversizedPoints + armourPoints,
-    itemCount,
+/**
+ * The whole calculation, item by item.
+ *
+ * A container that bears its own load -- a handcart -- takes up to its
+ * relief off the total, counted the carrier's own way, so a weak character
+ * fits less in it than a strong one and an oversized item in it is a point
+ * like any other. It never takes off more than its contents add: what the
+ * carrier holds themselves, the cart included, still counts in full.
+ *
+ * @param items - Everything the character holds, including worn armour.
+ * @param coins - How many coins the character carries, of any kind. Every
+ *   full hundred is one regular item; a part-hundred counts for nothing.
+ * @param strengthMod - The Strength modifier: how many items make a point.
+ * @returns The point total and where each part of it came from.
+ */
+export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, strengthMod = 0): EncumbranceBreakdown {
+  const coinItems = Math.floor(Math.max(0, Math.floor(Number(coins) || 0)) / COINS_PER_ITEM);
+  const full = tally(items, coinItems, strengthMod);
+  const { contained, relief } = borneLoad(items);
+  if (contained.size === 0 || relief === 0) return { ...full, coinItems, reliefPoints: 0 };
+
+  const bare = tally(
+    items.filter((item) => !contained.has(item)),
     coinItems,
-    itemPoints,
-    oversizedPoints,
-    armourPoints,
-  };
+    strengthMod,
+  );
+  const points = Math.max(full.points - relief, bare.points);
+  return { ...full, coinItems, points, reliefPoints: full.points - points };
 }
 
 /**
@@ -218,6 +274,7 @@ export function encumbranceBreakdown(items: EncumbranceItem[] = [], coins = 0, s
  * @returns The localization key naming the state those points put you in.
  */
 export function encumbranceStateLabel(points: number): string {
-  const state = ENCUMBRANCE_STATES.find(({ maxPoints }) => points <= maxPoints);
-  return (state ?? ENCUMBRANCE_STATES[ENCUMBRANCE_STATES.length - 1]).label;
+  const state = ENCUMBRANCE_STATES.find(({ maxPoints }) => points <= maxPoints) ?? ENCUMBRANCE_STATES.at(-1);
+  if (!state) throw new Error("No encumbrance states configured");
+  return state.label;
 }

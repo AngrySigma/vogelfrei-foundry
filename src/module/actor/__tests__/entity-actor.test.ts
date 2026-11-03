@@ -23,17 +23,17 @@ import {
  */
 import type { ExplorationSkill } from "../../config";
 // eslint-disable-next-line import/no-cycle
-import OseItem from "../../item/entity";
-import OseActor from "../entity";
+import VogelfreiItem from "../../item/entity";
+import VogelfreiActor from "../entity";
 
-export const key = "ose.actor.entity";
+export const key = "vf.actor.entity";
 export const options = {
-  displayName: "OSE: Actor: Entity",
+  displayName: "VF: Actor: Entity",
   preSelected: true,
 };
 
 const createMockActor = async (type: string) =>
-  OseActor.create({
+  VogelfreiActor.create({
     name: `Test Actor ${key}`,
     type,
   });
@@ -91,13 +91,13 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     itemTypes.forEach((itemType) => {
       it(`Creates ${itemType.capitalize()} with correct default icon`, async () => {
         const actor = await createMockActor("character");
-        const item = (await OseItem.create({
+        const item = (await VogelfreiItem.create({
           name: `Test ${key} ${itemType.capitalize()}`,
           type: itemType,
-        })) as OseItem;
+        })) as VogelfreiItem;
         await actor?.createEmbeddedDocuments("Item", [item]);
         const actorItem = actor?.items.getName(item?.name);
-        expect(actorItem?.img).equal(OseItem.defaultIcons[itemType]);
+        expect(actorItem?.img).equal(VogelfreiItem.defaultIcons[itemType]);
         // Await the world-item delete so it can't race the `after` cleanup.
         if (item?.id && game.items?.get(item.id)) await item.delete();
       });
@@ -110,7 +110,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adding positive XP adds to experience", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(actor?.system.details.xp.value).equal(0);
       expect(game.messages?.size).equal(0);
       await actor?.getExperience(10);
@@ -121,7 +121,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adding negative XP subtracts from experience", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(actor?.system.details.xp.value).equal(0);
       expect(game.messages?.size).equal(0);
       await actor?.getExperience(-10);
@@ -132,7 +132,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adding positive XP adds to experience modified by bonus", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor?.update({ system: { details: { xp: { bonus: 10 } } } });
       expect(actor?.system.details.xp.value).equal(0);
       expect(game.messages?.size).equal(0);
@@ -146,12 +146,12 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
   describe("_preCreate(data, options, user)", () => {
     it("New character's prototypeToken actorLink defaults to true", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(actor.prototypeToken.actorLink).equal(true);
     });
 
     it("New monster's prototypeToken actorLink defaults to false", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(actor.prototypeToken.actorLink).equal(false);
     });
 
@@ -178,13 +178,13 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
   describe("isNew()", () => {
     it("character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(actor?.isNew()).equal(true);
       await actor?.delete();
     });
 
     it("monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(actor?.isNew()).equal(true);
       await actor?.delete();
     });
@@ -297,7 +297,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     const scoreSpread = Array.from({ length: 23 }, (_el, idx) => idx + 1);
 
-    const actor = (await createMockActor("monster")) as OseActor;
+    const actor = (await createMockActor("monster")) as VogelfreiActor;
 
     scoreSpread.forEach((hd) => {
       const savesData = saves.find((s) => hd >= s.low && hd <= s.high);
@@ -329,7 +329,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
   });
 
   describe("rollHP(options)", async () => {
-    const actor = (await createMockActor("monster")) as OseActor;
+    const actor = (await createMockActor("monster")) as VogelfreiActor;
     const conScoreSpread = Array.from({ length: 20 }, (_el, idx) => idx + 1);
     const conBonusSpread = [-3, -3, -3, -2, -2, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3];
     const hdSpread = [4, 6, 8, 10, 12, 20];
@@ -358,7 +358,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     const saves = ["paralysis", "poison", "breath", "device", "magic"];
     saves.forEach((save) => {
       it(`is functional for ${save} saves on character`, async () => {
-        const actor = (await createMockActor("character")) as OseActor;
+        const actor = (await createMockActor("character")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor?.rollSave(save, { fastForward: true });
         await waitUntil(() => game.messages?.size === 1);
@@ -367,7 +367,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       });
 
       it(`is functional for ${save} saves on monster`, async () => {
-        const actor = (await createMockActor("monster")) as OseActor;
+        const actor = (await createMockActor("monster")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollSave(save, { fastForward: true });
         await waitUntil(() => game.messages?.size === 1);
@@ -383,7 +383,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollMorale();
       await waitUntil(() => game.messages?.size === 1);
@@ -392,7 +392,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollMorale();
       await waitUntil(() => game.messages?.size === 1);
@@ -407,7 +407,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollLoyalty();
       await waitUntil(() => game.messages?.size === 1);
@@ -416,7 +416,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollLoyalty();
       await waitUntil(() => game.messages?.size === 1);
@@ -431,7 +431,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollReaction({ fastForward: true });
       await waitUntil(() => game.messages?.size === 1);
@@ -440,7 +440,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollReaction({ fastForward: true });
       await waitUntil(() => game.messages?.size === 1);
@@ -458,7 +458,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     scores.forEach((score) => {
       it(`${score} for character`, async () => {
-        const actor = (await createMockActor("character")) as OseActor;
+        const actor = (await createMockActor("character")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollCheck(score, { fastForward: true });
         await waitUntil(() => game.messages?.size === 1);
@@ -467,7 +467,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       });
 
       it(`${score} for character`, async () => {
-        const actor = (await createMockActor("monster")) as OseActor;
+        const actor = (await createMockActor("monster")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollCheck(score, { fastForward: true });
         await waitForInput();
@@ -484,14 +484,14 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("Rolls nothing for a character, whose Wounds are not rolled", async () => {
       // Class and Career.md: 6 + Toughness (a Warrior 7), no die.
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { hd: "1d8" } } });
       expect(await actor.rollHitDice()).equal(undefined);
       await actor.delete();
     });
 
     it("Rolls a monster's Hit Dice as they are", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       await actor.update({ system: { wounds: { hd: "3d8" } } });
       const roll = await actor.rollHitDice();
       expect(roll.formula).equal("3d8");
@@ -505,7 +505,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollAppearing();
       await waitForInput();
@@ -515,7 +515,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     describe("for monster", () => {
       it("in wilderness", async () => {
-        const actor = (await createMockActor("monster")) as OseActor;
+        const actor = (await createMockActor("monster")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollAppearing({ check: "wilderness" });
         await waitUntil(() => game.messages?.size === 1);
@@ -525,7 +525,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       });
 
       it("in other", async () => {
-        const actor = (await createMockActor("monster")) as OseActor;
+        const actor = (await createMockActor("monster")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollAppearing({ check: "other" });
         await waitUntil(() => game.messages?.size === 1);
@@ -554,7 +554,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     ];
     explorationOptions.forEach((expl) => {
       it("for character", async () => {
-        const actor = (await createMockActor("character")) as OseActor;
+        const actor = (await createMockActor("character")) as VogelfreiActor;
         expect(game.messages?.size).equal(0);
         await actor.rollExploration(expl, { fastForward: true });
         await waitUntil(() => (game.messages?.size ?? 0) >= 1);
@@ -568,7 +568,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollExploration("architecture", { fastForward: true });
       await waitForInput();
@@ -583,7 +583,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for character", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollDamage({ label: "test" });
       await waitUntil(() => game.messages?.size === 1);
@@ -593,7 +593,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("for monster", async () => {
-      const actor = (await createMockActor("monster")) as OseActor;
+      const actor = (await createMockActor("monster")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollDamage({ label: "test" });
       await waitUntil(() => game.messages?.size === 1);
@@ -603,7 +603,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adds roll.dmg to damage parts if provided", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.messages?.size).equal(0);
       await actor.rollDamage({
         label: "test",
@@ -616,12 +616,12 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await actor.delete();
     });
 
-    // Kept as the record of a rule Vogelfrei does not use: OSE added the
-    // Strength modifier to melee damage, and this asserted the roll contained
+    // Kept as the record of a rule Vogelfrei does not use: earlier versions
+    // added the Strength modifier to melee damage, and this asserted the roll contained
     // "15 - 3". Damage is now the weapon die alone. If Strength on damage ever
     // comes back, this is the test that should go red.
     it("Adds no strength bonus to a melee damage roll", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor?.update({ system: { scores: { strength: { value: 1 } } } });
       expect(actor.system.scores.strength.value).equal(1);
       expect(game.messages?.size).equal(0);
@@ -674,7 +674,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("One target causes one attack roll", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       const token = await actor.getTokenDocument();
       await token.constructor.create(token, { parent: canvas.scene });
       // Wait until the token's placeable has been FULLY drawn: targeting a
@@ -705,7 +705,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Multiple target causes multiple attack rolls", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       const token = await actor.getTokenDocument();
       await token.constructor.create(token, { parent: canvas.scene });
       const token2 = await actor.getTokenDocument();
@@ -741,7 +741,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
           },
         },
       };
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       expect(game.user?.targets.size).equal(0);
       expect(game.messages?.size).equal(0);
       await actor.targetAttack(data, "melee", { skipDialog: true });
@@ -767,7 +767,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("rolls a d20 if supplied no data", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       // A score of 0 maps to -3, so neutralise Strength to assert a bare d20.
       await actor.update({ system: { scores: { strength: { value: 10 } } } });
       expect(game.messages?.size).equal(0);
@@ -788,9 +788,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       expect(rolldata.formula).equal("1d20");
       await waitUntil(() => game.messages?.size === 1);
       expect(game.messages?.size).equal(1);
-      expect(game.messages?.contents[0].content).contain(
-        game.i18n.format("VF.roll.attacksWith", { name: item?.name }),
-      );
+      expect(game.messages?.contents[0].content).contain(game.i18n.format("VF.roll.attacksWith", { name: item?.name }));
       expect(game.messages?.contents[0].content).contain("1d20");
       actor?.delete();
       item?.delete();
@@ -798,7 +796,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("Adds no Agility to a missile attack", async () => {
       // Combat Actions.md: ranged is d20 + Ballistic Skill, nothing more.
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { scores: { agility: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "missile", skipDialog: true });
@@ -809,7 +807,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adds no Strength to a melee attack", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
@@ -820,7 +818,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("Adds Weapon Skill in melee and Ballistic Skill at range", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { ws: 2, bs: 3 } });
       const melee = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
       expect(melee.formula).equal("1d20 + 2");
@@ -832,7 +830,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
     it("Adds no Ballistic Skill to a firearm", async () => {
       // Anyone can point a gun.
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { bs: 3 } });
       const item = await createWorldTestItem("weapon");
       await item?.update({
@@ -851,7 +849,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       const existingRandomFunction = CONFIG.Dice.randomUniform;
       CONFIG.Dice.randomUniform = () => rollSpecificNumber(10, 20);
 
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { scores: { strength: { value: 18 } } } });
       expect(game.messages?.size).equal(0);
       const rolldata = await actor.rollAttack({ roll: {} }, { type: "melee", skipDialog: true });
@@ -869,7 +867,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("If item provided with a bonus, it is added as bonus to attack roll", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { scores: { strength: { value: 10 } } } });
       const item = await createWorldTestItem("weapon");
       await item?.update({ system: { bonus: 18 } });
@@ -884,7 +882,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
 
   describe("applyDamage(amount, multiplier)", () => {
     it("doesn't remove Wounds if no variables are given", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 10, max: 10 } } });
       expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage();
@@ -893,7 +891,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("calculates the amount with amount", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 10, max: 10 } } });
       expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(3);
@@ -902,7 +900,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("calculates the amount with amount and multiplier", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 10, max: 10 } } });
       expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(3, 2);
@@ -911,7 +909,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("calculates the amount with amount and negative multiplier", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(3, -2);
@@ -922,7 +920,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     it("treats a negative rolled amount as no damage, not healing", async () => {
       // A damage roll that totals below zero deals nothing. Healing is reached
       // through the multiplier, never by a negative amount.
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(-3);
@@ -933,7 +931,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     it("drives Wounds below zero with only amount", async () => {
       // Vogelfrei deliberately does not floor Wounds at 0: the critical injury
       // roll is 1d4 + the number of Wounds below zero.
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 10, max: 10 } } });
       expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(20);
@@ -942,7 +940,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("drives Wounds below zero with amount and multiplier", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 10, max: 10 } } });
       expect(actor.system.wounds.value).equal(10);
       await actor.applyDamage(4, 3);
@@ -951,7 +949,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("doesn't heal above maximum Wounds with only amount", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(20, -1);
@@ -960,7 +958,7 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
     });
 
     it("doesn't heal above maximum Wounds with amount and multiplier", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.update({ system: { wounds: { value: 1, max: 10 } } });
       expect(actor.system.wounds.value).equal(1);
       await actor.applyDamage(4, -3);

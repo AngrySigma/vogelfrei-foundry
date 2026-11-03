@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: User Documentation
-    url: https://necroticgnome.github.io/ose-foundry-core/
-    about: "Learn how to get started with Old-School Essentials on Foundry VTT."
-  - name: Old-School Essentials FVTT Edition Discord Community
-    url: https://discord.gg/y6RM86YgNY
-    about: "Ask a question in our #foundryvtt-help channel."
+    url: https://angrysigma.github.io/vogelfrei-foundry/
+    about: "Learn how to install and use Vogelfrei on Foundry VTT."
+  - name: Vogelfrei Rulebook
+    url: https://angrysigma.github.io/vogelfrei/
+    about: "Read the rules implemented by the game system."

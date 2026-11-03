@@ -12,21 +12,11 @@
  * what day one fell on, and which dates the world keeps as feasts.
  */
 
-import PartyApp, { partyPace } from "../party/party-app";
-import { refreshOnChange as refreshOnPartyChange } from "../party/store";
+import PartyApp, { partyPace, partyWatches } from "../party/party-app";
+import { onMembershipChange, refreshOnChange as refreshOnPartyChange } from "../party/store";
 import { civilDate, clampEpoch, feastsOn, longestMonth, monthIndexOf, monthOrdinalOf, monthsCrossed } from "./calendar";
-import { checksBetween, newDelve, restState, TERRAIN } from "./chronicle";
-import {
-  advanceDays,
-  advanceWatches,
-  clampWatches,
-  clockRange,
-  phaseOf,
-  rescaleCalendar,
-  setCalendar,
-  watchesElapsed,
-  watchName,
-} from "./day";
+import { checksBetween, newDelve, restState, TERRAIN, withWatchesPerDay } from "./chronicle";
+import { advanceDays, advanceWatches, clockRange, phaseOf, setCalendar, watchesElapsed, watchName } from "./day";
 import DelveApp from "./delve-app";
 import { rollEncounterChecks } from "./encounter";
 import { getChronicle, refreshOnChange, updateChronicle } from "./store";
@@ -216,25 +206,26 @@ async function onSetDay(event) {
 /**
  * Cut the day into a different number of watches, keeping the time of day.
  *
- * A travel check set to once a day stays once a day; any other cadence is the
- * Referee's own number and is left as they set it.
- *
  * @this {ChronicleApp}
  * @param {Event} event - The change.
  */
 async function onSetWatchesPerDay(event) {
-  const next = clampWatches(Number(event.target.value));
-  await updateChronicle((chronicle) => {
-    const previous = chronicle.watchesPerDay;
-    if (next === previous) return null;
-    const onceADay = chronicle.travel.everyWatches === previous;
-    return {
-      ...chronicle,
-      ...rescaleCalendar(chronicle, previous, next),
-      watchesPerDay: next,
-      travel: { ...chronicle.travel, everyWatches: onceADay ? next : chronicle.travel.everyWatches },
-    };
-  });
+  await updateChronicle((chronicle) => withWatchesPerDay(chronicle, Number(event.target.value)));
+}
+
+/**
+ * Give the day as many watches as the party's load allows, when who is in the
+ * party changes. Run by the active Referee only, so it is written once; a
+ * count the Referee types afterwards stands until the roster changes again.
+ */
+async function matchWatchesToParty() {
+  if (game.users.activeGM !== game.user) return;
+  const found = partyWatches();
+  if (!found) return;
+  const before = getChronicle().watchesPerDay;
+  await updateChronicle((chronicle) => withWatchesPerDay(chronicle, found.value));
+  if (getChronicle().watchesPerDay === before) return;
+  ui.notifications?.info(game.i18n.format("VF.chronicle.WatchesFromParty", { count: found.value, names: found.names }));
 }
 
 /** @this {ChronicleApp} */
@@ -532,3 +523,5 @@ export default class ChronicleApp extends HandlebarsApplicationMixin(Application
 refreshOnChange(ChronicleApp);
 // The party line shows the pace, which moves whenever someone's load does.
 refreshOnPartyChange(ChronicleApp);
+// Who travels sets how long the day's watches are.
+onMembershipChange(matchWatchesToParty);

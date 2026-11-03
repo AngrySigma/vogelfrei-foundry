@@ -140,7 +140,7 @@ type ArmourItem = {
  * Assembles a character's AC numbers from their equipped armour, Agility,
  * Weapon Skill and free-form modifier.
  */
-export default class OseDataModelCharacterAC {
+export default class VogelfreiDataModelCharacterAC {
   #armour: ArmourItem[];
 
   #agility: number;
@@ -228,7 +228,7 @@ export default class OseDataModelCharacterAC {
 
   /** The default AC, for anywhere that still wants a single number. */
   get value(): number {
-    return this.values.melee;
+    return this.values.melee ?? BASE_AC;
   }
 
   get mod(): number {

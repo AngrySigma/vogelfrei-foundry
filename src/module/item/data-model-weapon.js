@@ -4,7 +4,7 @@
 import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 import costFields from "./cost-fields";
 import { DEFAULT_WEAPON_DAMAGE, weaponDamageGrade } from "./weapon-damage";
-export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelWeapon extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
     return {
@@ -76,7 +76,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
   get #missileTag() {
     if (!this.missile) return null;
     return [
-      CONFIG.OSE.auto_tags.missile,
+      CONFIG.VF.auto_tags.missile,
       {
         label: `${this.range.short}/${this.range.medium}/${this.range.long}`,
         icon: "fa-bullseye",
@@ -86,12 +86,12 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
 
   get #meleeTag() {
     if (!this.melee) return null;
-    return CONFIG.OSE.auto_tags.melee;
+    return CONFIG.VF.auto_tags.melee;
   }
 
   get #slowTag() {
     if (!this.slow) return null;
-    return CONFIG.OSE.auto_tags.slow;
+    return CONFIG.VF.auto_tags.slow;
   }
 
   get #armourTag() {
@@ -104,7 +104,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
     if (!this.save) return null;
 
     return {
-      label: CONFIG.OSE.saves_long[this.save],
+      label: CONFIG.VF.saves_long[this.save],
       icon: "fa-skull",
     };
   }
@@ -112,7 +112,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
   get manualTags() {
     if (!this.tags) return null;
 
-    const tagNames = new Set(Object.values(CONFIG.OSE.auto_tags).map(({ label }) => label));
+    const tagNames = new Set(Object.values(CONFIG.VF.auto_tags).map(({ label }) => label));
     return this.tags.filter(({ value }) => !tagNames.has(value));
   }
 
@@ -140,7 +140,7 @@ export default class OseDataModelWeapon extends foundry.abstract.TypeDataModel {
   }
 
   get autoTags() {
-    const tagNames = Object.values(CONFIG.OSE.auto_tags);
+    const tagNames = Object.values(CONFIG.VF.auto_tags);
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 

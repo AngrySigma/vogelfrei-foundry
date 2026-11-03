@@ -1,7 +1,7 @@
 /**
  * @file A class representing the character's ability to move, depending on encumbrance state
  */
-import OseDataModelCharacterEncumbrance from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance from "./data-model-character-encumbrance";
 
 /**
  * A character's movement rates, derived from their base speed and current
@@ -22,7 +22,7 @@ export interface CharacterMove {
 /**
  * A class representing a character's move speeds.
  */
-export default class OseDataModelCharacterMove implements CharacterMove {
+export default class VogelfreiDataModelCharacterMove implements CharacterMove {
   static baseMoveRate = 120;
 
   #moveBase;
@@ -42,14 +42,14 @@ export default class OseDataModelCharacterMove implements CharacterMove {
   /**
    * The constructor
    *
-   * @param {OseDataModelCharacterEncumbrance} encumbrance - An object representing the character's encumbrance values
+   * @param {VogelfreiDataModelCharacterEncumbrance} encumbrance - An object representing the character's encumbrance values
    * @param {boolean} shouldCalculateMovement - Should the class autocalculate movement?
    * @param {number} base - The base move rate for the actor
    */
   constructor(
-    encumbrance: OseDataModelCharacterEncumbrance = new OseDataModelCharacterEncumbrance(),
+    encumbrance: VogelfreiDataModelCharacterEncumbrance = new VogelfreiDataModelCharacterEncumbrance(),
     shouldCalculateMovement = true,
-    base = OseDataModelCharacterMove.baseMoveRate,
+    base = VogelfreiDataModelCharacterMove.baseMoveRate,
   ) {
     // Props necessary for any encumbrance variant
     this.#moveBase = base;

@@ -9,7 +9,7 @@
  */
 
 /** Where the icons and their index live. */
-const iconBase = () => `${CONFIG.OSE.assetsPath}/icons/characters`;
+const iconBase = () => `${CONFIG.VF.assetsPath}/icons/characters`;
 
 let indexPromise = null;
 
@@ -151,7 +151,7 @@ export default async function pickCharacterIcon(actor) {
 
   const dialog = new foundry.applications.api.DialogV2({
     window: { title: game.i18n.format("VF.iconPicker.title", { name: actor.name }) },
-    classes: ["ose", "vf-icon-picker"],
+    classes: ["vf", "vf-icon-picker"],
     // No fixed height: the icon area scrolls on its own, and a fixed window
     // height cut the buttons off below it.
     position: { width: 600, height: "auto" },

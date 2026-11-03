@@ -1,9 +1,9 @@
 /**
- * @file A class representing the "Basic" encumbrance scheme from Old School Essentials: Classic Fantasy
+ * @file The legacy "Basic" weight-based encumbrance scheme.
  */
-import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
-// import { OSE } from '../../config';
+// import { VF } from '../../config';
 
 /**
  * A set of options for configuring the
@@ -17,8 +17,8 @@ type Options = {
  * @todo Add template path for encumbrance bar
  * @todo Add template path for inventory item row
  */
-export default class OseDataModelCharacterEncumbranceBasic
-  extends OseDataModelCharacterEncumbrance
+export default class VogelfreiDataModelCharacterEncumbranceBasic
+  extends VogelfreiDataModelCharacterEncumbrance
   implements CharacterEncumbrance
 {
   static templateEncumbranceBar = "";
@@ -57,13 +57,13 @@ export default class OseDataModelCharacterEncumbranceBasic
   #heaviestArmor;
 
   constructor(
-    max = OseDataModelCharacterEncumbrance.baseEncumbranceCap,
+    max = VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap,
     items: Item[] = [],
     options: Options = {} as Options,
   ) {
-    super(OseDataModelCharacterEncumbranceBasic.type, max);
+    super(VogelfreiDataModelCharacterEncumbranceBasic.type, max);
     this.#treasureEncumbrance =
-      options?.significantTreasure || OseDataModelCharacterEncumbranceBasic.significantTreasure;
+      options?.significantTreasure || VogelfreiDataModelCharacterEncumbranceBasic.significantTreasure;
 
     this.#weight = items.reduce(
       (acc: number, { type, system: { treasure, quantity, weight } }: Item) =>
@@ -73,11 +73,11 @@ export default class OseDataModelCharacterEncumbranceBasic
 
     this.#heaviestArmor = items.reduce((heaviest, { type, system: { type: armorType, equipped } }) => {
       if (type !== "armor" || !equipped) return heaviest;
-      if (armorType === "light" && heaviest === OseDataModelCharacterEncumbranceBasic.armorWeight.unarmored)
-        return OseDataModelCharacterEncumbranceBasic.armorWeight.light;
-      if (armorType === "heavy") return OseDataModelCharacterEncumbranceBasic.armorWeight.heavy;
+      if (armorType === "light" && heaviest === VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.unarmored)
+        return VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.light;
+      if (armorType === "heavy") return VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.heavy;
       return heaviest;
-    }, OseDataModelCharacterEncumbranceBasic.armorWeight.unarmored);
+    }, VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.unarmored);
   }
 
   static defineSchema() {
@@ -86,7 +86,7 @@ export default class OseDataModelCharacterEncumbranceBasic
 
     return new SchemaField({
       variant: new StringField({
-        initial: OseDataModelCharacterEncumbranceBasic.type,
+        initial: VogelfreiDataModelCharacterEncumbranceBasic.type,
       }),
       enabled: new BooleanField({ initial: true }),
       encumbered: new BooleanField({ initial: false }),
@@ -97,7 +97,7 @@ export default class OseDataModelCharacterEncumbranceBasic
       value: new NumberField({ integer: false }),
       max: new NumberField({
         integer: false,
-        initial: OseDataModelCharacterEncumbrance.baseEncumbranceCap,
+        initial: VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap,
       }),
       atFirstBreakpoint: new BooleanField({ initial: false }),
       atSecondBreakpoint: new BooleanField({ initial: false }),
@@ -123,22 +123,22 @@ export default class OseDataModelCharacterEncumbranceBasic
 
   get atThirdBreakpoint() {
     return (
-      this.#heaviestArmor === OseDataModelCharacterEncumbranceBasic.armorWeight.heavy &&
+      this.#heaviestArmor === VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.heavy &&
       this.value >= this.#treasureEncumbrance
     );
   }
 
   get atSecondBreakpoint() {
-    const isHeavy = this.#heaviestArmor === OseDataModelCharacterEncumbranceBasic.armorWeight.heavy;
+    const isHeavy = this.#heaviestArmor === VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.heavy;
     const isLightWithTreasure =
-      this.#heaviestArmor === OseDataModelCharacterEncumbranceBasic.armorWeight.light &&
+      this.#heaviestArmor === VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.light &&
       this.value >= this.#treasureEncumbrance;
     return isHeavy || isLightWithTreasure;
   }
 
   get atFirstBreakpoint() {
     return (
-      this.#heaviestArmor === OseDataModelCharacterEncumbranceBasic.armorWeight.light ||
+      this.#heaviestArmor === VogelfreiDataModelCharacterEncumbranceBasic.armorWeight.light ||
       this.overSignificantTreasureThreshold
     );
   }

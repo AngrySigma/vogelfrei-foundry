@@ -4,7 +4,7 @@
 import { countedItems, DEFAULT_ITEM_ENCUMBRANCE, ITEM_ENCUMBRANCE_TYPES } from "../actor/encumbrance-points";
 import { proofToFirearmRating } from "../migrate-playtest-rules-core";
 import costFields from "./cost-fields";
-export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelArmor extends foundry.abstract.TypeDataModel {
   static ArmorTypes = {
     unarmored: "VF.armor.unarmored",
     light: "VF.armor.light",
@@ -33,7 +33,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
     return {
       type: new StringField({
         initial: "light",
-        choices: Object.keys(OseDataModelArmor.ArmorTypes),
+        choices: Object.keys(VogelfreiDataModelArmor.ArmorTypes),
       }),
       // Bonuses added to AC, not replacements for it. Body armour sets both to
       // its Armour Rating; shields are asymmetric -- a buckler helps only in
@@ -78,7 +78,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   get manualTags() {
     if (!this.tags) return null;
 
-    const tagNames = new Set(Object.values(CONFIG.OSE.auto_tags).map(({ label }) => label));
+    const tagNames = new Set(Object.values(CONFIG.VF.auto_tags).map(({ label }) => label));
     return this.tags
       .filter(({ value }) => !tagNames.has(value))
       .map(({ title, value }) => ({
@@ -89,7 +89,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
   }
 
   get autoTags() {
-    const tagNames = Object.values(CONFIG.OSE.auto_tags);
+    const tagNames = Object.values(CONFIG.VF.auto_tags);
 
     const autoTags = this.tags.map(({ value }) => tagNames.find(({ label }) => value === label));
 
@@ -98,7 +98,7 @@ export default class OseDataModelArmor extends foundry.abstract.TypeDataModel {
       : null;
 
     return [
-      { label: OseDataModelArmor.ArmorTypes[this.type], icon: "fa-tshirt" },
+      { label: VogelfreiDataModelArmor.ArmorTypes[this.type], icon: "fa-tshirt" },
       firearm,
       ...autoTags,
       ...this.manualTags,

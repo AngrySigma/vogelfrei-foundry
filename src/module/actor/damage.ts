@@ -2,7 +2,7 @@
  * @file The Wounds/Stamina damage pipeline.
  *
  * Kept free of any Foundry dependency so it can be reasoned about and tested
- * on its own. `OseActor#applyDamage` is a thin wrapper that reads the actor's
+ * on its own. `VogelfreiActor#applyDamage` is a thin wrapper that reads the actor's
  * pools, calls {@link applyDamageToPools}, and writes the result back.
  *
  * Rules: docs/Adventuring/Hazards/Damage.md and
@@ -66,8 +66,7 @@ export function applyDamageToPools(
   damage: number,
   { critical = false }: DamageOptions = {},
 ): DamageOutcome {
-  const clampStamina = (value: number) =>
-    Math.max(0, Math.min(staminaMax, value));
+  const clampStamina = (value: number) => Math.max(0, Math.min(staminaMax, value));
 
   if (!Number.isFinite(damage) || damage === 0) {
     return { wounds, stamina: clampStamina(stamina) };

@@ -10,11 +10,11 @@ import {
   trashChat,
   waitForInput,
 } from "../../e2e/testUtils";
-import OseDice from "../helpers-dice";
+import VogelfreiDice from "../helpers-dice";
 
-export const key = "ose.helpers.dice";
+export const key = "vf.helpers.dice";
 export const options = {
-  displayName: "OSE: Helpers: Dice",
+  displayName: "VF: Helpers: Dice",
 };
 
 const createMockRoll = (target: number, resultArray: Array<number | string> = [target]) => {
@@ -46,7 +46,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     });
 
     it("Can roll with single part", async () => {
-      const dice = await OseDice.sendRoll({
+      const dice = await VogelfreiDice.sendRoll({
         parts: ["1d10"],
         data: { roll: { blindroll: false } },
       });
@@ -61,7 +61,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     });
 
     it("Can roll with multiple parts", async () => {
-      const dice = await OseDice.sendRoll({
+      const dice = await VogelfreiDice.sendRoll({
         parts: ["1d10", "1d20"],
         data: { roll: { blindroll: false } },
       });
@@ -89,20 +89,20 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       const data = createMockData("result", 10);
       it("Successful roll hitting target", () => {
         const roll = createMockRoll(10);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Unsuccessful roll under", () => {
         const roll = createMockRoll(9);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(true);
       });
 
       it("Unsuccessful roll over", () => {
         const roll = createMockRoll(11);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(true);
       });
     });
 
@@ -110,20 +110,20 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       const data = createMockData("above", 10);
       it("Successful roll hitting target", () => {
         const roll = createMockRoll(10);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Unsuccessful roll under", () => {
         const roll = createMockRoll(9);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(true);
       });
 
       it("Successful roll over", () => {
         const roll = createMockRoll(11);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
     });
 
@@ -131,20 +131,20 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       const data = createMockData("below", 10);
       it("Successful roll hitting target", () => {
         const roll = createMockRoll(10);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Successful roll under", () => {
         const roll = createMockRoll(9);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Unsuccessful roll over", () => {
         const roll = createMockRoll(11);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(true);
       });
     });
 
@@ -152,33 +152,33 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       const data = createMockData("check", 10);
       it("Successful roll on a nat 1", () => {
         const roll = createMockRoll(1);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Unsuccessful roll on a nat 20", () => {
         const dataNat20 = createMockData("check", 20);
         const roll = createMockRoll(20);
-        expect(OseDice.digestResult(dataNat20, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(dataNat20, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(dataNat20, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(dataNat20, roll).isFailure).equal(true);
       });
 
       it("Successful roll hitting target", () => {
         const roll = createMockRoll(10);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Successful roll under", () => {
         const roll = createMockRoll(9);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(true);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(false);
       });
 
       it("Unsuccessful roll over", () => {
         const roll = createMockRoll(11);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isFailure).equal(true);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isFailure).equal(true);
       });
     });
 
@@ -196,16 +196,16 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
 
       it("Successful roll hitting target", () => {
         const roll = createMockRoll(9);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).details).equal("Success");
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).details).equal("Success");
       });
 
       it("Successful roll under", () => {
         const roll = createMockRoll(10);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).details).equal("Failure");
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).details).equal("Failure");
       });
     });
 
@@ -213,10 +213,10 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       const data = createMockData("unknown", 10);
       it("Returns default result", () => {
         const roll = createMockRoll(4);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).isSuccess).equal(false);
-        expect(OseDice.digestResult(data, roll).target).equal(10);
-        expect(OseDice.digestResult(data, roll).total).equal(4);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).isSuccess).equal(false);
+        expect(VogelfreiDice.digestResult(data, roll).target).equal(10);
+        expect(VogelfreiDice.digestResult(data, roll).total).equal(4);
       });
     });
   });
@@ -229,37 +229,37 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
 
       it("Natural 1 always fails", () => {
         const rollTargetOne = createMockRoll(1, [1]);
-        expect(OseDice.attackIsSuccess(rollTargetOne, 100, 0)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetOne, 100, 0)).equal(false);
         const rollTargetTwenty = createMockRoll(20, [1]);
-        expect(OseDice.attackIsSuccess(rollTargetTwenty, 100, 0)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetTwenty, 100, 0)).equal(false);
       });
 
       it("Natural 20 always succeeds", () => {
         const rollTargetOne = createMockRoll(1, [20]);
-        expect(OseDice.attackIsSuccess(rollTargetOne, 0, 100)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetOne, 0, 100)).equal(true);
         const rollTargetTwenty = createMockRoll(20, [20]);
-        expect(OseDice.attackIsSuccess(rollTargetTwenty, 0, 100)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetTwenty, 0, 100)).equal(true);
       });
 
       it("Roll + bonus equal target is successful", () => {
         const roll = createMockRoll(10);
         const target = 20;
         const bonus = 10;
-        expect(OseDice.attackIsSuccess(roll, target, bonus)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(roll, target, bonus)).equal(true);
       });
 
       it("Roll + bonus above target is successful", () => {
         const roll = createMockRoll(10);
         const target = 19;
         const bonus = 10;
-        expect(OseDice.attackIsSuccess(roll, target, bonus)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(roll, target, bonus)).equal(true);
       });
 
       it("Roll + bonus under target is unsuccessful", () => {
         const roll = createMockRoll(10);
         const target = 21;
         const bonus = 10;
-        expect(OseDice.attackIsSuccess(roll, target, bonus)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(roll, target, bonus)).equal(false);
       });
     });
 
@@ -270,37 +270,37 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
 
       it("Natural 1 always fails", () => {
         const rollTargetOne = createMockRoll(1, [1]);
-        expect(OseDice.attackIsSuccess(rollTargetOne, 100, 0)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetOne, 100, 0)).equal(false);
         const rollTargetTwenty = createMockRoll(20, [1]);
-        expect(OseDice.attackIsSuccess(rollTargetTwenty, 100, 0)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetTwenty, 100, 0)).equal(false);
       });
 
       it("Natural 20 always succeeds", () => {
         const rollTargetOne = createMockRoll(1, [20]);
-        expect(OseDice.attackIsSuccess(rollTargetOne, 0, 100)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetOne, 0, 100)).equal(true);
         const rollTargetTwenty = createMockRoll(20, [20]);
-        expect(OseDice.attackIsSuccess(rollTargetTwenty, 0, 100)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(rollTargetTwenty, 0, 100)).equal(true);
       });
 
       it("Roll + ac equal thac0 is successful", () => {
         const roll = createMockRoll(10);
         const thac0 = 20;
         const ac = 10;
-        expect(OseDice.attackIsSuccess(roll, thac0, ac)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(roll, thac0, ac)).equal(true);
       });
 
       it("Roll + ac above thac0 is successful", () => {
         const roll = createMockRoll(10);
         const thac0 = 19;
         const ac = 10;
-        expect(OseDice.attackIsSuccess(roll, thac0, ac)).equal(true);
+        expect(VogelfreiDice.attackIsSuccess(roll, thac0, ac)).equal(true);
       });
 
       it("Roll + ac under thac0 is unsuccessful", () => {
         const roll = createMockRoll(10);
         const thac0 = 21;
         const ac = 10;
-        expect(OseDice.attackIsSuccess(roll, thac0, ac)).equal(false);
+        expect(VogelfreiDice.attackIsSuccess(roll, thac0, ac)).equal(false);
       });
     });
   });
@@ -319,51 +319,51 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     it("Hits on equal to the target's AC", () => {
       // A total that exactly matches the AC lands; it need not beat it.
       const roll = createMockRoll(14);
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isFailure).equal(false);
     });
 
     it("Hits above the target's AC", () => {
       const roll = createMockRoll(15);
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(true);
     });
 
     it("Misses below the target's AC", () => {
       const roll = createMockRoll(13);
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
-      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isFailure).equal(true);
     });
 
     it("Uses the AC variant the attacker chose", () => {
       const vsMonster = { roll: { ...data.roll, acVariant: "meleeMonster" } };
       const roll = createMockRoll(12);
       // 12 misses AC 14 but lands on the monster variant's 12.
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
-      expect(OseDice.digestAttackResult(vsMonster, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(VogelfreiDice.digestAttackResult(vsMonster, roll).isSuccess).equal(true);
     });
 
     it("Defaults a ranged attack to the ranged AC", () => {
       const ranged = { roll: { ...data.roll, type: "missile" } };
       const roll = createMockRoll(15);
-      expect(OseDice.digestAttackResult(ranged, roll).isSuccess).equal(true);
-      expect(OseDice.digestAttackResult(ranged, createMockRoll(14)).isSuccess).equal(false);
+      expect(VogelfreiDice.digestAttackResult(ranged, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(ranged, createMockRoll(14)).isSuccess).equal(false);
     });
 
     it("Natural 1 always misses, whatever the total", () => {
       const roll = createMockRoll(100, [1]);
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(false);
-      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(false);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isFailure).equal(true);
     });
 
     it("Natural 20 always hits, whatever the total", () => {
       const roll = createMockRoll(0, [20]);
-      expect(OseDice.digestAttackResult(data, roll).isSuccess).equal(true);
-      expect(OseDice.digestAttackResult(data, roll).isFailure).equal(false);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, roll).isFailure).equal(false);
     });
 
     it("Flags a natural 20 as a critical", () => {
-      expect(OseDice.digestAttackResult(data, createMockRoll(0, [20])).isCritical).equal(true);
-      expect(OseDice.digestAttackResult(data, createMockRoll(14, [14])).isCritical).equal(false);
+      expect(VogelfreiDice.digestAttackResult(data, createMockRoll(0, [20])).isCritical).equal(true);
+      expect(VogelfreiDice.digestAttackResult(data, createMockRoll(14, [14])).isCritical).equal(false);
     });
 
     describe("Monsters, which carry one AC rather than a table", () => {
@@ -376,18 +376,18 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       });
 
       it("Reads the monster's single AC", () => {
-        expect(OseDice.digestAttackResult(monster(12), createMockRoll(12)).target).equal(12);
+        expect(VogelfreiDice.digestAttackResult(monster(12), createMockRoll(12)).target).equal(12);
       });
 
       it("Hits a monster on equal or above", () => {
-        expect(OseDice.digestAttackResult(monster(12), createMockRoll(12)).isSuccess).equal(true);
-        expect(OseDice.digestAttackResult(monster(12), createMockRoll(13)).isSuccess).equal(true);
+        expect(VogelfreiDice.digestAttackResult(monster(12), createMockRoll(12)).isSuccess).equal(true);
+        expect(VogelfreiDice.digestAttackResult(monster(12), createMockRoll(13)).isSuccess).equal(true);
       });
 
       it("Misses a monster below its AC", () => {
         // Before the single-AC fallback this came back as a hit: the variant
         // lookup found nothing and the roll was treated as untargeted.
-        const result = OseDice.digestAttackResult(monster(12), createMockRoll(11));
+        const result = VogelfreiDice.digestAttackResult(monster(12), createMockRoll(11));
         expect(result.isSuccess).equal(false);
         expect(result.isFailure).equal(true);
       });
@@ -399,15 +399,15 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
             target: { actor: { system: { ac: { value: 99, values: { melee: 14 } } } } },
           },
         };
-        expect(OseDice.digestAttackResult(both, createMockRoll(14)).target).equal(14);
+        expect(VogelfreiDice.digestAttackResult(both, createMockRoll(14)).target).equal(14);
       });
     });
 
     it("Reports the total when there is no target, rather than inventing a defender", () => {
       const noTarget = { roll: { type: "melee" } };
       const roll = createMockRoll(3);
-      expect(OseDice.digestAttackResult(noTarget, roll).isSuccess).equal(true);
-      expect(OseDice.digestAttackResult(noTarget, roll).target).equal(null);
+      expect(VogelfreiDice.digestAttackResult(noTarget, roll).isSuccess).equal(true);
+      expect(VogelfreiDice.digestAttackResult(noTarget, roll).target).equal(null);
     });
   });
 
@@ -436,7 +436,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       ui.notifications?.clear();
       const rollData = createMockAttackData();
       rollData.data.roll.dmg = [];
-      await OseDice.sendAttackRoll(rollData);
+      await VogelfreiDice.sendAttackRoll(rollData);
       await waitForInput();
       expect(getActiveNotifications().map((li) => li?.textContent?.trim()))
         .to.be.an("array")
@@ -449,7 +449,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       CONFIG.Dice.randomUniform = () => rollSpecificNumber(10, 20);
 
       const rollData = createMockAttackData();
-      await OseDice.sendAttackRoll(rollData);
+      await VogelfreiDice.sendAttackRoll(rollData);
       await waitForInput();
       await waitForInput();
       await waitForInput();
@@ -471,7 +471,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     describe("Skipping dialog", () => {
       const skipDialog = true;
       it("produces a roll chat message", async () => {
-        await OseDice.RollSave({
+        await VogelfreiDice.RollSave({
           parts: ["1d10"],
           skipDialog,
           data: { roll: { blindroll: false } },
@@ -485,7 +485,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
 
     describe("Not skipping dialog", () => {
       it("produces a dialog", async () => {
-        OseDice.RollSave({
+        VogelfreiDice.RollSave({
           parts: ["1d10"],
           data: { roll: { blindroll: false } },
           title: "Test Roll",
@@ -509,7 +509,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
     describe("Skipping dialog", () => {
       const skipDialog = true;
       it("produces a roll chat message", async () => {
-        await OseDice.Roll({
+        await VogelfreiDice.Roll({
           parts: ["1d10"],
           skipDialog,
           data: { roll: { blindroll: false } },
@@ -523,7 +523,7 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
 
     describe("Not skipping dialog", () => {
       it("produces a dialog", async () => {
-        OseDice.Roll({
+        VogelfreiDice.Roll({
           parts: ["1d10"],
           data: { roll: { blindroll: false } },
           title: "Test Roll",

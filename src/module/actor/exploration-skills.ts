@@ -19,7 +19,7 @@ export type ExplorationSkillEntry = {
 };
 
 export const explorationSkillKeys = (): ExplorationSkill[] =>
-  Object.keys(CONFIG.OSE.exploration_skills) as ExplorationSkill[];
+  Object.keys(CONFIG.VF.exploration_skills) as ExplorationSkill[];
 
 /**
  * The chance actually rolled against for a skill.
@@ -75,7 +75,7 @@ export const prepareExplorationSkills = (
     key,
     value: exploration[key],
     total: explorationSkillTotal(key, exploration[key] ?? 0, strengthMod),
-    long: game.i18n.localize(CONFIG.OSE.exploration_skills[key]),
+    long: game.i18n.localize(CONFIG.VF.exploration_skills[key]),
     short: game.i18n.localize(`VF.exploration.${key}.short`),
-    abbreviation: game.i18n.localize(CONFIG.OSE.exploration_skills_short[key]),
+    abbreviation: game.i18n.localize(CONFIG.VF.exploration_skills_short[key]),
   }));

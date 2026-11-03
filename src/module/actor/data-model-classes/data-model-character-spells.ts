@@ -40,7 +40,7 @@ export interface CharacterSpells {
   readonly slots: Slots;
 }
 
-export default class OseDataModelCharacterSpells implements CharacterSpells {
+export default class VogelfreiDataModelCharacterSpells implements CharacterSpells {
   #slots: Slots = {};
 
   #spellList: Item[] = [];
