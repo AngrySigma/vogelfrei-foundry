@@ -41,6 +41,7 @@ system:
     value: 0
     max: 0
   description: "<p>Functions as a Medium melee weapon</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

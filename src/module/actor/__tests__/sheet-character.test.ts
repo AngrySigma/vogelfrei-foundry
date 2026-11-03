@@ -83,6 +83,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
 
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
+      expect(windows[0].options.height).equal(400);
 
       for (const window of windows) {
         await window.close();

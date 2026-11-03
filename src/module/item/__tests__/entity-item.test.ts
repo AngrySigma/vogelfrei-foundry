@@ -42,6 +42,20 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
     it("Asking for other items return null", () => expect(defaultIcons.non_existing).is.undefined);
   });
 
+  describe("migrateData()", () => {
+    it("Maps existing standard weapons and ammunition without overwriting a special ammo choice", () => {
+      const bow = { name: "Bow", type: "weapon", system: { tags: [], ammunition: undefined as string | undefined } };
+      const arrows = { name: "Arrows", type: "item", system: { ammunition: undefined as string | undefined } };
+      const special = { name: "Silver Arrows", type: "item", system: { ammunition: "arrow" } };
+      OseItem.migrateData(bow);
+      OseItem.migrateData(arrows);
+      OseItem.migrateData(special);
+      expect(bow.system.ammunition).equal("arrow");
+      expect(arrows.system.ammunition).equal("arrow");
+      expect(special.system.ammunition).equal("arrow");
+    });
+  });
+
   describe("create()", () => {
     const testItemCreate = async (type: string) => {
       const item = await createWorldTestItem(type);

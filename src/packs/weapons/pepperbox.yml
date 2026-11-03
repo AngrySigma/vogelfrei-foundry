@@ -39,6 +39,7 @@ system:
     value: 0
     max: 0
   description: "<p>The familiar revolving pepperbox is a 19th-century weapon</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

@@ -39,6 +39,7 @@ system:
     value: 0
     max: 0
   description: "<p>Kept as a later concealed weapon</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

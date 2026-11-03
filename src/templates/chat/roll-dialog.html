@@ -17,6 +17,16 @@
             {{/each}}
         </select>
     </div>
+    {{#if ammunition}}
+    <div class="form-group">
+        <label>{{localize "VF.items.Ammunition"}}</label>
+        <select name="ammunition">
+            {{#each ammunition}}
+            <option value="{{this.id}}">{{this.name}} ({{this.quantity}})</option>
+            {{/each}}
+        </select>
+    </div>
+    {{/if}}
     {{#if isMelee}}
     <div class="form-group">
         <label>{{localize "VF.WeaponLength"}}</label>

@@ -39,6 +39,7 @@ system:
     value: 0
     max: 0
   description: "<p>Its self-rotation by recoil is outside period technology</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

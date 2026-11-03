@@ -34,6 +34,7 @@ export default class VogelfreiCharacterCreator extends FormApplication {
       id: "character-creator",
       template: `${VF.systemPath()}/templates/actors/dialogs/character-creation.html`,
       width: 300,
+      height: 400,
     });
   }
 

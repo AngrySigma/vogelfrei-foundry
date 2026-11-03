@@ -308,6 +308,15 @@ const VogelfreiDice = {
       ui.notifications.error("Attack has no damage dice terms; be sure to set the attack's damage");
       return;
     }
+    if (data.roll.type === "missile" && data.roll.ammunitionType) {
+      const ammunitionId = form?.ammunition?.value || data.roll.ammunition?.[0]?.id;
+      const selected = data.actor?.items.get(ammunitionId);
+      if (!selected || selected.system.ammunition !== data.roll.ammunitionType || selected.system.quantity.value < 1) {
+        ui.notifications.warn(game.i18n.localize("VF.messages.AmmunitionUnavailable"));
+        return false;
+      }
+      await selected.update({ "system.quantity.value": selected.system.quantity.value - 1 });
+    }
     const template = `${VF.systemPath()}/templates/chat/roll-attack.html`;
     const chatData = {
       user: game.user.id,
@@ -517,11 +526,16 @@ const VogelfreiDice = {
     let rolled = false;
     const template = `${VF.systemPath()}/templates/chat/roll-dialog.html`;
     const isAttack = ["melee", "missile", "attack"].includes(data.roll.type);
+    if (data.roll.ammunitionType && !data.roll.ammunition?.length) {
+      ui.notifications.warn(game.i18n.format("VF.messages.NoAmmunition", { name: data.actor.name }));
+      return false;
+    }
     const held = data.roll.stances ? currentStance(data.actor) : null;
     const dialogData = {
       formula: parts.join(" "),
       data,
       isAttack,
+      ammunition: data.roll.ammunition,
       // Weapon length and stances are melee business only.
       isMelee: isAttack && data.roll.type !== "missile",
       stances: data.roll.stances

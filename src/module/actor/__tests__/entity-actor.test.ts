@@ -22,6 +22,7 @@ import {
  * @file Contains tests for Actor Entity.
  */
 import type { ExplorationSkill } from "../../config";
+import OseDice from "../../helpers-dice";
 // eslint-disable-next-line import/no-cycle
 import VogelfreiItem from "../../item/entity";
 import VogelfreiActor from "../entity";
@@ -841,6 +842,59 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await waitUntil(() => game.messages?.size === 1);
       await actor.delete();
       await item?.delete();
+    });
+
+    it("Deducts only the selected compatible ammunition", async () => {
+      const actor = (await createMockActor("character")) as OseActor;
+      await actor.createEmbeddedDocuments("Item", [
+        { name: "Test Bow", type: "weapon", system: { missile: true, melee: false, ammunition: "arrow" } },
+        { name: "Arrows", type: "item", system: { ammunition: "arrow", quantity: { value: 20 } } },
+        { name: "Silver Arrows", type: "item", system: { ammunition: "arrow", quantity: { value: 5 } } },
+        { name: "Crossbow Bolts", type: "item", system: { ammunition: "bolt", quantity: { value: 7 } } },
+      ]);
+      const bow = actor.items.getName("Test Bow");
+      const arrows = actor.items.getName("Arrows");
+      const silverArrows = actor.items.getName("Silver Arrows");
+      const bolts = actor.items.getName("Crossbow Bolts");
+
+      await actor.rollAttack({ roll: {}, item: bow }, { type: "missile", skipDialog: true });
+      expect(arrows?.system.quantity.value).equal(19);
+      expect(silverArrows?.system.quantity.value).equal(5);
+      expect(bolts?.system.quantity.value).equal(7);
+
+      await OseDice.sendAttackRoll({
+        parts: ["1d20"],
+        data: {
+          actor,
+          roll: {
+            type: "missile",
+            dmg: ["1d8"],
+            ammunitionType: "arrow",
+            ammunition: [
+              { id: arrows?.id, name: "Arrows", quantity: 19 },
+              { id: silverArrows?.id, name: "Silver Arrows", quantity: 5 },
+            ],
+          },
+        },
+        form: { ammunition: { value: silverArrows?.id } },
+      });
+      expect(arrows?.system.quantity.value).equal(19);
+      expect(silverArrows?.system.quantity.value).equal(4);
+      expect(bolts?.system.quantity.value).equal(7);
+      await actor.delete();
+    });
+
+    it("Does not fire a mapped weapon without compatible ammunition", async () => {
+      const actor = (await createMockActor("character")) as OseActor;
+      await actor.createEmbeddedDocuments("Item", [
+        { name: "Test Bow", type: "weapon", system: { missile: true, melee: false, ammunition: "arrow" } },
+        { name: "Crossbow Bolts", type: "item", system: { ammunition: "bolt", quantity: { value: 7 } } },
+      ]);
+      const bow = actor.items.getName("Test Bow");
+      const result = await actor.rollAttack({ roll: {}, item: bow }, { type: "missile", skipDialog: true });
+      expect(result).equal(false);
+      expect(actor.items.getName("Crossbow Bolts")?.system.quantity.value).equal(7);
+      await actor.delete();
     });
 
     // @todo: How to verify if possible to miss, thus obfuscating dmg roll?
