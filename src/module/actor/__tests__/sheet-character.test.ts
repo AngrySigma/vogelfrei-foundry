@@ -17,10 +17,10 @@ import {
   waitForInput,
   waitUntil,
 } from "../../../e2e/testUtils";
-import type OseActorSheetCharacter from "../character-sheet";
+import type VogelfreiActorSheetCharacter from "../character-sheet";
 
-export const key = "ose.actor.sheet.character";
-export const options = { displayName: "OSE: Actor: Sheet: Character" };
+export const key = "vf.actor.sheet.character";
+export const options = { displayName: "VF: Actor: Sheet: Character" };
 
 export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
   after(async () => {
@@ -31,9 +31,9 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
   describe("defaultOptions()", () => {
     it("Has correctly set defaultOptions", async () => {
       const actor = await createMockActorKey("character", {}, key);
-      const sheet = actor?.sheet as unknown as OseActorSheetCharacter;
+      const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
-      expect(sheet.options.classes).contain("ose");
+      expect(sheet.options.classes).contain("vf");
       expect(sheet.options.classes).contain("sheet");
       expect(sheet.options.classes).contain("actor");
       expect(sheet.options.classes).contain("character");
@@ -76,7 +76,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
 
     it("renders the character creator", async () => {
       const actor = await createMockActorKey("character", {}, key);
-      const sheet = actor?.sheet as unknown as OseActorSheetCharacter;
+      const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
       await waitForInput();
@@ -92,7 +92,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
 
     it("clicking on the dices generates scores", async () => {
       const actor = await createMockActorKey("character", {}, key);
-      const sheet = actor?.sheet as unknown as OseActorSheetCharacter;
+      const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
       await delay(400);
@@ -118,7 +118,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
     // @todo: this needs fixing
     it("saving scores records data to actor", async () => {
       const actor = await createMockActorKey("character", {}, key);
-      const sheet = actor?.sheet as unknown as OseActorSheetCharacter;
+      const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
       await delay(400);
@@ -226,7 +226,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
 
       const dialogs = openV2Dialogs();
       expect(dialogs.length).equal(1);
-      dialogs[0].close();
+      await dialogs[0].close();
     });
 
     it("adds language on OK", async () => {
@@ -236,7 +236,8 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       // The previous test's dialog may still be closing; wait for this one alone.
       await waitUntil(() => openV2Dialogs().length === 1, { timeout: 1000 });
 
-      $(`button[data-action="ok"]`).trigger("click");
+      await waitUntil(() => document.querySelector(`button[data-action="ok"]`) !== null);
+      document.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
       await waitUntil(() => openV2Dialogs().length === 0 && actor?.system.languages.value.length === 1, {
         timeout: 1000,
       });

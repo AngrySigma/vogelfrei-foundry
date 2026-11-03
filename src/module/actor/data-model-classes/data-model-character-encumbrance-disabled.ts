@@ -2,16 +2,16 @@
  * @file A class representing the "Disabled" encumbrance scheme;
  *       we aren't tracking carry weight here.
  */
-import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
-// import { OSE } from '../../config';
+// import { VF } from '../../config';
 
 /**
  * @todo Add template path for encumbrance bar
  * @todo Add template path for inventory item row
  */
-export default class OseDataModelCharacterEncumbranceDisabled
-  extends OseDataModelCharacterEncumbrance
+export default class VogelfreiDataModelCharacterEncumbranceDisabled
+  extends VogelfreiDataModelCharacterEncumbrance
   implements CharacterEncumbrance
 {
   static templateEncumbranceBar = "";
@@ -29,7 +29,7 @@ export default class OseDataModelCharacterEncumbranceDisabled
   static localizedLabel = "VF.Setting.EncumbranceDisabled";
 
   constructor() {
-    super(OseDataModelCharacterEncumbranceDisabled.type);
+    super(VogelfreiDataModelCharacterEncumbranceDisabled.type);
   }
 
   static defineSchema() {
@@ -38,7 +38,7 @@ export default class OseDataModelCharacterEncumbranceDisabled
 
     return new SchemaField({
       variant: new StringField({
-        initial: OseDataModelCharacterEncumbranceDisabled.type,
+        initial: VogelfreiDataModelCharacterEncumbranceDisabled.type,
       }),
       enabled: new BooleanField({ initial: true }),
       encumbered: new BooleanField({ initial: false }),

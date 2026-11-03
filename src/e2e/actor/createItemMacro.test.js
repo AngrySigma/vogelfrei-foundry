@@ -1,7 +1,7 @@
-import { createOseMacro } from "../../module/macros";
+import { createVogelfreiMacro } from "../../module/macros";
 import { trashChat, waitForInput } from "../testUtils";
 
-export const key = "ose.actor.macro";
+export const key = "vf.actor.macro";
 export const options = {
   displayName: "The Character Sheet: Item Macros",
 };
@@ -39,11 +39,11 @@ export default ({ before, after, describe, it, expect }) => {
     await createItem(type);
     const item = testActor().items.contents[0];
     const data = createItemMacroData(item);
-    await createOseMacro(data, 1);
+    await createVogelfreiMacro(data, 1);
     await waitForInput();
 
     const createdMacro = game.user.getHotbarMacros()[0];
-    expect(createdMacro?.macro?.command.indexOf("game.ose.rollItemMacro")).not.equal(-1);
+    expect(createdMacro?.macro?.command.indexOf("game.vf.rollItemMacro")).not.equal(-1);
   };
 
   before(async () => {

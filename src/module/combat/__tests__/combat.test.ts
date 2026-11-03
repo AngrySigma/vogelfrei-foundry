@@ -1,5 +1,5 @@
 /**
- * @file Combat tests for OSE module
+ * @file Combat tests for the Vogelfrei system
  */
 // eslint-disable-next-line import/no-cycle
 
@@ -13,41 +13,41 @@ import {
   waitForInput,
   waitUntil,
 } from "../../../e2e/testUtils";
-import type OseActor from "../../actor/entity";
-import { OSECombat } from "../combat";
+import type VogelfreiActor from "../../actor/entity";
+import { VFCombat } from "../combat";
 
-export const key = "ose.combat";
+export const key = "vf.combat";
 export const options = {
-  displayName: "OSE: Combat",
+  displayName: "VF: Combat",
 };
 
 export default ({ describe, it, expect, after, afterEach, before }: QuenchMethods) => {
-  const oseCombat = new OSECombat();
-  let pc1: OseActor | Document | null = null;
-  let pc2: OseActor | Document | null = null;
-  let friendlyCharacter1: OseActor | Document | null = null;
-  let friendlyCharacter2: OseActor | Document | null = null;
-  let neutralCharacter1: OseActor | Document | null = null;
-  let neutralCharacter2: OseActor | Document | null = null;
-  let hostileCharacter1: OseActor | Document | null = null;
-  let hostileCharacter2: OseActor | Document | null = null;
-  let friendlyMonster1: OseActor | Document | null = null;
-  let friendlyMonster2: OseActor | Document | null = null;
-  let neutralMonster1: OseActor | Document | null = null;
-  let neutralMonster2: OseActor | Document | null = null;
-  let hostileMonster1: OseActor | Document | null = null;
-  let hostileMonster2: OseActor | Document | null = null;
-  let friendlyRetainer1: OseActor | Document | null = null;
-  let friendlyRetainer2: OseActor | Document | null = null;
-  let neutralRetainer1: OseActor | Document | null = null;
-  let neutralRetainer2: OseActor | Document | null = null;
-  let hostileRetainer1: OseActor | Document | null = null;
-  let hostileRetainer2: OseActor | Document | null = null;
+  const vfCombat = new VFCombat();
+  let pc1: VogelfreiActor | Document | null = null;
+  let pc2: VogelfreiActor | Document | null = null;
+  let friendlyCharacter1: VogelfreiActor | Document | null = null;
+  let friendlyCharacter2: VogelfreiActor | Document | null = null;
+  let neutralCharacter1: VogelfreiActor | Document | null = null;
+  let neutralCharacter2: VogelfreiActor | Document | null = null;
+  let hostileCharacter1: VogelfreiActor | Document | null = null;
+  let hostileCharacter2: VogelfreiActor | Document | null = null;
+  let friendlyMonster1: VogelfreiActor | Document | null = null;
+  let friendlyMonster2: VogelfreiActor | Document | null = null;
+  let neutralMonster1: VogelfreiActor | Document | null = null;
+  let neutralMonster2: VogelfreiActor | Document | null = null;
+  let hostileMonster1: VogelfreiActor | Document | null = null;
+  let hostileMonster2: VogelfreiActor | Document | null = null;
+  let friendlyRetainer1: VogelfreiActor | Document | null = null;
+  let friendlyRetainer2: VogelfreiActor | Document | null = null;
+  let neutralRetainer1: VogelfreiActor | Document | null = null;
+  let neutralRetainer2: VogelfreiActor | Document | null = null;
+  let hostileRetainer1: VogelfreiActor | Document | null = null;
+  let hostileRetainer2: VogelfreiActor | Document | null = null;
   // The hasPlayerOwner assertions need a non-GM user. Headless/CI worlds may
   // not have one, so we create one for the batch and remove it afterwards.
   let createdTestUser: User | null = null;
 
-  const createCombatant = async (actor: OseActor) => {
+  const createCombatant = async (actor: VogelfreiActor) => {
     const token = await actor.getTokenDocument();
     await token.constructor.create(token, { parent: canvas.scene });
   };
@@ -318,12 +318,12 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
 
   describe("Static properties", () => {
     it("should have the correct initiative formula", () => {
-      expect(OSECombat.FORMULA).to.equal("1d6 + @init");
-      expect(OSECombat.GROUP_FORMULA).to.equal("1d6");
+      expect(VFCombat.FORMULA).to.equal("1d6 + @init");
+      expect(VFCombat.GROUP_FORMULA).to.equal("1d6");
     });
 
-    it("GROUPS should combine OSE colors with action groups", () => {
-      expect(OSECombat.GROUPS).to.eql({
+    it("GROUPS should combine VF colors with action groups", () => {
+      expect(VFCombat.GROUPS).to.eql({
         green: game.i18n.localize("VF.colors.green"),
         red: game.i18n.localize("VF.colors.red"),
         yellow: game.i18n.localize("VF.colors.yellow"),
@@ -351,13 +351,13 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
 
     it('should return true when initiative setting is "group"', () => {
       expect(game.settings.get(game.system.id, "initiative")).to.equal("group");
-      expect(oseCombat.isGroupInitiative).to.be.true;
+      expect(vfCombat.isGroupInitiative).to.be.true;
     });
 
     it('should return false when initiative setting is not "group"', async () => {
       await game.settings.set(game.system.id, "initiative", "individual");
       expect(game.settings.get(game.system.id, "initiative")).to.equal("individual");
-      expect(oseCombat.isGroupInitiative).to.be.false;
+      expect(vfCombat.isGroupInitiative).to.be.false;
     });
   });
 
@@ -479,26 +479,26 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       );
       expect(hostileRetainer2?.hasPlayerOwner).to.be.false;
 
-      await createCombatant(pc1 as OseActor);
-      await createCombatant(pc2 as OseActor);
-      await createCombatant(friendlyCharacter1 as OseActor);
-      await createCombatant(friendlyCharacter2 as OseActor);
-      await createCombatant(neutralCharacter1 as OseActor);
-      await createCombatant(neutralCharacter2 as OseActor);
-      await createCombatant(hostileCharacter1 as OseActor);
-      await createCombatant(hostileCharacter2 as OseActor);
-      await createCombatant(friendlyMonster1 as OseActor);
-      await createCombatant(friendlyMonster2 as OseActor);
-      await createCombatant(neutralMonster1 as OseActor);
-      await createCombatant(neutralMonster2 as OseActor);
-      await createCombatant(hostileMonster1 as OseActor);
-      await createCombatant(hostileMonster2 as OseActor);
-      await createCombatant(friendlyRetainer1 as OseActor);
-      await createCombatant(friendlyRetainer2 as OseActor);
-      await createCombatant(neutralRetainer1 as OseActor);
-      await createCombatant(neutralRetainer2 as OseActor);
-      await createCombatant(hostileRetainer1 as OseActor);
-      await createCombatant(hostileRetainer2 as OseActor);
+      await createCombatant(pc1 as VogelfreiActor);
+      await createCombatant(pc2 as VogelfreiActor);
+      await createCombatant(friendlyCharacter1 as VogelfreiActor);
+      await createCombatant(friendlyCharacter2 as VogelfreiActor);
+      await createCombatant(neutralCharacter1 as VogelfreiActor);
+      await createCombatant(neutralCharacter2 as VogelfreiActor);
+      await createCombatant(hostileCharacter1 as VogelfreiActor);
+      await createCombatant(hostileCharacter2 as VogelfreiActor);
+      await createCombatant(friendlyMonster1 as VogelfreiActor);
+      await createCombatant(friendlyMonster2 as VogelfreiActor);
+      await createCombatant(neutralMonster1 as VogelfreiActor);
+      await createCombatant(neutralMonster2 as VogelfreiActor);
+      await createCombatant(hostileMonster1 as VogelfreiActor);
+      await createCombatant(hostileMonster2 as VogelfreiActor);
+      await createCombatant(friendlyRetainer1 as VogelfreiActor);
+      await createCombatant(friendlyRetainer2 as VogelfreiActor);
+      await createCombatant(neutralRetainer1 as VogelfreiActor);
+      await createCombatant(neutralRetainer2 as VogelfreiActor);
+      await createCombatant(hostileRetainer1 as VogelfreiActor);
+      await createCombatant(hostileRetainer2 as VogelfreiActor);
       await waitForInput();
     });
   });
@@ -927,9 +927,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       rollAllButton?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
       // The click handler rolls 20 initiatives asynchronously; wait until all
       // rolls and chat messages have landed before asserting.
-      await waitUntil(
-        () => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null),
-      );
+      await waitUntil(() => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null));
       await waitForInput();
       expect(game.messages.size).to.equal(20);
       for (const combatant of game.combat.combatants.contents.map((g) => g.name)) {
@@ -982,9 +980,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
     it("should reroll initiative for all combatants on new round", async () => {
       await game?.combat?.nextRound();
       // nextRound rerolls 20 initiatives asynchronously.
-      await waitUntil(
-        () => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null),
-      );
+      await waitUntil(() => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null));
       await waitForInput();
       expect(game.combat?.started).to.be.true;
       expect(game.combat?.round).to.equal(2);
@@ -1064,9 +1060,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
 
     it("should reset initiative for all combatants on new round", async () => {
       await game?.combat?.smartRerollInitiative();
-      await waitUntil(
-        () => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null),
-      );
+      await waitUntil(() => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null));
       expect(game.messages.size).to.equal(20);
       for (const group of game.combat?.groups ?? []) {
         expect(group?.initiative).to.not.be.null;
@@ -1129,9 +1123,7 @@ export default ({ describe, it, expect, after, afterEach, before }: QuenchMethod
       await game.combat.startCombat();
       // startCombat rolls 20 initiatives asynchronously; wait for all
       // rolls/messages to land so later tests see a settled state.
-      await waitUntil(
-        () => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null),
-      );
+      await waitUntil(() => game.messages.size === 20 && !game.combat?.combatants?.some((c) => c.initiative === null));
       await waitForInput();
       expect(game.combat?.started).to.be.true;
       expect(game.combat?.round).to.equal(1);

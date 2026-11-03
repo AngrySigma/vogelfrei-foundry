@@ -81,23 +81,24 @@ with `system.json` and `system.zip`. Prod then updates through Foundry's own upd
 ## Architecture
 
 Entry point: `src/vogelfrei.js` registers settings, document classes, data models, sheets and
-hooks. Internal names still say OSE (`OseActor`, `OseItem`, `CONFIG.OSE`, `OseDataModel*`),
-which is a leftover of the fork and not a sign of untouched code. User-facing strings live in
-`src/lang/en.json` under the **`VF.*`** namespace.
+hooks. Runtime names use Vogelfrei (`VogelfreiActor`, `VogelfreiItem`, `CONFIG.VF`,
+`VogelfreiDataModel*`). The legacy `game.ose` alias and `flags.ose` reads only keep existing
+Vogelfrei worlds and macros working. User-facing strings live in `src/lang/en.json` under the
+**`VF.*`** namespace.
 
 **Data model.** `template.json` plus the TypeDataModels in `src/module/actor/data-model-*.js`
 and `src/module/item/data-model-*.js`. The keys were **renamed**, not just relabelled:
 - scores: `strength, toughness, agility, intelligence, willpower, leadership`
 - saves, in the book's order: `paralysis, poison, breath, device, magic`
 - `wounds` (was `hp`) and `stamina` pools, plus `ws` / `bs` (Weapon / Ballistic Skill)
-- `exploration` holds the nine x-in-6 skills listed in `CONFIG.OSE.exploration_skills`
+- `exploration` holds the nine x-in-6 skills listed in `CONFIG.VF.exploration_skills`
   (`src/module/config.ts`). Their sheet view, and the 2d6 roll at 6-in-6 or 0-in-6, are in
   `actor/exploration-skills.ts`.
 - `ac`/`aac`/`thac0` remain in `template.json` as legacy fields. Vogelfrei AC does not come from them.
 
 **Rules modules.** These are pure and Foundry-free where possible, so they can be tested:
 - `actor/damage.ts`: the Wounds/Stamina pipeline (Stamina first, coupled loss, crits/bypass
-  straight to Wounds, no Stamina for monsters). `OseActor#applyDamage` in `actor/entity.js` is
+  straight to Wounds, no Stamina for monsters). `VogelfreiActor#applyDamage` in `actor/entity.js` is
   a thin wrapper around it.
 - `actor/data-model-classes/data-model-character-ac.ts`: `ARMOUR_CLASS_VARIANTS` is the single
   table of AC formulas (melee, meleeMonster, ranged, firearm, surprised), all from

@@ -83,8 +83,10 @@ export function parseMoney(text: string): Money {
   if (!match) throw new Error(`Unreadable price ${JSON.stringify(text)}`);
 
   const [, amount, unit, plus] = match;
+  const multiplier = unit ? UNITS[unit.toLowerCase()] : undefined;
+  if (multiplier === undefined) throw new Error(`Unreadable price ${JSON.stringify(text)}`);
   return {
-    bp: Number(amount) * UNITS[unit.toLowerCase()],
+    bp: Number(amount) * multiplier,
     minimum: plus === "+",
   };
 }

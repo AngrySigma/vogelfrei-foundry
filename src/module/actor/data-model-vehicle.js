@@ -14,7 +14,7 @@
 import { ANIMAL_ITEMS_PER_POINT } from "../party/travel";
 import { encumbranceBreakdown } from "./encumbrance-points";
 
-export default class OseDataModelVehicle extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelVehicle extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const { HTMLField, NumberField, SchemaField, StringField } = foundry.data.fields;
 

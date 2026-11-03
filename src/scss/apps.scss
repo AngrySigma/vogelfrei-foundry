@@ -1,4 +1,4 @@
-.ose.roll-dialog {
+.vf.roll-dialog {
   .roll-details {
     font-weight: bold;
     text-align: center;
@@ -23,7 +23,7 @@
   justify-content: center;
 }
 
-.ose.dialog.creator {
+.vf.dialog.creator {
   .attribute-list {
     .form-fields {
       flex: 0 0 50px;
@@ -53,7 +53,7 @@
   }
 }
 
-.ose.dialog.gp-cost {
+.vf.dialog.gp-cost {
   .item-list {
     margin: 0;
     padding: 0;
@@ -103,7 +103,7 @@
   }
 }
 
-.ose.dialog.modifiers {
+.vf.dialog.modifiers {
   .attribute-bonuses {
     label {
       font-weight: bold;
@@ -170,7 +170,7 @@
   }
 }
 
-.ose.chat-block {
+.vf.chat-block {
   margin: 0;
 
   .chat-header {
@@ -260,7 +260,7 @@
   }
 }
 
-.ose.chat-card {
+.vf.chat-card {
   font-style: normal;
   font-size: var(--font-size-12);
 
@@ -690,7 +690,7 @@
         }
 
         &:has(input[value="white"]) {
-          --combat-set-option-bg: var(--ose-group-color-white);
+          --combat-set-option-bg: var(--vf-group-color-white);
           --combat-set-option-font-color: black;
         }
       }

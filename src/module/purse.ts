@@ -8,7 +8,7 @@
  * Vogelfrei's coinage is not decimal, so paying means totalling the purse in
  * brass, taking the price out, and counting the change back into coins.
  *
- * Coin Items -- how OSE, and this system before 0.5, kept money -- are still
+ * Coin Items -- how this system before 0.5 kept money -- are still
  * recognised, so an old character's gold can be folded into the purse.
  *
  * Foundry-free, so the arithmetic can be checked on its own.

@@ -5,9 +5,9 @@
 
 import { animalOwnPoints, BARDING_POINTS, band } from "../party/travel";
 import { normaliseAlignment } from "./alignment";
-import OseDataModelCharacterEncumbranceDisabled from "./data-model-classes/data-model-character-encumbrance-disabled";
-import OseDataModelCharacterMove from "./data-model-classes/data-model-character-move";
-import OseDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
+import VogelfreiDataModelCharacterEncumbranceDisabled from "./data-model-classes/data-model-character-encumbrance-disabled";
+import VogelfreiDataModelCharacterMove from "./data-model-classes/data-model-character-move";
+import VogelfreiDataModelCharacterSpells from "./data-model-classes/data-model-character-spells";
 import { encumbranceBreakdown } from "./encumbrance-points";
 
 const getItemsOfActorOfType = (actor, filterType, filterFn = null) =>
@@ -22,12 +22,12 @@ const BURDEN_STATES = [
   "VF.encumbrance.over",
 ];
 
-export default class OseDataModelMonster extends foundry.abstract.TypeDataModel {
+export default class VogelfreiDataModelMonster extends foundry.abstract.TypeDataModel {
   prepareDerivedData() {
-    this.encumbrance = new OseDataModelCharacterEncumbranceDisabled();
-    this.spells = new OseDataModelCharacterSpells(this.spells, this.#spellList);
+    this.encumbrance = new VogelfreiDataModelCharacterEncumbranceDisabled();
+    this.spells = new VogelfreiDataModelCharacterSpells(this.spells, this.#spellList);
     this.config.movementAuto = false;
-    this.movement = new OseDataModelCharacterMove(this.encumbrance, false, this.movement.base);
+    this.movement = new VogelfreiDataModelCharacterMove(this.encumbrance, false, this.movement.base);
 
     // A beast of burden counts its own load on the mount table (Time and
     // Movement.md#mounts). Riders and anything it pulls are the roster's
@@ -43,8 +43,8 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
    * @inheritdoc
    */
   static migrateData(source) {
-    OseDataModelMonster.#migrateMonsterLanguages(source);
-    OseDataModelMonster.#migrateCantrips(source);
+    VogelfreiDataModelMonster.#migrateMonsterLanguages(source);
+    VogelfreiDataModelMonster.#migrateCantrips(source);
 
     // Same dropdown as the character sheet, same normalising.
     if (source?.details) {
@@ -59,7 +59,7 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
    * Use an empty array for system.languages.value
    * in order to suppress Polyglot errors.
    *
-   * @param {OseDataModelMonster} source - Source data to migrate
+   * @param {VogelfreiDataModelMonster} source - Source data to migrate
    */
   static #migrateMonsterLanguages(source) {
     const languages = source.languages ?? {};
@@ -72,7 +72,7 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
 
   /**
    * Ensure cantrips (level 0 spells) exist in the spells object.
-   * @param {OseDataModelMonster} source - Source data to migrate
+   * @param {VogelfreiDataModelMonster} source - Source data to migrate
    */
   static #migrateCantrips(source) {
     const spells = source.spells ?? {};
@@ -123,7 +123,7 @@ export default class OseDataModelMonster extends foundry.abstract.TypeDataModel 
       }),
       thac0: new ObjectField(),
       languages: new ObjectField(),
-      // In the book's order: see CONFIG.OSE.saves_short.
+      // In the book's order: see CONFIG.VF.saves_short.
       saves: new SchemaField({
         paralysis: new SchemaField({ value: new NumberField({ integer: true }) }),
         poison: new SchemaField({ value: new NumberField({ integer: true }) }),

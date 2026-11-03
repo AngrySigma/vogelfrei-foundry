@@ -1,14 +1,14 @@
 /**
  * @file A class representing the "Item-based" encumbrance scheme from Carcass Crawler Issue Two
  */
-import OseDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
+import VogelfreiDataModelCharacterEncumbrance, { type CharacterEncumbrance } from "./data-model-character-encumbrance";
 
 /**
  * @todo Add template path for encumbrance bar
  * @todo Add template path for inventory item row
  */
-export default class OseDataModelCharacterEncumbranceItemBased
-  extends OseDataModelCharacterEncumbrance
+export default class VogelfreiDataModelCharacterEncumbranceItemBased
+  extends VogelfreiDataModelCharacterEncumbrance
   implements CharacterEncumbrance
 {
   static baseEncumbranceCap = 9;
@@ -81,7 +81,7 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
   // eslint-disable-next-line sonarjs/cognitive-complexity, @typescript-eslint/no-unused-vars
   constructor(max = 16, items: Item[] = [], options: { scores?: { strength?: { mod?: number } } } = {}) {
-    super(OseDataModelCharacterEncumbranceItemBased.type, max);
+    super(VogelfreiDataModelCharacterEncumbranceItemBased.type, max);
     if (game.settings.get(game.system.id, "encumbranceItemStrengthMod")) {
       this.#weightMod = Math.max(0, options.scores?.strength?.mod ?? 0);
     } else {
@@ -90,8 +90,8 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
     const isDefaultMax =
       !max ||
-      max === OseDataModelCharacterEncumbrance.baseEncumbranceCap ||
-      max === OseDataModelCharacterEncumbranceItemBased.alternateBaseEncumbranceCap;
+      max === VogelfreiDataModelCharacterEncumbrance.baseEncumbranceCap ||
+      max === VogelfreiDataModelCharacterEncumbranceItemBased.alternateBaseEncumbranceCap;
 
     this.#packedMax = isDefaultMax ? 16 : max;
     this.#equippedMax = isDefaultMax ? 9 : max;
@@ -133,13 +133,18 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
     this.#max = this.usingEquippedEncumbrance ? this.#equippedMax : this.#packedMax;
 
-    this.#atFiveEighths = this.#packedWeight > OseDataModelCharacterEncumbranceItemBased.packedStepCounts.stepOne;
-    this.#atThreeQuarters = this.#packedWeight > OseDataModelCharacterEncumbranceItemBased.packedStepCounts.stepTwo;
-    this.#atSevenEights = this.#packedWeight > OseDataModelCharacterEncumbranceItemBased.packedStepCounts.stepThree;
+    this.#atFiveEighths = this.#packedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.packedStepCounts.stepOne;
+    this.#atThreeQuarters =
+      this.#packedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.packedStepCounts.stepTwo;
+    this.#atSevenEights =
+      this.#packedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.packedStepCounts.stepThree;
 
-    this.#atOneThird = this.#equippedWeight > OseDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepOne;
-    this.#atFiveNinths = this.#equippedWeight > OseDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepTwo;
-    this.#atSevenNinths = this.#equippedWeight > OseDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepThree;
+    this.#atOneThird =
+      this.#equippedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepOne;
+    this.#atFiveNinths =
+      this.#equippedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepTwo;
+    this.#atSevenNinths =
+      this.#equippedWeight > VogelfreiDataModelCharacterEncumbranceItemBased.equippedStepCounts.stepThree;
   }
 
   static defineSchema() {
@@ -148,7 +153,7 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
     return new SchemaField({
       variant: new StringField({
-        initial: OseDataModelCharacterEncumbranceItemBased.type,
+        initial: VogelfreiDataModelCharacterEncumbranceItemBased.type,
       }),
       enabled: new BooleanField({ initial: true }),
       encumbered: new BooleanField({ initial: false }),
@@ -157,7 +162,7 @@ export default class OseDataModelCharacterEncumbranceItemBased
       value: new NumberField({ integer: false }),
       max: new NumberField({
         integer: false,
-        initial: OseDataModelCharacterEncumbranceItemBased.baseEncumbranceCap,
+        initial: VogelfreiDataModelCharacterEncumbranceItemBased.baseEncumbranceCap,
       }),
       atFirstBreakpoint: new BooleanField({ initial: false }),
       atSecondBreakpoint: new BooleanField({ initial: false }),
@@ -177,13 +182,13 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
   get steps() {
     return this.usingEquippedEncumbrance
-      ? Object.values(OseDataModelCharacterEncumbranceItemBased.equippedEncumbranceSteps)
-      : Object.values(OseDataModelCharacterEncumbranceItemBased.packedEncumbranceSteps);
+      ? Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.equippedEncumbranceSteps)
+      : Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.packedEncumbranceSteps);
   }
 
   get usingEquippedEncumbrance() {
-    const equippedValues = Object.values(OseDataModelCharacterEncumbranceItemBased.equippedStepCounts);
-    const packedValues = Object.values(OseDataModelCharacterEncumbranceItemBased.packedStepCounts);
+    const equippedValues = Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.equippedStepCounts);
+    const packedValues = Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.packedStepCounts);
     let equippedIndex = equippedValues.findIndex((step) => step >= this.#equippedWeight);
     equippedIndex = equippedIndex === -1 ? 4 : equippedIndex;
 
@@ -223,12 +228,12 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
   // eslint-disable-next-line class-methods-use-this
   get equippedSteps() {
-    return Object.values(OseDataModelCharacterEncumbranceItemBased.equippedEncumbranceSteps);
+    return Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.equippedEncumbranceSteps);
   }
 
   // eslint-disable-next-line class-methods-use-this
   get packedSteps() {
-    return Object.values(OseDataModelCharacterEncumbranceItemBased.packedEncumbranceSteps);
+    return Object.values(VogelfreiDataModelCharacterEncumbranceItemBased.packedEncumbranceSteps);
   }
 
   get equippedPct() {
@@ -257,6 +262,6 @@ export default class OseDataModelCharacterEncumbranceItemBased
 
   // eslint-disable-next-line class-methods-use-this
   get alternateMax() {
-    return OseDataModelCharacterEncumbranceItemBased.alternateBaseEncumbranceCap;
+    return VogelfreiDataModelCharacterEncumbranceItemBased.alternateBaseEncumbranceCap;
   }
 }

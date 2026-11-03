@@ -2,7 +2,7 @@
  * @file Contains helpers for tag generation
  */
 
-const OseTags = {
+const VogelfreiTags = {
   /**
    * Returns the formula used for dice roll calculations
    * @param actor - The actor object which owns the item with roll data
@@ -29,11 +29,11 @@ const OseTags = {
    * @param rollType - Type of roll target used
    * @returns tagTarget - The constructed type and target value
    */
-  rollTagTarget({ rollType = "" as keyof typeof CONFIG.OSE.roll_type, rollTarget = null } = {}) {
-    const tagTarget = rollTarget === null ? "" : ` ${CONFIG.OSE.roll_type[rollType]}${rollTarget}`;
+  rollTagTarget({ rollType = "" as keyof typeof CONFIG.VF.roll_type, rollTarget = null } = {}) {
+    const tagTarget = rollTarget === null ? "" : ` ${CONFIG.VF.roll_type[rollType]}${rollTarget}`;
 
     return tagTarget;
   },
 };
 
-export default OseTags;
+export default VogelfreiTags;

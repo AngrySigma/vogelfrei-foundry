@@ -1,7 +1,7 @@
 /**
  * @file Helper functions related to treasure table rolls
  */
-import { OSE } from "./config";
+import { VF } from "./config";
 import { getRollMode } from "./helpers-message-mode";
 
 // eslint-disable-next-line import/prefer-default-export
@@ -130,7 +130,7 @@ export async function rollTreasure(table, options = {}) {
 
   await new Promise((resolve) => requestAnimationFrame(resolve));
   const html = await foundry.applications.handlebars.renderTemplate(
-    `${OSE.systemPath()}/templates/chat/roll-treasure.html`,
+    `${VF.systemPath()}/templates/chat/roll-treasure.html`,
     templateData,
   );
 

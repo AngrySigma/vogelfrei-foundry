@@ -1,37 +1,37 @@
 /**
  * @file A file that manages preloading our system templates
  */
-import OSE from "./config";
+import VF from "./config";
 
 const preloadHandlebarsTemplates = async () => {
   const templatePaths = [
     // Character Sheets
-    `${OSE.systemPath()}/templates/actors/character-sheet.html`,
-    `${OSE.systemPath()}/templates/actors/monster-sheet.html`,
-    `${OSE.systemPath()}/templates/actors/vehicle-sheet.html`,
+    `${VF.systemPath()}/templates/actors/character-sheet.html`,
+    `${VF.systemPath()}/templates/actors/monster-sheet.html`,
+    `${VF.systemPath()}/templates/actors/vehicle-sheet.html`,
     // Character Sheets Partials
-    `${OSE.systemPath()}/templates/actors/partials/character-header.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-attributes-tab.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-encumbrance.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-abilities-tab.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-spells-tab.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-inventory-tab.html`,
-    `${OSE.systemPath()}/templates/actors/partials/actor-item-summary.html`,
-    `${OSE.systemPath()}/templates/actors/partials/character-notes-tab.html`,
-    `${OSE.systemPath()}/templates/actors/partials/monster-header.html`,
-    `${OSE.systemPath()}/templates/actors/partials/monster-attributes-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-header.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-attributes-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-encumbrance.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-abilities-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-spells-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-inventory-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/actor-item-summary.html`,
+    `${VF.systemPath()}/templates/actors/partials/character-notes-tab.html`,
+    `${VF.systemPath()}/templates/actors/partials/monster-header.html`,
+    `${VF.systemPath()}/templates/actors/partials/monster-attributes-tab.html`,
     // Item Display
-    `${OSE.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
-    `${OSE.systemPath()}/templates/apps/pending-rolls.html`,
+    `${VF.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
+    `${VF.systemPath()}/templates/apps/pending-rolls.html`,
     // Combat Tab
-    `${OSE.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`,
-    `${OSE.systemPath()}/templates/apps/combat-set-groups.hbs`,
+    `${VF.systemPath()}/templates/sidebar/combat-tracker-combatant.hbs`,
+    `${VF.systemPath()}/templates/apps/combat-set-groups.hbs`,
     // Chronicle
-    `${OSE.systemPath()}/templates/apps/chronicle.hbs`,
-    `${OSE.systemPath()}/templates/apps/delve.hbs`,
+    `${VF.systemPath()}/templates/apps/chronicle.hbs`,
+    `${VF.systemPath()}/templates/apps/delve.hbs`,
     // Party
-    `${OSE.systemPath()}/templates/apps/party.hbs`,
-    `${OSE.systemPath()}/templates/apps/formation.hbs`,
+    `${VF.systemPath()}/templates/apps/party.hbs`,
+    `${VF.systemPath()}/templates/apps/formation.hbs`,
   ];
   return foundry.applications.handlebars.loadTemplates(templatePaths);
 };

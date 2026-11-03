@@ -1,7 +1,7 @@
 /**
  * @file Functions that alter the way that sidebar and compendium lists render
  */
-import OSE from "./config";
+import VF from "./config";
 
 /**
  * Called when a compendium directory is rendered
@@ -21,7 +21,7 @@ export const RenderCompendium = async (object) => {
     const foundryDocument = content.find((e) => e.id === item.dataset.entryId);
 
     const tagsHtml = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
+      `${VF.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
       { tags: foundryDocument.system.autoTags || [] },
     );
     item.insertAdjacentHTML("beforeend", tagsHtml);
@@ -42,7 +42,7 @@ export const RenderItemDirectory = async (object) => {
     const foundryDocument = content.find((e) => e.id === item.dataset.entryId);
 
     const tagsHtml = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
+      `${VF.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
       { tags: foundryDocument.system.autoTags || [] },
     );
     item.insertAdjacentHTML("beforeend", tagsHtml);

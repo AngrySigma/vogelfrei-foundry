@@ -21,10 +21,10 @@ import {
   waitForInput,
   waitUntil,
 } from "../../e2e/testUtils";
-import { createOseMacro, rollItemMacro } from "../helpers-macros";
+import { createVogelfreiMacro, rollItemMacro } from "../helpers-macros";
 
-export const key = "ose.helpers.macro";
-export const options = { displayName: "OSE: Helpers: Macro" };
+export const key = "vf.helpers.macro";
+export const options = { displayName: "VF: Helpers: Macro" };
 
 /* MOCKING HELPERS */
 const createMockActor = async (type: string, data: object = {}) => createMockActorKey(type, data, key);
@@ -59,7 +59,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
     await ui.notifications?.clear();
   });
 
-  describe("createOseMacro(data, slot)", () => {
+  describe("createVogelfreiMacro(data, slot)", () => {
     it("Can create macro", async () => {
       const macro = await createMockMacro();
       expect(game.macros?.contents.find((m) => m.uuid === macro?.uuid)).not.undefined;
@@ -70,7 +70,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       const data = { type: "Macro", uuid: macro?.uuid };
       const macroSlot = 9;
 
-      await createOseMacro(data, macroSlot);
+      await createVogelfreiMacro(data, macroSlot);
       const hotbar = game.user?.getHotbarMacros(1);
 
       expect(hotbar[macroSlot - 1].macro).equal(macro);
@@ -80,7 +80,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       const actor = await createMockActor("character");
       const data = { type: actor?.type, uuid: actor?.uuid };
       const macroSlot = 9;
-      const notification = await createOseMacro(data, macroSlot);
+      const notification = await createVogelfreiMacro(data, macroSlot);
       expect(objectIsNotification(notification)).equal(true);
       expect(notification.message).equal(game.i18n.localize("VF.warn.macrosNotAnItem"));
       await actor?.delete();
@@ -91,7 +91,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
       const worldItem = await createWorldTestItem("weapon");
       const data = { type: "Item", uuid: worldItem?.uuid };
       const macroSlot = 9;
-      const notification = await createOseMacro(data, macroSlot);
+      const notification = await createVogelfreiMacro(data, macroSlot);
       expect(objectIsNotification(notification)).equal(true);
       expect(notification.message).equal(game.i18n.localize("VF.warn.macrosOnlyForOwnedItems"));
       await actor?.delete();
@@ -115,9 +115,9 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
           };
           const macroSlot = 9;
 
-          await createOseMacro(data, macroSlot);
+          await createVogelfreiMacro(data, macroSlot);
           const macro = game.user?.getHotbarMacros()[macroSlot - 1];
-          expect(macro?.macro?.command).equal(`game.ose.rollItemMacro("New Actor Test ${type.capitalize()}");`);
+          expect(macro?.macro?.command).equal(`game.vf.rollItemMacro("New Actor Test ${type.capitalize()}");`);
           await actor?.delete();
         });
       });
@@ -190,9 +190,7 @@ export default ({ describe, it, expect, before, after, afterEach }: QuenchMethod
         actorName: actor?.name,
         itemName: `New Actor Test ${type.capitalize()}`,
       });
-      await waitUntil(() =>
-        getActiveNotifications().some((li) => li?.textContent?.trim() === expectedWarning),
-      );
+      await waitUntil(() => getActiveNotifications().some((li) => li?.textContent?.trim() === expectedWarning));
       expect(getActiveNotifications().map((li) => li?.textContent?.trim()))
         .to.be.an("array")
         .that.includes(expectedWarning);

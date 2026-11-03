@@ -4,11 +4,11 @@
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
 import { cleanUpActorsByKey, createMockActorKey, openWindows, waitForInput } from "../../../e2e/testUtils";
-import OseCharacterModifiers from "../character-modifiers";
+import VogelfreiCharacterModifiers from "../character-modifiers";
 
-export const key = "ose.actor.sheet.character.dialog.modifiers";
+export const key = "vf.actor.sheet.character.dialog.modifiers";
 export const options = {
-  displayName: "OSE: Actor: Dialog Sheet: Character Modifiers",
+  displayName: "VF: Actor: Dialog Sheet: Character Modifiers",
 };
 
 const createMockActor = async (type: string, data: object = {}) => createMockActorKey(type, data, key);
@@ -16,9 +16,9 @@ const createMockActor = async (type: string, data: object = {}) => createMockAct
 export default ({ describe, it, expect, assert, after }: QuenchMethods) => {
   describe("defaultOptions()", () => {
     it("Has correctly set defaultOptions", () => {
-      const sheet = new OseCharacterModifiers();
+      const sheet = new VogelfreiCharacterModifiers();
       expect(sheet.options.id).equal("sheet-modifiers");
-      expect(sheet.options.classes).contain("ose");
+      expect(sheet.options.classes).contain("vf");
       expect(sheet.options.classes).contain("dialog");
       expect(sheet.options.classes).contain("modifiers");
       expect(sheet.options.template).contain("/templates/actors/dialogs/modifiers-dialog.html");
@@ -29,7 +29,7 @@ export default ({ describe, it, expect, assert, after }: QuenchMethods) => {
   describe("title()", () => {
     it("Creates string in dialog window title", async () => {
       const actor = await createMockActor("character");
-      const sheet = new OseCharacterModifiers(actor);
+      const sheet = new VogelfreiCharacterModifiers(actor);
       sheet.render(true);
       await waitForInput();
       const dialogTitle = document.querySelector("div.modifiers .window-title")?.innerHTML;
@@ -44,7 +44,7 @@ export default ({ describe, it, expect, assert, after }: QuenchMethods) => {
   describe("getData()", () => {
     it("Returns proper data", async () => {
       const actor = await createMockActor("character");
-      const sheet = new OseCharacterModifiers(actor);
+      const sheet = new VogelfreiCharacterModifiers(actor);
       const data = sheet.getData();
       const keys = Object.keys(data);
       assert(keys.length > 0);

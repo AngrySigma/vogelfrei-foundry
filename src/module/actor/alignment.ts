@@ -3,7 +3,7 @@
  *
  * Character/Alignment.md: "The three alignments are Order, Neutrality, and
  * Chaos." Alignment used to be a free-text box, so actors carry whatever was
- * typed into it -- most often nothing, sometimes a B/X word inherited from OSE.
+ * typed into it -- most often nothing, sometimes a B/X word inherited from earlier data.
  * A dropdown cannot show a value that is not one of its options, so anything
  * unrecognised lands on Neutrality, which is where every mortal starts anyway.
  */

@@ -3,14 +3,14 @@
  */
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
-import OseDataModelSpell from "../data-model-spell";
+import VogelfreiDataModelSpell from "../data-model-spell";
 
-export const key = "ose.item.datamodel.spell";
-export const options = { displayName: "OSE: Item: Data Model: Spell" };
+export const key = "vf.item.datamodel.spell";
+export const options = { displayName: "VF: Item: Data Model: Spell" };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("manualTags()", () => {
-    const spell = new OseDataModelSpell();
+    const spell = new VogelfreiDataModelSpell();
     it("By default return empty array", () => {
       expect(spell.manualTags.length).equal(0);
     });
@@ -33,7 +33,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("autoTags()", () => {
-    const spell = new OseDataModelSpell();
+    const spell = new VogelfreiDataModelSpell();
     it("By default return 3 auto-tags", () => {
       expect(spell.autoTags.length).equal(3);
       spell.autoTags.forEach((t) => {

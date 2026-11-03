@@ -25,10 +25,7 @@ export default function registerArmourEquipHooks() {
 
     const displaced = actor.items.filter(
       (other: any) =>
-        other.id !== item.id &&
-        other.type === "armor" &&
-        other.system.equipped &&
-        isShield(other) === isShield(item),
+        other.id !== item.id && other.type === "armor" && other.system.equipped && isShield(other) === isShield(item),
     );
     if (displaced.length === 0) return;
 

@@ -266,9 +266,9 @@ async function onRosterQuery(op) {
 }
 
 /**
- * Read in the party OSE kept, once.
+ * Read in the party earlier versions kept, once.
  *
- * OSE marked membership with a `party` flag on each character. A world that
+ * Earlier versions marked membership with a `party` flag on each character. A world that
  * used it opens with those characters already on the roster, as players; the
  * flags are left where they are, since nothing reads them any more.
  *

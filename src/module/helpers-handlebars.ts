@@ -1,7 +1,7 @@
 /**
  * @file A place to store Handlebars helpers for our templates
  */
-import OSE, { type InventoryItemTag } from "./config";
+import VF, { type InventoryItemTag } from "./config";
 import { formatMoney } from "./money";
 
 const registerHelpers = async () => {
@@ -29,11 +29,11 @@ const registerHelpers = async () => {
   Handlebars.registerHelper("roundWeight", (weight) => Math.round(Number.parseFloat(weight) / 100) / 10);
 
   Handlebars.registerHelper("getTagIcon", (tagValue: string) => {
-    const tagKey = (Object.keys(CONFIG.OSE.tags) as InventoryItemTag[])
+    const tagKey = (Object.keys(CONFIG.VF.tags) as InventoryItemTag[])
       // find key for the tag display name who's name matches the provided tag text.
-      .find((findTagName) => CONFIG.OSE.tags[findTagName] === tagValue);
+      .find((findTagName) => CONFIG.VF.tags[findTagName] === tagValue);
     // if that tag key is found, return the image for the tag key
-    return tagKey ? CONFIG.OSE.tag_images[tagKey] : null;
+    return tagKey ? CONFIG.VF.tag_images[tagKey] : null;
   });
 
   // A gauge with no maximum reads as wholly empty rather than dividing by zero.
@@ -52,13 +52,13 @@ const registerHelpers = async () => {
     return accum;
   });
 
-  Handlebars.registerHelper("path", (relativePath) => `${OSE.systemPath()}${relativePath}`);
+  Handlebars.registerHelper("path", (relativePath) => `${VF.systemPath()}${relativePath}`);
 
-  Handlebars.registerHelper("asset", (relativePath) => `${OSE.assetsPath}${relativePath}`);
+  Handlebars.registerHelper("asset", (relativePath) => `${VF.assetsPath}${relativePath}`);
 
   Handlebars.registerHelper("ceil", (val) => Math.ceil(val));
 
-  Handlebars.registerHelper("partial", (path) => `${OSE.systemPath()}/templates/${path}`);
+  Handlebars.registerHelper("partial", (path) => `${VF.systemPath()}/templates/${path}`);
 
   // Prices are stored as whole brass pieces; nobody reads 24000 as forty gold.
   Handlebars.registerHelper("money", (bp, options) =>

@@ -1,7 +1,6 @@
 /// <reference types="@league-of-foundry-developers/foundry-vtt-types" />
 
-import { OseCombat } from "./module/combat";
-import type { OseConfig } from "./module/config";
+import type { VogelfreiConfig } from "./module/config";
 
 declare global {
   // Configure foundry-vtt-types for lenient typing
@@ -14,7 +13,7 @@ declare global {
   }
 
   interface CONFIG {
-    OSE: OseConfig;
+    VF: VogelfreiConfig;
   }
 
   // Foundry extends Math with clamp() (see foundry client primitives/math),
@@ -24,25 +23,24 @@ declare global {
   }
 
   interface Game {
-    ose: {
+    vf: {
       rollItemMacro: (itemName: string) => Promise<void>;
-      oseCombat: OseCombat;
+      rollTableMacro: (tableUuid: string) => void;
     };
+    ose: Game["vf"];
   }
-  
+
   namespace Game {
     interface SystemData<T> {
-      /**
-       * Defining game.system.id as a const
-       */
-      id: "ose";
+      /** Defining game.system.id as a const. */
+      id: "vogelfrei" | "vogelfrei-dev";
     }
   }
 }
 
 type Override<Type, NewType extends { [key in keyof Type]?: NewType[key] }> = Omit<Type, keyof NewType> & NewType;
 
-type OseContextMenuEntry = Override<ContextMenuEntry, {
+type VogelfreiContextMenuEntry = Override<ContextMenuEntry, {
   /**
    * The function to call when the menu item is clicked. Receives the HTML element of the SidebarTab entry that this context menu is for.
    */

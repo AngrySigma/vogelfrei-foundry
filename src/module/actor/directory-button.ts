@@ -5,8 +5,8 @@
  * This creates the character and opens the generator on it in one step, so the
  * roller is reachable without knowing to hover a portrait.
  */
-import OseCharacterCreator from "../dialog/character-creation";
-import OsePendingRolls from "../dialog/pending-rolls";
+import VogelfreiCharacterCreator from "../dialog/character-creation";
+import VogelfreiPendingRolls from "../dialog/pending-rolls";
 
 /** Ask for a name, create the character, and open the generator on it. */
 async function generateCharacter() {
@@ -33,7 +33,7 @@ async function generateCharacter() {
     name: String(name).trim() || game.i18n.localize("VF.dialog.newCharacter"),
     type: "character",
   });
-  if (actor) new OseCharacterCreator(actor).render(true);
+  if (actor) new VogelfreiCharacterCreator(actor).render(true);
 }
 
 /**
@@ -79,7 +79,7 @@ export default function registerActorDirectoryButton() {
       pendingLabel.textContent = game.i18n.localize("VF.dialog.pendingRolls");
       pending.append(pendingIcon, pendingLabel);
       pending.addEventListener("click", () => {
-        new OsePendingRolls().render(true);
+        new VogelfreiPendingRolls().render(true);
       });
       actions.append(pending);
     }

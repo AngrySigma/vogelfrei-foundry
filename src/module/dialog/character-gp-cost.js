@@ -2,11 +2,11 @@
  * @file An application for deducting currency from an actor using the Shopping Cart feature
  */
 // eslint-disable-next-line no-unused-vars
-import OSE from "../config";
+import VF from "../config";
 import { formatMoney } from "../money";
 import { pay } from "../purse";
 
-export default class OseCharacterGpCost extends FormApplication {
+export default class VogelfreiCharacterGpCost extends FormApplication {
   static physicalItemTypes = new Set(["item", "container", "weapon", "armor"]);
 
   constructor(event, preparedData, position) {
@@ -16,9 +16,9 @@ export default class OseCharacterGpCost extends FormApplication {
 
   static get defaultOptions() {
     return foundry.utils.mergeObject(FormApplication.defaultOptions, {
-      classes: ["ose", "dialog", "gp-cost"],
+      classes: ["vf", "dialog", "gp-cost"],
       id: "sheet-gp-cost",
-      template: `${OSE.systemPath()}/templates/actors/dialogs/gp-cost-dialog.html`,
+      template: `${VF.systemPath()}/templates/actors/dialogs/gp-cost-dialog.html`,
       width: 240,
     });
   }
@@ -108,7 +108,7 @@ export default class OseCharacterGpCost extends FormApplication {
     const speaker = ChatMessage.getSpeaker({ actor: this });
     const templateData = await this.getData();
     const content = await foundry.applications.handlebars.renderTemplate(
-      `${OSE.systemPath()}/templates/chat/inventory-list.html`,
+      `${VF.systemPath()}/templates/chat/inventory-list.html`,
       templateData,
     );
     ChatMessage.create({
@@ -127,7 +127,11 @@ export default class OseCharacterGpCost extends FormApplication {
     return data.items.reduce((total, item) => {
       const itemData = item.system;
       // Only count non-treasure physical items that haven't been paid for yet
-      if (OseCharacterGpCost.physicalItemTypes.has(item.type) && !itemData.treasure && !item.flags?.ose?.paid) {
+      if (
+        VogelfreiCharacterGpCost.physicalItemTypes.has(item.type) &&
+        !itemData.treasure &&
+        !(item.flags?.vogelfrei?.paid ?? item.flags?.ose?.paid)
+      ) {
         return total + (itemData.quantity.max ? itemData.cost * itemData.quantity.value : itemData.cost);
       }
 
@@ -147,10 +151,14 @@ export default class OseCharacterGpCost extends FormApplication {
     this.object.items.forEach((item) => {
       const itemData = item.system;
       // Mark all non-treasure physical items that haven't been paid for yet
-      if (OseCharacterGpCost.physicalItemTypes.has(item.type) && !itemData.treasure && !item.flags?.ose?.paid) {
+      if (
+        VogelfreiCharacterGpCost.physicalItemTypes.has(item.type) &&
+        !itemData.treasure &&
+        !(item.flags?.vogelfrei?.paid ?? item.flags?.ose?.paid)
+      ) {
         updates.push({
           _id: item.id,
-          "flags.ose.paid": true,
+          "flags.vogelfrei.paid": true,
         });
       }
     });

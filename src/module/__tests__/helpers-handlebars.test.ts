@@ -4,9 +4,9 @@
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../e2e";
 
-export const key = "ose.helpers.handlebars";
+export const key = "vf.helpers.handlebars";
 export const options = {
-  displayName: "OSE: Helpers: Handlebars",
+  displayName: "VF: Helpers: Handlebars",
 };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
@@ -123,10 +123,10 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       });
 
       describe("is functional", () => {
-        const tags = Object.keys(CONFIG.OSE.tags);
+        const tags = Object.keys(CONFIG.VF.tags);
         tags.forEach((tag) => {
           it(`for ${tag} tag`, async () => {
-            expect(Handlebars.helpers.getTagIcon(CONFIG.OSE.tags[tag])).equal(CONFIG.OSE.tag_images[tag]);
+            expect(Handlebars.helpers.getTagIcon(CONFIG.VF.tags[tag])).equal(CONFIG.VF.tag_images[tag]);
           });
         });
       });
@@ -174,7 +174,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       });
 
       it("is functional", () => {
-        expect(Handlebars.helpers.path("/test")).equal(`${CONFIG.OSE.systemPath()}/test`);
+        expect(Handlebars.helpers.path("/test")).equal(`${CONFIG.VF.systemPath()}/test`);
       });
     });
 
@@ -185,7 +185,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
       });
 
       it("is functional", () => {
-        expect(Handlebars.helpers.asset("/test")).equal(`${CONFIG.OSE.assetsPath}/test`);
+        expect(Handlebars.helpers.asset("/test")).equal(`${CONFIG.VF.assetsPath}/test`);
       });
     });
   });

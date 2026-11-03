@@ -1,14 +1,14 @@
 /**
  * @file An application used to manage Actor configuration.
  */
-import OSE from "../config";
+import VF from "../config";
 
-export default class OseEntityTweaks extends FormApplication {
+export default class VogelfreiEntityTweaks extends FormApplication {
   static get defaultOptions() {
     return foundry.utils.mergeObject(FormApplication.defaultOptions, {
       classes: ["sheet-tweaks"],
       id: "entity-tweaks",
-      template: `${OSE.systemPath()}/templates/actors/dialogs/tweaks-dialog.html`,
+      template: `${VF.systemPath()}/templates/actors/dialogs/tweaks-dialog.html`,
       width: 380,
     });
   }
@@ -39,7 +39,7 @@ export default class OseEntityTweaks extends FormApplication {
     }
     data.user = game.user;
     data.config = {
-      ...CONFIG.OSE,
+      ...CONFIG.VF,
       ascendingAC: game.settings.get(game.system.id, "ascendingAC"),
     };
     return data;
@@ -68,7 +68,7 @@ export default class OseEntityTweaks extends FormApplication {
     // so that the default value is used.
     const encumbranceMax = "system.encumbrance.max";
     if (
-      CONFIG.OSE.encumbrance.type === "itembased" &&
+      CONFIG.VF.encumbrance.type === "itembased" &&
       (formData[encumbranceMax] === this.object.system.encumbrance.defaultMax ||
         formData[encumbranceMax] === this.object.system.encumbrance.alternateMax)
     ) {

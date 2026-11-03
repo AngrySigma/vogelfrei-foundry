@@ -61,7 +61,7 @@ const registerSettings = () => {
     type: String,
     config: true,
     requiresReload: true,
-    choices: Object.values(CONFIG.OSE.encumbranceOptions).reduce((obj, enc) => {
+    choices: Object.values(CONFIG.VF.encumbranceOptions).reduce((obj, enc) => {
       obj[enc.type] = enc.localizedLabel;
       return obj;
     }, {}) as SettingConfig<EncumbranceOption>["choices"],
@@ -69,7 +69,7 @@ const registerSettings = () => {
 
   // A world stores the value it was created with, so changing the default
   // above does nothing to worlds that already exist -- they stay on whichever
-  // OSE weight scheme they were made with, which is not how Vogelfrei counts.
+  // legacy weight scheme they were made with, which is not how Vogelfrei counts.
   // Flip those once, then never touch the setting again.
   game.settings.register(game.system.id, "encumbranceSchemeAdopted", {
     scope: "world",
@@ -134,27 +134,27 @@ const registerSettings = () => {
     config: true,
     requiresReload: true,
   });
-  game.settings.register(game.system.id, "hasPromptedDefaultOSETokenRing", {
+  game.settings.register(game.system.id, "hasPromptedDefaultTokenRing", {
     default: false,
-    scope: "world",
+    scope: "client",
     type: Boolean,
   });
 };
 
 declare global {
   namespace ClientSettings {
-    // Include OSE settings in addition to foundry default settings
     interface Values {
-      "ose.initiative": "individual" | "group";
-      "ose.rerollInitiative": "keep" | "reset" | "reroll";
-      "ose.ascendingAC": boolean;
-      "ose.morale": boolean;
-      "ose.encumbranceOption": EncumbranceOption;
-      "ose.encumbranceSchemeAdopted": boolean;
-      "ose.significantTreasure": number;
-      "ose.languages": string;
-      "ose.applyDamageOption": ApplyDamageOption;
-      "ose.ignoreAttackBonusOnDamageRoll": boolean;
+      "vogelfrei.initiative": "individual" | "group";
+      "vogelfrei.rerollInitiative": "keep" | "reset" | "reroll";
+      "vogelfrei.ascendingAC": boolean;
+      "vogelfrei.morale": boolean;
+      "vogelfrei.encumbranceOption": EncumbranceOption;
+      "vogelfrei.encumbranceSchemeAdopted": boolean;
+      "vogelfrei.significantTreasure": number;
+      "vogelfrei.languages": string;
+      "vogelfrei.applyDamageOption": ApplyDamageOption;
+      "vogelfrei.ignoreAttackBonusOnDamageRoll": boolean;
+      "vogelfrei.hasPromptedDefaultTokenRing": boolean;
     }
   }
 }

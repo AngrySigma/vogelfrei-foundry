@@ -1,5 +1,5 @@
 {
-  // Declaration-only build for @ose-foundry-core/types.
+  // Declaration-only build for @vogelfrei/types.
   //
   // Extends the base tsconfig (inheriting `types: ["foundry-vtt-types"]`).
   // rootDir is `src` so the barrel's relative imports into src/module emit

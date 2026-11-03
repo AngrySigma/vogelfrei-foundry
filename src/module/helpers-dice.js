@@ -1,12 +1,12 @@
 /**
- * @file Helpful methods for dealing with OSE-specific dice logic
+ * @file Helpful methods for dealing with VF-specific dice logic
  */
 import { cappedArmourModifier, targetArmourRating } from "./actor/armour-modifier";
 import { ARMOUR_CLASS_VARIANTS } from "./actor/data-model-classes/data-model-character-ac";
 import { skillDice, skillRollMode, skillSucceeds } from "./actor/exploration-skills";
 import { stanceAttack } from "./actor/stance";
 import { clearStance, currentStance, setStance } from "./actor/stance-store";
-import OSE from "./config";
+import VF from "./config";
 import { getRollMode, getRollModes } from "./helpers-message-mode";
 
 /**
@@ -19,7 +19,7 @@ const INSIDE_REACH_DAMAGE = "2d8kl";
 /** The stances an attack can be made in. Guard makes no attack. */
 const ATTACK_STANCES = ["press", "defensive"];
 
-const OseDice = {
+const VogelfreiDice = {
   async sendRoll({
     parts = [],
     data = {},
@@ -29,7 +29,7 @@ const OseDice = {
     form = null,
     chatMessage = true,
   } = {}) {
-    const template = `${OSE.systemPath()}/templates/chat/roll-result.html`;
+    const template = `${VF.systemPath()}/templates/chat/roll-result.html`;
 
     const chatData = {
       user: game.user.id,
@@ -40,7 +40,7 @@ const OseDice = {
       title,
       flavor,
       data,
-      config: CONFIG.OSE,
+      config: CONFIG.VF,
     };
 
     if (data.roll?.type === "skill") {
@@ -75,11 +75,11 @@ const OseDice = {
       data.roll.blindroll = true;
     }
 
-    templateData.result = OseDice.digestResult(data, roll);
+    templateData.result = VogelfreiDice.digestResult(data, roll);
 
     return new Promise((resolve) => {
       roll.render().then((r) => {
-        templateData.rollOSE = r;
+        templateData.rollVF = r;
         foundry.applications.handlebars.renderTemplate(template, templateData).then((content) => {
           chatData.content = content;
           // Dice So Nice
@@ -317,7 +317,7 @@ const OseDice = {
       }
       await selected.update({ "system.quantity.value": selected.system.quantity.value - 1 });
     }
-    const template = `${OSE.systemPath()}/templates/chat/roll-attack.html`;
+    const template = `${VF.systemPath()}/templates/chat/roll-attack.html`;
     const chatData = {
       user: game.user.id,
       speaker,
@@ -328,7 +328,7 @@ const OseDice = {
       title,
       flavor,
       data,
-      config: CONFIG.OSE,
+      config: CONFIG.VF,
     };
 
     // Optionally include a situational bonus
@@ -388,11 +388,11 @@ const OseDice = {
       data.roll.blindroll = true;
     }
 
-    templateData.result = OseDice.digestAttackResult(data, roll);
+    templateData.result = VogelfreiDice.digestAttackResult(data, roll);
 
     return new Promise((resolve) => {
       roll.render().then((r) => {
-        templateData.rollOSE = r;
+        templateData.rollVF = r;
         dmgRoll.render().then((dr) => {
           templateData.rollDamage = dr;
           foundry.applications.handlebars.renderTemplate(template, templateData).then((content) => {
@@ -432,7 +432,7 @@ const OseDice = {
     chatMessage = true,
   } = {}) {
     let rolled = false;
-    const template = `${OSE.systemPath()}/templates/chat/roll-dialog.html`;
+    const template = `${VF.systemPath()}/templates/chat/roll-dialog.html`;
     const dialogData = {
       formula: parts.join(" "),
       data,
@@ -449,7 +449,7 @@ const OseDice = {
       chatMessage,
     };
     if (skipDialog) {
-      return OseDice.sendRoll(rollData);
+      return VogelfreiDice.sendRoll(rollData);
     }
 
     let roll;
@@ -462,7 +462,7 @@ const OseDice = {
         callback: (_event, button) => {
           rolled = true;
           rollData.form = button.form;
-          roll = OseDice.sendRoll(rollData);
+          roll = VogelfreiDice.sendRoll(rollData);
         },
       },
       {
@@ -474,7 +474,7 @@ const OseDice = {
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.magic}`);
           rollData.title += ` ${game.i18n.localize("VF.saveBonus.magic.short")} (${rollData.data.roll.magic})`;
-          roll = OseDice.sendRoll(rollData);
+          roll = VogelfreiDice.sendRoll(rollData);
         },
       },
       {
@@ -486,7 +486,7 @@ const OseDice = {
           rollData.form = button.form;
           rollData.parts.push(`${rollData.data.roll.nonmagic}`);
           rollData.title += ` ${game.i18n.localize("VF.saveBonus.nonmagic.short")} (${rollData.data.roll.nonmagic})`;
-          roll = OseDice.sendRoll(rollData);
+          roll = VogelfreiDice.sendRoll(rollData);
         },
       },
       {
@@ -524,7 +524,7 @@ const OseDice = {
     flags = {},
   } = {}) {
     let rolled = false;
-    const template = `${OSE.systemPath()}/templates/chat/roll-dialog.html`;
+    const template = `${VF.systemPath()}/templates/chat/roll-dialog.html`;
     const isAttack = ["melee", "missile", "attack"].includes(data.roll.type);
     if (data.roll.ammunitionType && !data.roll.ammunition?.length) {
       ui.notifications.warn(game.i18n.format("VF.messages.NoAmmunition", { name: data.actor.name }));
@@ -564,8 +564,8 @@ const OseDice = {
     };
     if (skipDialog) {
       return ["melee", "missile", "attack"].includes(data.roll.type)
-        ? OseDice.sendAttackRoll(rollData)
-        : OseDice.sendRoll(rollData);
+        ? VogelfreiDice.sendAttackRoll(rollData)
+        : VogelfreiDice.sendRoll(rollData);
     }
 
     let roll;
@@ -579,8 +579,8 @@ const OseDice = {
           rolled = true;
           rollData.form = button.form;
           roll = ["melee", "missile", "attack"].includes(data.roll.type)
-            ? OseDice.sendAttackRoll(rollData)
-            : OseDice.sendRoll(rollData);
+            ? VogelfreiDice.sendAttackRoll(rollData)
+            : VogelfreiDice.sendRoll(rollData);
         },
         default: true,
       },
@@ -608,4 +608,4 @@ const OseDice = {
   },
 };
 
-export default OseDice;
+export default VogelfreiDice;

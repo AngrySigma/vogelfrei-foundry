@@ -3,14 +3,14 @@
  */
 // eslint-disable-next-line prettier/prettier, import/no-cycle
 import type { QuenchMethods } from "../../../e2e";
-import OseDataModelAbility from "../data-model-ability";
+import VogelfreiDataModelAbility from "../data-model-ability";
 
-export const key = "ose.item.datamodel.ability";
-export const options = { displayName: "OSE: Item: Data Model: Ability" };
+export const key = "vf.item.datamodel.ability";
+export const options = { displayName: "VF: Item: Data Model: Ability" };
 
 export default ({ describe, it, expect }: QuenchMethods) => {
   describe("manualTags", () => {
-    const ability = new OseDataModelAbility();
+    const ability = new VogelfreiDataModelAbility();
     it("By default return empty array", () => {
       expect(ability.manualTags.length).equal(0);
     });
@@ -33,7 +33,7 @@ export default ({ describe, it, expect }: QuenchMethods) => {
   });
 
   describe("autoTags", () => {
-    const ability = new OseDataModelAbility();
+    const ability = new VogelfreiDataModelAbility();
     // A true ability item has default values set.
     ability.updateSource({
       blindroll: false,
