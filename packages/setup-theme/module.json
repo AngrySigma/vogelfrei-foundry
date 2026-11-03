@@ -1,0 +1,27 @@
+{
+  "id": "vogelfrei-setup-theme",
+  "title": "Vogelfrei Setup Theme",
+  "description": "Replaces Foundry's default setup and login background while preserving per-world campaign images.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "authors": [
+    {
+      "name": "Illarion Iov",
+      "url": "https://github.com/AngrySigma"
+    }
+  ],
+  "coreTranslation": true,
+  "styles": [
+    "styles/setup.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ]
+}
