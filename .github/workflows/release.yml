@@ -44,8 +44,18 @@ jobs:
           manifest: https://github.com/${{github.repository}}/releases/latest/download/system.json
           download: https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/system.zip
 
+      - name: Insert release-specific values in setup-theme manifest
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "packages/setup-theme/module.json"
+        env:
+          version: ${{github.ref_name}}
+          url: https://github.com/${{github.repository}}
+          manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
+          download: https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/vogelfrei-setup-theme.zip
+
       # The zip's root must contain system.json for Foundry to install it.
-      - name: Create zip file
+      - name: Create system zip file
         run: |
           zip -r ./system.zip \
             system.json \
@@ -58,6 +68,15 @@ jobs:
             NOTICE \
             AUTHORS
 
+      - name: Create setup-theme zip file
+        working-directory: packages/setup-theme
+        run: |
+          zip -r "${{ github.workspace }}/vogelfrei-setup-theme.zip" \
+            module.json \
+            styles/ \
+            assets/ \
+            lang/
+
       # Creates the Release as well as attaching to it, so pushing a tag is the
       # single action that publishes. Triggering on `release: published` meant a
       # tag alone did nothing and the manifest URL 404'd.
@@ -69,6 +88,6 @@ jobs:
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "./system.json, ./system.zip"
+          artifacts: "./system.json, ./system.zip, ./packages/setup-theme/module.json, ./vogelfrei-setup-theme.zip"
           tag: ${{ github.ref_name }}
           generateReleaseNotes: true
