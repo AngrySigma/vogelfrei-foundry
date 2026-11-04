@@ -36,6 +36,7 @@ import VogelfreiItem from "./module/item/entity";
 import registerArmourEquipHooks from "./module/item/equip-armour";
 import VogelfreiItemSheet from "./module/item/item-sheet";
 import { migratePlaytestRules, registerPlaytestRulesMigration } from "./module/migrate-playtest-rules";
+import registerMobileMode, { openMobileCharacterSheet } from "./module/mobile/mobile-mode";
 import registerPartyDirectoryButton from "./module/party/directory-button";
 import PartyApp from "./module/party/party-app";
 import { adoptLegacyParty, registerPartyHooks, registerPartySetting } from "./module/party/store";
@@ -68,6 +69,7 @@ Hooks.once("init", async () => {
 
   // Register custom system settings
   registerSettings();
+  registerMobileMode();
   registerChronicleSetting();
   registerPartySetting();
   registerUploadGuard();
@@ -87,6 +89,7 @@ Hooks.once("init", async () => {
   CONFIG.Token.rulerClass = TokenRulerVF;
 
   game.vf = {
+    openMobileCharacterSheet,
     rollItemMacro: macros.rollItemMacro,
     rollTableMacro: macros.rollTableMacro,
   };

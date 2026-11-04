@@ -50,6 +50,19 @@ export default class VogelfreiActorSheetCharacter extends VogelfreiActorSheet {
     });
   }
 
+  _getHeaderButtons() {
+    const buttons = super._getHeaderButtons();
+    if (!this.actor.isOwner) return buttons;
+
+    buttons.unshift({
+      label: game.i18n.localize("VF.mobile.Enter"),
+      class: "vf-mobile-enter",
+      icon: "fa-solid fa-mobile-screen-button",
+      onclick: () => game.vf.openMobileCharacterSheet(this.actor),
+    });
+    return buttons;
+  }
+
   /**
    * Organize and classify Owned Items for Character sheets
    *

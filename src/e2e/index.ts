@@ -161,6 +161,14 @@ import itemWeaponDamageTests, {
   key as itemWeaponDamageKey,
   options as itemWeaponDamageOptions,
 } from "../module/item/__tests__/weapon-damage.test";
+import mobileCharacterSheetTests, {
+  key as mobileCharacterSheetKey,
+  options as mobileCharacterSheetOptions,
+} from "../module/mobile/__tests__/mobile-character-sheet.test";
+import mobileModeTests, {
+  key as mobileModeKey,
+  options as mobileModeOptions,
+} from "../module/mobile/__tests__/mobile-mode.test";
 import partyFormationTests, {
   key as partyFormationKey,
   options as partyFormationOptions,
@@ -227,6 +235,8 @@ Hooks.on("quenchReady", async (quench: Quench) => {
   quench.registerBatch(actorSheetKey, actorSheetTests, actorSheetOptions);
   quench.registerBatch(actorSheetDragNDropKey, actorSheetDragNDropTests, actorSheetDragNDropOptions);
   quench.registerBatch(actorSheetCharacterKey, actorSheetCharacterTests, actorSheetCharacterOptions);
+  quench.registerBatch(mobileCharacterSheetKey, mobileCharacterSheetTests, mobileCharacterSheetOptions);
+  quench.registerBatch(mobileModeKey, mobileModeTests, mobileModeOptions);
   quench.registerBatch(actorSheetMonsterKey, actorSheetMonsterTests, actorSheetMonsterOptions);
 
   /* ------------------------------------------- */

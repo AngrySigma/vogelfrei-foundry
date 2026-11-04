@@ -1,0 +1,21 @@
+<div class="mobile-compendium-content">
+  <label class="compendium-search-label">
+    <span>{{localize "VF.mobile.Search"}}</span>
+    <input class="compendium-search" type="search" placeholder="{{localize 'VF.mobile.SearchItems'}}" autofocus />
+  </label>
+  <ol class="compendium-results">
+    {{#each entries}}
+    <li class="compendium-entry" data-name="{{name}}">
+      <img src="{{img}}" alt="" />
+      <div class="compendium-entry-details">
+        <strong>{{name}}</strong>
+        <span>{{packLabel}}</span>
+      </div>
+      <button type="button" class="compendium-add" data-pack="{{pack}}" data-entry-id="{{id}}" aria-label="{{localize 'VF.Add'}}">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </li>
+    {{/each}}
+  </ol>
+  {{#unless entries}}<p>{{localize "VF.mobile.NoCompendiumItems"}}</p>{{/unless}}
+</div>
