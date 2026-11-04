@@ -1,0 +1,13 @@
+<section class="mobile-identity">
+  <label><span>{{localize "VF.details.class"}}</span><input name="system.details.class" type="text" value="{{system.details.class}}" data-dtype="String" /></label>
+  <label><span>{{localize "VF.details.career"}}</span><input name="system.details.career" type="text" value="{{system.details.career}}" data-dtype="String" /></label>
+    <label class="mobile-spellcaster-toggle"><span>{{localize "VF.Spellcaster"}}</span><input name="system.spells.enabled" type="checkbox" {{checked system.spells.enabled}} data-dtype="Boolean" /></label>
+  <div class="mobile-identity-progression">
+    <label><span>{{localize "VF.details.alignment"}}</span><select name="system.details.alignment" data-dtype="String">{{selectOptions config.alignments selected=system.details.alignment localize=true}}</select></label>
+    <label><span>{{localize "VF.details.status"}}</span><select name="system.details.status" data-dtype="String"><option value="">&mdash;</option>{{selectOptions config.statuses selected=system.details.status localize=true}}</select></label>
+    <label><span>{{localize "VF.details.level"}}</span><input name="system.details.level" type="number" value="{{system.details.level}}" data-dtype="Number" /></label>
+    <label><span>{{localize "VF.details.experience.base"}}</span><input name="system.details.xp.value" type="number" value="{{system.details.xp.value}}" data-dtype="Number" /></label>
+    <label><span>{{localize "VF.details.experience.next"}}</span><input name="system.details.xp.next" type="number" value="{{system.details.xp.next}}" data-dtype="Number" /></label>
+  </div>
+</section>
+{{> (path "/templates/actors/partials/character-attributes-tab.html") }}

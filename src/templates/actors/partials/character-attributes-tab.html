@@ -269,6 +269,12 @@
                     <input name="system.saves.magic.value" type="text" value="{{system.saves.magic.value}}"
                         placeholder="0" />
             </li>
+            {{#if @root.mobile}}
+        </ul>
+    </div>
+    <div class="attribute-group save-bonuses">
+        <ul class="attributes">
+            {{/if}}
             {{!-- Ability Scores.md: Intelligence is added to saves against
                   Magic-User spells, Willpower to every other save. --}}
             <li class="attribute saving-throw">

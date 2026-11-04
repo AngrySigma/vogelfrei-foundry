@@ -20,6 +20,8 @@ const preloadHandlebarsTemplates = async () => {
     `${VF.systemPath()}/templates/actors/partials/character-notes-tab.html`,
     `${VF.systemPath()}/templates/actors/partials/monster-header.html`,
     `${VF.systemPath()}/templates/actors/partials/monster-attributes-tab.html`,
+    // Mobile Character Sheet
+    `${VF.systemPath()}/templates/mobile/character-stats.html`,
     // Item Display
     `${VF.systemPath()}/templates/actors/partials/item-auto-tags-partial.html`,
     `${VF.systemPath()}/templates/apps/pending-rolls.html`,
