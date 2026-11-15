@@ -26,10 +26,7 @@ const required = <T>(value: T | undefined): T => {
 };
 
 export default ({ it, expect, afterEach }: QuenchMethods) => {
-  let previousCharacter: string | null = null;
-
   afterEach(async () => {
-    await game.user?.update({ character: previousCharacter });
     dismissMobileRollResult();
     await closeSheets();
     await closeSheets();
@@ -61,9 +58,9 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     expect(sheetStyle.fontSize).equal("24px");
     expect(sheetElement.getBoundingClientRect().width).at.most(window.innerWidth);
 
-    const tab = required(sheet.element.find(".mobile-sheet-body > .tab")[0]);
+    const tab = required(sheet.element.find(".mobile-sheet-body > .tab[data-tab='attributes']")[0]);
     const tabStyle = getComputedStyle(tab);
-    expect(tabStyle.overflowY).equal("auto");
+    expect(tabStyle.overflowY).equal("hidden");
     expect(tabStyle.touchAction).equal("pan-y");
     await sheet.close();
     expect(game.settings.get(game.system.id, "mobileMode")).equal(false);
@@ -95,6 +92,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     expect(getComputedStyle(score).minHeight).equal("132px");
     expect(getComputedStyle(scoreInput).height).equal("72px");
     expect(getComputedStyle(scoreInput).fontSize).equal("48px");
+    expect(scoreInput.getAttribute("inputmode")).equal("numeric");
     expect(getComputedStyle(scoreLabel).fontSize).equal("28px");
     expect(getComputedStyle(scoreModifier).position).equal("static");
     expect(getComputedStyle(scoreModifier).fontSize).equal("32px");
@@ -124,6 +122,9 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const savingThrows = required(sheet.element.find("[data-save='magic']").closest(".attributes")[0]);
     const saveBonuses = required(sheet.element.find(".attribute-group.save-bonuses")[0]);
     expect(getComputedStyle(savingThrows).gridTemplateColumns.split(" ")).to.have.length(5);
+    const breathLabel = required(sheet.element.find("[data-save='breath'] .attribute-name")[0]);
+    expect(getComputedStyle(breathLabel).minHeight).equal("104px");
+    expect(getComputedStyle(required(breathLabel.parentElement ?? undefined)).minHeight).equal("184px");
     expect(
       getComputedStyle(required(saveBonuses.querySelector(".attributes") ?? undefined)).gridTemplateColumns.split(" "),
     ).to.have.length(2);
@@ -161,9 +162,15 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     expect(getComputedStyle(spells).marginTop).equal("16px");
     expect(getComputedStyle(spellTitle).lineHeight).not.equal("15px");
     expect(getComputedStyle(required(abilities.querySelector(".item-name") ?? undefined)).fontSize).equal("34px");
+    const itemControl = required(abilities.querySelector(".item-control") ?? undefined);
+    expect(getComputedStyle(itemControl).minWidth).equal("72px");
+    expect(getComputedStyle(itemControl).minHeight).equal("72px");
+    expect(getComputedStyle(itemControl).fontSize).equal("48px");
+    expect(getComputedStyle(required(itemControl.parentElement ?? undefined)).gap).equal("8px");
   });
 
   it("uses touch-sized fields and buttons in roll dialogs", async () => {
+    document.body.classList.add("vf-mobile-mode");
     const actor = required(await createMockActorKey("character", {}, key));
     const sheet = new VogelfreiMobileCharacterSheet(actor);
     await sheet.render(true);
@@ -173,19 +180,28 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const formula = required(form.querySelector("input[name='formula']") ?? undefined);
     const bonus = required(form.querySelector("input[name='bonus']") ?? undefined);
     const rollMode = required(form.querySelector("select[name='rollMode']") ?? undefined);
+    const row = required(form.querySelector(".form-group") ?? undefined);
+    expect(getComputedStyle(row).minHeight).equal("172px");
     const label = required(form.querySelector(".form-group label") ?? undefined);
-    expect(getComputedStyle(label).fontSize).equal("56px");
+    expect(getComputedStyle(label).fontSize).equal("40px");
+    expect(getComputedStyle(label).flexGrow).equal("0");
     for (const field of [formula, bonus, rollMode]) {
-      expect(getComputedStyle(field).height).equal("128px");
-      expect(getComputedStyle(field).fontSize).equal("56px");
+      expect(getComputedStyle(field).height).equal("112px");
+      expect(getComputedStyle(field).fontSize).equal("40px");
+      expect(getComputedStyle(field).flexGrow).equal("0");
+      expect(getComputedStyle(field).flexBasis).equal("auto");
     }
 
     const dialog = required(form.closest(".application.dialog") ?? undefined);
+    const title = required(dialog.querySelector(".window-title") ?? undefined);
+    const headerButton = required(dialog.querySelector(".header-control") ?? undefined);
+    expect(getComputedStyle(title).fontSize).equal("32px");
+    expect(getComputedStyle(headerButton).minHeight).equal("56px");
     const buttons = dialog.querySelectorAll(".form-footer button");
     expect(buttons.length).at.least(2);
     for (const button of buttons) {
-      expect(getComputedStyle(button).minHeight).equal("128px");
-      expect(getComputedStyle(button).fontSize).equal("56px");
+      expect(getComputedStyle(button).minHeight).equal("88px");
+      expect(getComputedStyle(button).fontSize).equal("36px");
     }
 
     required(dialog.querySelector<HTMLButtonElement>("button[data-action='cancel']") ?? undefined).click();
@@ -243,6 +259,8 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
       expect(save.getBoundingClientRect().top).equal(footerTop);
 
       const name = required(editor.element.find<HTMLInputElement>("input[name='name']")[0]);
+      expect(getComputedStyle(name).minHeight).equal("88px");
+      expect(getComputedStyle(name).fontSize).equal("44px");
       name.value = "Saved editor";
       save.click();
       await waitUntil(() => !save.isConnected);
@@ -250,7 +268,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     });
   }
 
-  it("imports a matching item from a compendium", async () => {
+  it("closes a compendium without importing and imports on demand", async () => {
     const actor = required(await createMockActorKey("character", {}, key));
     const pack = await createMockCompendium("Item");
     const worldItem = required(await createWorldTestItem("weapon"));
@@ -259,6 +277,14 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const picker = new VogelfreiMobileCompendiumPicker(actor, { type: "weapon" });
     const data = await picker.getData();
     expect(data.entries.map((entry) => entry.name)).contain(worldItem.name);
+
+    await picker.render(true);
+    const search = required(picker.element.find<HTMLInputElement>(".compendium-search")[0]);
+    expect(getComputedStyle(search).fontSize).equal("34px");
+    const close = required(picker.element.find<HTMLButtonElement>(".compendium-close")[0]);
+    close.click();
+    await waitUntil(() => !close.isConnected);
+    expect(actor.items.getName(worldItem.name)).undefined;
 
     await picker.render(true);
     const button = await waitForElement<HTMLButtonElement>(".mobile-compendium-picker .compendium-add");
@@ -289,10 +315,9 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     expect(second.system.containerId).equal("");
   });
 
-  it("shows public results but conceals blind results", async () => {
+  it("shows results for the sheet actor but conceals blind results", async () => {
+    document.body.classList.add("vf-mobile-mode");
     const actor = required(await createMockActorKey("character", {}, key));
-    previousCharacter = game.user?.character?.id ?? null;
-    await game.user?.update({ character: actor.id });
     const sheet = new VogelfreiMobileCharacterSheet(actor);
     await sheet.render(true);
 
@@ -318,7 +343,5 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     popup = await waitForElement(".vf-mobile-roll-result");
     expect(popup?.textContent).contain(game.i18n.localize("VF.mobile.BlindRollSent"));
     expect(popup?.textContent).not.contain("51");
-
-    await game.user?.update({ character: previousCharacter });
   });
 };

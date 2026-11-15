@@ -1,4 +1,4 @@
-<form class="vf roll-dialog">
+<div class="vf roll-dialog">
     {{#if data.rollData.details}}
     <div class="roll-details">
         {{data.rollData.details}}
@@ -17,6 +17,16 @@
             {{/each}}
         </select>
     </div>
+    {{#if ammunition}}
+    <div class="form-group">
+        <label>{{localize "VF.items.Ammunition"}}</label>
+        <select name="ammunition">
+            {{#each ammunition}}
+            <option value="{{this.id}}">{{this.name}} ({{this.quantity}})</option>
+            {{/each}}
+        </select>
+    </div>
+    {{/if}}
     {{#if isMelee}}
     <div class="form-group">
         <label>{{localize "VF.WeaponLength"}}</label>
@@ -49,4 +59,4 @@
             {{selectOptions rollModes selected=rollMode labelAttr="label" localize=true}}
         </select>
     </div>
-</form>
+</div>

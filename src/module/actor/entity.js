@@ -595,6 +595,15 @@ export default class VogelfreiActor extends Actor {
 
     // Add weapon bonus to attack roll only (already added to dmgParts)
     if (attData.item) attackMods.push(attData.item?.system?.bonus);
+    const ammunitionType = isMissile ? attData.item?.system?.ammunition : "";
+    const ammunition = ammunitionType
+      ? this.items
+          .filter(
+            (item) =>
+              item.type === "item" && item.system.ammunition === ammunitionType && item.system.quantity.value > 0,
+          )
+          .map((item) => ({ id: item.id, name: item.name, quantity: item.system.quantity.value }))
+      : [];
 
     rollParts.push(...removeFalsyElements(attackMods));
 
@@ -609,6 +618,8 @@ export default class VogelfreiActor extends Actor {
         // change it.
         acVariant: firearm ? "firearm" : undefined,
         firearm,
+        ammunitionType,
+        ammunition,
         // Capped against the target's Armour Rating once the target is known,
         // in VogelfreiDice.sendAttackRoll. A gun has none.
         armourModifier: firearm ? 0 : (attData.item?.system?.armourModifier ?? 0),

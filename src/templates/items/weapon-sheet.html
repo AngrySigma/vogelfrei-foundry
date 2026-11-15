@@ -183,6 +183,15 @@
         </div>
         {{#if system.missile}}
         <div class="form-group block-input">
+          <label>{{localize 'VF.items.Ammunition'}}</label>
+          <div class="form-fields">
+            <select name="system.ammunition" data-dtype="String">
+              <option value="">{{localize 'VF.ammunition.none'}}</option>
+              {{selectOptions config.ammunition selected=system.ammunition localize=true}}
+            </select>
+          </div>
+        </div>
+        <div class="form-group block-input">
           <label>{{localize 'VF.items.Range'}}</label>
           <div class="form-fields range">
             <input

@@ -4,6 +4,7 @@ name: "Sling Bullets"
 type: "item"
 img: "icons/svg/sword.svg"
 system:
+  ammunition: "slingBullet"
   cost: 2
   costRural: 2
   costMinimum: false

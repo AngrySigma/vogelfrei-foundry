@@ -74,6 +74,10 @@ export default class VogelfreiMobileCompendiumPicker extends foundry.appv1.api.A
     };
 
     html.find(".compendium-search").on("input", filter);
+    html.find(".compendium-close").on("click", (event) => {
+      event.preventDefault();
+      void this.close();
+    });
     html.find(".compendium-add").on("click", async (event) => {
       event.preventDefault();
       const button = event.currentTarget as HTMLButtonElement;

@@ -133,6 +133,7 @@ export default class VogelfreiActorSheetCharacter extends VogelfreiActorSheet {
     this._prepareItems(data);
 
     data.staminaDice = dieChoices(this.actor.system.stamina.die);
+    data.unknownLanguages = this.actor.system.languages.unknown ?? [];
 
     const stance = currentStance(this.actor);
     data.stances = STANCE_KINDS.map((kind) => ({
@@ -194,28 +195,28 @@ export default class VogelfreiActorSheetCharacter extends VogelfreiActorSheet {
     });
   }
 
-  _pushLang(table) {
-    const data = this.actor.system;
-    let update = data[table]; // V10 compatibility
-    this._chooseLang().then((dialogInput) => {
+  _pushLang(table, list = "value") {
+    return this._chooseLang().then((dialogInput) => {
       const name = CONFIG.VF.languages[dialogInput.choice];
-      if (update.value) {
-        update.value.push(name);
-      } else {
-        update = { value: [name] };
-      }
-
+      const languages = this.actor.system[table];
+      const otherList = list === "unknown" ? "value" : "unknown";
       const newData = {};
-      newData[table] = update;
+      newData[table] = {
+        ...languages,
+        [list]: [...new Set([...(languages[list] ?? []), name])],
+        [otherList]: (languages[otherList] ?? []).filter((language) => language !== name),
+      };
       return this.actor.update({ system: newData });
     });
   }
 
-  _popLang(table, lang) {
-    const data = this.actor.system;
-    const update = data[table].value.filter((el) => el !== lang);
+  _popLang(table, lang, list = "value") {
+    const languages = this.actor.system[table];
     const newData = {};
-    newData[table] = { value: update };
+    newData[table] = {
+      ...languages,
+      [list]: (languages[list] ?? []).filter((language) => language !== lang),
+    };
     return this.actor.update({ system: newData });
   }
 
@@ -308,15 +309,13 @@ export default class VogelfreiActorSheetCharacter extends VogelfreiActorSheet {
     html.find(".item-push").click((ev) => {
       ev.preventDefault();
       const header = ev.currentTarget;
-      const table = header.dataset.array;
-      this._pushLang(table);
+      this._pushLang(header.dataset.array, header.dataset.list);
     });
 
     html.find(".item-pop").click((ev) => {
       ev.preventDefault();
       const header = ev.currentTarget;
-      const table = header.dataset.array;
-      this._popLang(table, $(ev.currentTarget).closest(".item").data("lang"));
+      this._popLang(header.dataset.array, $(ev.currentTarget).closest(".item").data("lang"), header.dataset.list);
     });
 
     // Toggle Equipment

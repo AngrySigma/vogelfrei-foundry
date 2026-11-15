@@ -83,6 +83,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
 
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
+      expect(windows[0].options.height).equal(400);
 
       for (const window of windows) {
         await window.close();
@@ -190,6 +191,15 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       expect(Object.keys(data?.system)).contain("init");
     });
 
+    it("shows only explicitly recorded unknown languages", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: ["Dwarvish"] } });
+
+      const data = await actor?.sheet.getData();
+      expect(data?.unknownLanguages).deep.equal(["Dwarvish"]);
+      expect(CONFIG.VF.languages).not.include.members(["Lawful", "Chaotic", "Neutral"]);
+    });
+
     after(async () => {
       await cleanUpActorsByKey(key);
     });
@@ -248,6 +258,36 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       expect(actor?.system.languages.value[0]).equal("Common");
     });
 
+    it("moves a language from unknown to known without duplicates", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: [], unknown: ["Common"] } });
+
+      const pending = actor?.sheet?._pushLang(table);
+      await waitUntil(() => openV2Dialogs().length === 1);
+      document.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
+      await pending;
+      await waitUntil(() => openV2Dialogs().length === 0);
+
+      expect(actor?.system.languages.value).deep.equal(["Common"]);
+      expect(actor?.system.languages.unknown).deep.equal([]);
+    });
+
+    it("adds a failed encounter to unknown only once", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: [] } });
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const pending = actor?.sheet?._pushLang(table, "unknown");
+        await waitUntil(() => openV2Dialogs().length === 1);
+        openV2Dialogs()[0].element.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
+        await pending;
+        await waitUntil(() => openV2Dialogs().length === 0);
+      }
+
+      expect(actor?.system.languages.value).deep.equal([]);
+      expect(actor?.system.languages.unknown).deep.equal(["Common"]);
+    });
+
     after(async () => {
       await cleanUpActorsByKey(key);
       await closeV2Dialogs();
@@ -270,6 +310,16 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       await waitForInput();
 
       expect(actor?.system.languages.value.length).equal(0);
+    });
+
+    it("can remove an unknown language without changing known languages", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: ["Dwarvish"] } });
+
+      await actor?.sheet?._popLang(table, "Dwarvish", "unknown");
+
+      expect(actor?.system.languages.value).deep.equal(["Common"]);
+      expect(actor?.system.languages.unknown).deep.equal([]);
     });
 
     after(async () => {

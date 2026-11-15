@@ -49,7 +49,6 @@ const registerMobileRollResults = () => {
   Hooks.on("renderChatMessageHTML", (message: ChatMessage, html: HTMLElement) => {
     if (!document.body.classList.contains("vf-mobile-mode") || !message.isAuthor) return;
     if (!message.content.includes('data-vf-roll="true"')) return;
-    if (message.speaker.actor !== game.user?.character?.id) return;
     showRollResult(message, html);
   });
 };

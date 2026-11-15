@@ -122,6 +122,7 @@ export default class VogelfreiDataModelCharacter extends foundry.abstract.TypeDa
    * @inheritdoc
    */
   static migrateData(source) {
+    VogelfreiDataModelCharacter.#migrateLanguages(source);
     VogelfreiDataModelCharacter.#migrateCantrips(source);
 
     // Two save bonuses, one per source. Ability Scores.md gives Intelligence to
@@ -147,6 +148,14 @@ export default class VogelfreiDataModelCharacter extends foundry.abstract.TypeDa
 
     // biome-ignore lint/complexity/noThisInStatic: super.migrateData() correctly calls parent static method
     return super.migrateData(source);
+  }
+
+  static #migrateLanguages(source) {
+    const languages = source.languages ?? {};
+    source.languages = languages;
+
+    if (!Array.isArray(languages.value)) languages.value = [];
+    if (!Array.isArray(languages.unknown)) languages.unknown = [];
   }
 
   /**

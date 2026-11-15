@@ -41,6 +41,7 @@ system:
     value: 0
     max: 0
   description: "<p>A specialist siege weapon of the generation after this one; see below</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

@@ -8,6 +8,7 @@ export default class VogelfreiDataModelItem extends foundry.abstract.TypeDataMod
     const { SchemaField, StringField, NumberField, BooleanField, ArrayField, ObjectField } = foundry.data.fields;
     return {
       treasure: new BooleanField(),
+      ammunition: new StringField({ initial: "" }),
       description: new StringField(),
       tags: new ArrayField(new ObjectField()),
       equipped: new BooleanField(),

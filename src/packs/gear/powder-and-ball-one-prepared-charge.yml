@@ -18,6 +18,7 @@ system:
   tags: []
   treasure: false
   description: "<p>One shot; cartridge form and availability are campaign-specific</p>"
+  ammunition: "firearm"
 effects: []
 folder: null
 sort: 0

@@ -209,9 +209,6 @@ export const VF = {
   /** The languages a character may know, as display names. */
   languages: [
     "Common",
-    "Lawful",
-    "Chaotic",
-    "Neutral",
     "Bugbear",
     "Doppelgänger",
     "Dragon",
@@ -232,6 +229,12 @@ export const VF = {
     "Orcish",
     "Pixie",
   ],
+  ammunition: {
+    arrow: "VF.ammunition.arrow",
+    bolt: "VF.ammunition.bolt",
+    slingBullet: "VF.ammunition.slingBullet",
+    firearm: "VF.ammunition.firearm",
+  },
   /** Weapon/item quality tag labels, as localization keys, keyed by tag. */
   tags: {
     melee: "VF.items.Melee",

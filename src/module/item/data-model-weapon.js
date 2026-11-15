@@ -41,6 +41,7 @@ export default class VogelfreiDataModelWeapon extends foundry.abstract.TypeDataM
       lengthTwoHanded: new NumberField({ integer: true, min: 0, initial: null, nullable: true }),
       pattern: new StringField(),
       missile: new BooleanField(),
+      ammunition: new StringField({ initial: "" }),
       melee: new BooleanField({ initial: true }),
       slow: new BooleanField(),
       counter: new SchemaField({

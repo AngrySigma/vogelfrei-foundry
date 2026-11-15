@@ -112,6 +112,10 @@ body.vf-mobile-mode .dialog.vf {
       color: $colorDark;
     }
 
+    > .tab[data-tab="attributes"] {
+      overflow-y: hidden;
+    }
+
     .item-entry,
     .item-entry .item-name,
     .item-entry .item-control,
@@ -333,6 +337,16 @@ body.vf-mobile-mode .dialog.vf {
       }
     }
 
+    .attribute-group:not(.save-bonuses) .attributes .saving-throw {
+      grid-template-rows: 104px 80px;
+      height: auto;
+      min-height: 184px;
+
+      .attribute-name {
+        min-height: 104px;
+      }
+    }
+
     .save-bonuses {
       margin-top: 24px;
 
@@ -403,16 +417,7 @@ body.vf-mobile-mode .dialog.vf {
           &.hit-dice {
             width: 100%;
             height: var(--mobile-gauge-size);
-
-            .die-row {
-              flex-direction: column;
-              gap: 4px;
-            }
-
-            .die-label {
-              width: auto;
-              font-size: 20px;
-            }
+            gap: 8px;
 
             select {
               width: 100%;
@@ -424,7 +429,9 @@ body.vf-mobile-mode .dialog.vf {
             }
 
             .hit-dice-roll {
-              font-size: 24px;
+              width: 48px;
+              height: 48px;
+              font-size: 44px;
             }
           }
         }
@@ -671,15 +678,15 @@ body.vf-mobile-mode .dialog.vf {
     .item-controls {
       display: flex;
       flex: 0 0 auto;
-      gap: 0;
+      gap: 8px;
 
       .item-control {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 52px;
-        min-height: 56px;
-        font-size: 36px;
+        min-width: 72px;
+        min-height: 72px;
+        font-size: 48px;
       }
     }
 
@@ -985,18 +992,18 @@ body.vf-mobile-mode .dialog.vf {
 }
 
 .vf.sheet.item.mobile-item-sheet.mobile-large-item-editor {
-  font-size: 48px;
+  font-size: 36px;
 
   .window-header {
-    flex-basis: calc(112px + env(safe-area-inset-top));
+    flex-basis: calc(80px + env(safe-area-inset-top));
 
     .window-title {
-      font-size: 40px;
+      font-size: 32px;
     }
 
     .header-button {
-      min-height: 96px;
-      font-size: 36px;
+      min-height: 56px;
+      font-size: 28px;
     }
 
     .vf-save-close {
@@ -1005,43 +1012,43 @@ body.vf-mobile-mode .dialog.vf {
   }
 
   .sheet-header .charname input {
-    min-height: 128px;
+    min-height: 88px;
     height: auto;
-    font-size: 72px;
+    font-size: 44px;
   }
 
   .sheet-body .stats {
     grid-template-columns: minmax(0, 1fr);
-    font-size: 56px;
+    font-size: 36px;
 
     .form-group {
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 8px;
+      margin-bottom: 16px;
 
       label {
-        min-height: 56px;
-        font-size: 56px;
+        min-height: 40px;
+        font-size: 36px;
         line-height: 1.2;
         overflow-wrap: anywhere;
       }
 
       .form-fields {
-        min-height: 128px;
+        min-height: 88px;
       }
 
       input,
       select {
         min-width: 0;
-        min-height: 128px;
-        height: 128px;
-        font-size: 56px;
+        min-height: 88px;
+        height: 88px;
+        font-size: 36px;
         line-height: 1.2;
       }
 
       input[type="checkbox"] {
-        width: 64px;
-        height: 64px;
-        min-height: 64px;
+        width: 40px;
+        height: 40px;
+        min-height: 40px;
       }
     }
   }
@@ -1052,23 +1059,17 @@ body.vf-mobile-mode .dialog.vf {
   .editor-content p,
   .prosemirror .editor-content,
   .prosemirror menu button {
-    font-size: 48px;
+    font-size: 32px;
     line-height: 1.4;
   }
 
   .editor-edit {
-    font-size: 48px;
+    font-size: 32px;
   }
 
   .mobile-item-actions button {
-    min-height: 128px;
-    font-size: 48px;
-  }
-
-  @media (max-width: 600px) {
-    .mobile-item-actions {
-      flex-direction: column;
-    }
+    min-height: 88px;
+    font-size: 32px;
   }
 }
 
@@ -1090,6 +1091,7 @@ body.vf-mobile-mode .dialog.vf {
 
   .mobile-compendium-content {
     display: flex;
+    box-sizing: border-box;
     flex-direction: column;
     height: 100%;
     padding: 12px;
@@ -1098,18 +1100,23 @@ body.vf-mobile-mode .dialog.vf {
   .compendium-search-label {
     display: flex;
     flex-direction: column;
+    gap: 8px;
     margin-bottom: 12px;
+    font-size: 34px;
     text-align: left;
   }
 
   .compendium-search {
     width: 100%;
-    min-height: 46px;
-    padding: 0 10px;
+    min-height: 64px;
+    padding: 0 12px;
+    font-size: 34px;
     text-align: left;
   }
 
   .compendium-results {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     margin: 0;
     padding: 0;
@@ -1119,14 +1126,14 @@ body.vf-mobile-mode .dialog.vf {
   .compendium-entry {
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 60px;
-    padding: 6px 0;
+    gap: 12px;
+    min-height: 80px;
+    padding: 8px 0;
     border-bottom: 1px solid $colorTan;
 
     img {
-      width: 44px;
-      height: 44px;
+      width: 56px;
+      height: 56px;
       border: 0;
       object-fit: contain;
     }
@@ -1138,16 +1145,28 @@ body.vf-mobile-mode .dialog.vf {
       min-width: 0;
       text-align: left;
 
+      strong {
+        font-size: 34px;
+      }
+
       span {
         color: $colorOlive;
-        font-size: 24px;
+        font-size: 28px;
       }
     }
 
     .compendium-add {
-      flex: 0 0 46px;
-      min-height: 46px;
+      flex: 0 0 64px;
+      min-height: 64px;
+      font-size: 28px;
     }
+  }
+
+  .compendium-close {
+    flex: 0 0 64px;
+    min-height: 64px;
+    margin-top: 12px;
+    font-size: 32px;
   }
 }
 
@@ -1232,6 +1251,27 @@ body.vf-mobile-mode .dialog.vf {
   max-width: calc(100vw - 16px) !important;
   max-height: calc(100dvh - 24px);
 
+  .window-header {
+    flex: 0 0 calc(72px + env(safe-area-inset-top));
+    gap: 8px;
+    padding-top: env(safe-area-inset-top);
+
+    .window-title {
+      font-size: 32px;
+      line-height: 1.2;
+    }
+
+    .header-button,
+    .header-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      min-height: 56px;
+      font-size: 28px;
+    }
+  }
+
   .window-content {
     overflow-y: auto;
   }
@@ -1239,32 +1279,40 @@ body.vf-mobile-mode .dialog.vf {
   .roll-dialog {
     .roll-details {
       margin-bottom: 16px;
-      font-size: 28px;
+      font-size: 36px;
       line-height: 1.3;
+      overflow-wrap: anywhere;
     }
 
     .form-group {
       display: flex;
+      flex: 0 0 auto;
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
+      gap: 12px;
+      height: auto;
+      min-height: 172px;
+      margin-bottom: 24px;
 
-    label {
-      font-size: 28px;
-      line-height: 1.2;
-    }
+      > label {
+        flex: 0 0 auto;
+        min-height: 48px;
+        font-size: 40px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
 
-    input,
-    select {
-      box-sizing: border-box;
-      width: 100%;
-      height: 64px;
-      min-height: 64px;
-      padding: 8px 12px;
-      font-size: 28px;
-      line-height: 1.2;
+      > input,
+      > select {
+        box-sizing: border-box;
+        flex: 0 0 auto;
+        width: 100%;
+        height: 112px;
+        min-height: 112px;
+        padding: 12px 16px;
+        font-size: 40px;
+        line-height: 1.2;
+      }
     }
   }
 
@@ -1272,62 +1320,17 @@ body.vf-mobile-mode .dialog.vf {
   .dialog-buttons {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 16px;
     margin-top: 16px;
 
     button {
       min-width: 0;
-      min-height: 64px;
-      padding: 12px 16px;
-      font-size: 28px;
+      min-height: 88px;
+      padding: 16px 20px;
+      font-size: 36px;
       line-height: 1.2;
-    }
-  }
-}
-
-body.vf-mobile-mode .application.dialog:has(.roll-dialog),
-body.vf-mobile-mode .dialog.vf:has(.roll-dialog) {
-  font-size: 48px;
-
-  .roll-dialog {
-    .roll-details,
-    label {
-      font-size: 56px;
-      line-height: 1.3;
-      overflow-wrap: anywhere;
-    }
-
-    .form-group {
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    input,
-    select {
-      height: 128px;
-      min-height: 128px;
-      font-size: 56px;
-      padding: 16px 24px;
-    }
-  }
-
-  .form-footer,
-  .dialog-buttons {
-    gap: 24px;
-
-    button {
-      min-height: 128px;
-      font-size: 56px;
-      padding: 24px 32px;
       white-space: normal;
       overflow-wrap: anywhere;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .form-footer,
-    .dialog-buttons {
-      grid-template-columns: minmax(0, 1fr);
     }
   }
 }
