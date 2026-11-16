@@ -66,6 +66,20 @@ export const waitUntil = async (
   return Boolean(predicate());
 };
 
+/** ApplicationV1.render returns the application before its DOM is ready. */
+export const renderApplication = async <
+  T extends { render(force: boolean): unknown; rendered: boolean; element: JQuery },
+>(
+  application: T,
+): Promise<T> => {
+  application.render(true);
+  const ready = await waitUntil(() => application.rendered && Boolean(application.element[0]?.isConnected), {
+    timeout: 1500,
+  });
+  if (!ready) throw new Error("Application did not finish rendering");
+  return application;
+};
+
 export const openWindows = (className: string) =>
   Object.values(ui.windows).filter((o) => o.options.classes.includes(className));
 
@@ -90,7 +104,7 @@ export const closeSheets = async () => {
   for (const w of openWindows("sheet")) {
     await w.close();
   }
-  waitForInput();
+  await waitForInput();
 };
 
 /**

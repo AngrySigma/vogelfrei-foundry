@@ -42,8 +42,8 @@ const createMockActor = async (type: string) =>
 export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.QuenchMethods) => {
   afterEach(async () => {
     await trashChat();
-    cleanUpActorsByKey(key);
-    cleanUpWorldItems();
+    await cleanUpActorsByKey(key);
+    await cleanUpWorldItems();
   });
 
   describe("update(data, options)", () => {

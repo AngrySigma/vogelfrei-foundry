@@ -17,6 +17,7 @@ import {
   itemTypes,
   openV2Dialogs,
   openWindows,
+  renderApplication,
   trashChat,
   waitForInput,
   waitUntil,
@@ -86,11 +87,9 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         // Create item
         const actor = await createMockActorKey("character", {}, key);
         await actor?.update({ system: { spells: { enabled: true } } });
-        actor?.sheet?.render(true);
-        await delay(200);
-
         const item = await createActorTestItem(actor, itemType);
-        await waitForInput();
+        const sheet = actor?.sheet;
+        await renderApplication(sheet);
 
         expect(actor?.items.size).equal(1);
         const mockedItem = item?.pop();
@@ -118,15 +117,15 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
         }
 
         // Setup what to click
-        const clickElement = document.querySelector(`${tab} .item-name`);
+        const clickElement = sheet.element[0]?.querySelector(`${tab} .item-name`);
         const descriptionElement = clickElement?.parentElement?.nextElementSibling;
         expect([...(descriptionElement?.classList ?? [])])
           .to.be.an("array")
           .that.does.not.include("expanded");
 
         // Mock event
-        document.querySelector(`${tab} .item-name`)?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-        await delay(200);
+        clickElement?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        await waitUntil(() => Boolean(descriptionElement?.classList.contains("expanded")), { timeout: 1000 });
 
         // Verify method
         expect([...(descriptionElement?.classList ?? [])])
@@ -820,14 +819,17 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const clickSave = async (save: string) => {
-      document.querySelector(`li[data-save="${save}"] a`)?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      await delay(220);
+      const actor = await getActor();
+      const button = actor?.sheet?.element[0]?.querySelector(`li[data-save="${save}"] a`);
+      expect(button).not.null;
+      button?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      expect(await waitUntil(() => game.messages?.size === 1, { timeout: 1500 })).equal(true);
     };
 
     describe("character can roll", () => {
       before(async () => {
         const actor = await createMockActorKey("character", {}, key);
-        await actor?.sheet?.render(true);
+        await renderApplication(actor?.sheet);
         await game.settings.set(game.system.id, "invertedCtrlBehavior", true);
         await trashChat();
         await delay(200);
@@ -858,7 +860,7 @@ export default ({ describe, it, expect, after, afterEach, before, beforeEach }: 
     describe("monster can roll", () => {
       before(async () => {
         const actor = await createMockActorKey("monster", {}, key);
-        await actor?.sheet?.render(true);
+        await renderApplication(actor?.sheet);
       });
 
       saves.forEach((save) => {

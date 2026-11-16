@@ -21,7 +21,7 @@ const ATTACK_STANCES = ["press", "defensive"];
 
 const VogelfreiDice = {
   async sendRoll({
-    parts = [],
+    parts = /** @type {string[]} */ ([]),
     data = {},
     title = null,
     flavor = null,
@@ -77,25 +77,16 @@ const VogelfreiDice = {
 
     templateData.result = VogelfreiDice.digestResult(data, roll);
 
-    return new Promise((resolve) => {
-      roll.render().then((r) => {
-        templateData.rollVF = r;
-        foundry.applications.handlebars.renderTemplate(template, templateData).then((content) => {
-          chatData.content = content;
-          // Dice So Nice
-          if (game.dice3d) {
-            game.dice3d.showForRoll(roll, game.user, true, chatData.whisper, chatData.blind).then(() => {
-              if (chatMessage !== false) ChatMessage.create(chatData);
-              resolve(roll);
-            });
-          } else {
-            chatData.sound = CONFIG.sounds.dice;
-            if (chatMessage !== false) ChatMessage.create(chatData);
-            resolve(roll);
-          }
-        });
-      });
-    });
+    templateData.rollVF = await roll.render();
+    chatData.content = await foundry.applications.handlebars.renderTemplate(template, templateData);
+    // Dice So Nice
+    if (game.dice3d) {
+      await game.dice3d.showForRoll(roll, game.user, true, chatData.whisper, chatData.blind);
+    } else {
+      chatData.sound = CONFIG.sounds.dice;
+    }
+    if (chatMessage !== false) await ChatMessage.create(chatData);
+    return roll;
   },
 
   /**

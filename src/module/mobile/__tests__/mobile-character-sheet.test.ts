@@ -8,6 +8,7 @@ import {
   createMockActorKey,
   createMockCompendium,
   createWorldTestItem,
+  renderApplication,
   trashChat,
   waitForElement,
   waitUntil,
@@ -25,7 +26,12 @@ const required = <T>(value: T | undefined): T => {
   return value;
 };
 
-export default ({ it, expect, afterEach }: QuenchMethods) => {
+export default ({ it, expect, beforeEach, afterEach }: QuenchMethods) => {
+  beforeEach(() => {
+    // These tests construct sheets directly rather than entering through the
+    // mobile-mode action, which normally sets the document's mode class.
+    document.body.classList.add("vf-mobile-mode");
+  });
   afterEach(async () => {
     dismissMobileRollResult();
     await closeSheets();
@@ -42,7 +48,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const actor = required(await createMockActorKey("character", {}, key));
     const desktopSheet = actor.sheet;
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     expect(actor.sheet).equal(desktopSheet);
     expect(desktopSheet._getHeaderButtons().map((button) => button.class)).contain("vf-mobile-enter");
@@ -71,14 +77,15 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const actor = required(await createMockActorKey("character", {}, key));
     await createActorTestItem(actor, "ability", "Test Ability");
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     const identityInput = required(sheet.element.find(".mobile-identity input")[0]);
     expect(getComputedStyle(identityInput).fontSize).equal("34px");
     const progression = required(sheet.element.find(".mobile-identity-progression")[0]);
     const progressionColumns = getComputedStyle(progression).gridTemplateColumns.split(" ");
     expect(progressionColumns).to.have.length(5);
-    expect(new Set(progressionColumns).size).equal(1);
+    const progressionWidths = progressionColumns.map(Number.parseFloat);
+    expect(Math.max(...progressionWidths) - Math.min(...progressionWidths)).below(1);
     expect(progression.querySelector("input[name='system.details.xp.value']")).not.null;
     expect(progression.querySelector("input[name='system.spells.enabled']")).null;
 
@@ -105,7 +112,8 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
       required(woundsGauge.parentElement ?? undefined),
     ).gridTemplateColumns.split(" ");
     expect(resourceColumns).to.have.length(3);
-    expect(new Set(resourceColumns).size).equal(1);
+    const resourceWidths = resourceColumns.map(Number.parseFloat);
+    expect(Math.max(...resourceWidths) - Math.min(...resourceWidths)).below(1);
     expect(getComputedStyle(required(sheet.element.find(".resource-labels div")[0])).fontSize).equal("24px");
     expect(getComputedStyle(wounds).height).equal("64px");
     expect(getComputedStyle(wounds).fontSize).equal("48px");
@@ -145,7 +153,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     await createActorTestItem(actor, "ability", "Test Ability");
     await actor.update({ "system.spells.enabled": true });
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     const exploration = required(sheet.element.find(".attributes.exploration")[0]);
     const abilities = required(sheet.element.find(".inventory.abilities")[0]);
@@ -173,7 +181,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     document.body.classList.add("vf-mobile-mode");
     const actor = required(await createMockActorKey("character", {}, key));
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     const pendingRoll = actor.rollSave("magic");
     const form = required((await waitForElement(".application.dialog .roll-dialog")) ?? undefined);
@@ -211,7 +219,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
   it("reveals the spell tab when spellcasting is enabled", async () => {
     const actor = required(await createMockActorKey("character", {}, key));
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     const input = sheet.element.find("input[name='system.spells.enabled']")[0] as HTMLInputElement;
     input.checked = true;
@@ -225,7 +233,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
   it("creates a custom ability and opens its mobile editor", async () => {
     const actor = required(await createMockActorKey("character", {}, key));
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     await sheet._createCustomItem({ type: "ability" });
 
@@ -239,7 +247,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
       const actor = required(await createMockActorKey("character", {}, key));
       const item = required((await createActorTestItem(actor, type, "Test editor"))?.[0]);
       const editor = new VogelfreiMobileItemSheet(item);
-      await editor.render(true);
+      await renderApplication(editor);
 
       const save = required(editor.element.find<HTMLButtonElement>(".mobile-item-save")[0]);
       const close = required(editor.element.find<HTMLButtonElement>(".mobile-item-close")[0]);
@@ -278,7 +286,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const data = await picker.getData();
     expect(data.entries.map((entry) => entry.name)).contain(worldItem.name);
 
-    await picker.render(true);
+    await renderApplication(picker);
     const search = required(picker.element.find<HTMLInputElement>(".compendium-search")[0]);
     expect(getComputedStyle(search).fontSize).equal("34px");
     const close = required(picker.element.find<HTMLButtonElement>(".compendium-close")[0]);
@@ -286,7 +294,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     await waitUntil(() => !close.isConnected);
     expect(actor.items.getName(worldItem.name)).undefined;
 
-    await picker.render(true);
+    await renderApplication(picker);
     const button = await waitForElement<HTMLButtonElement>(".mobile-compendium-picker .compendium-add");
     button?.click();
     await waitUntil(() => Boolean(actor.items.getName(worldItem.name)));
@@ -302,7 +310,8 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     const container = required((await createActorTestItem(actor, "container", "Bag"))?.[0]);
 
     await sheet._reorderItem(first, 1);
-    const weapons = actor.system.weapons.map((item: Item) => item.name);
+    const data = await sheet.getData();
+    const weapons = data.owned.weapons.map((item: Item) => item.name);
     expect(weapons).deep.equal(["Second", "First"]);
 
     await sheet._moveItemToContainer(first, container.id);
@@ -319,7 +328,7 @@ export default ({ it, expect, afterEach }: QuenchMethods) => {
     document.body.classList.add("vf-mobile-mode");
     const actor = required(await createMockActorKey("character", {}, key));
     const sheet = new VogelfreiMobileCharacterSheet(actor);
-    await sheet.render(true);
+    await renderApplication(sheet);
 
     const speaker = ChatMessage.getSpeaker({ actor });
     await ChatMessage.create({

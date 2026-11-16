@@ -13,6 +13,7 @@ import {
   openV2Dialogs,
   trashChat,
   waitForInput,
+  waitUntil,
 } from "../../../e2e/testUtils";
 import { getRollMode, setRollMode } from "../../helpers-message-mode";
 import VogelfreiItem from "../entity";
@@ -29,7 +30,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
   const { defaultIcons } = VogelfreiItem;
 
   after(async () => {
-    cleanUpWorldItems();
+    await cleanUpWorldItems();
   });
 
   describe("defaultIcons()", () => {
@@ -143,26 +144,31 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       await createActorTestItem(actor, "weapon");
       const weapon: VogelfreiItem = actor?.items.contents[0];
       await weapon?.update({ system: { melee: true, missile: true } });
-      const result = weapon.rollWeapon();
-      await waitForInput();
-      await actor.delete();
-      expect(openV2Dialogs().length).equal(1);
-      assert(result);
-      await closeV2Dialogs();
-      await waitForInput();
-      await waitForInput();
-      await waitForInput();
+      try {
+        const result = weapon.rollWeapon();
+        expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1500 })).true;
+        expect(openV2Dialogs().length).equal(1);
+        assert(result);
+      } finally {
+        await closeV2Dialogs();
+        await actor.delete();
+      }
       expect(openV2Dialogs().length).equal(0);
     });
 
-    it("Actor with weapon with ", async () => {
+    it("Actor with a missile weapon renders an attack dialog", async () => {
       const actor: VogelfreiActor = await createMockActor();
       await createActorTestItem(actor, "weapon");
       const weapon: VogelfreiItem = actor?.items.contents[0];
       await weapon?.update({ system: { missile: true, melee: false } });
-      const result = weapon.rollWeapon();
-      await actor.delete();
-      assert(result);
+      try {
+        const result = weapon.rollWeapon();
+        expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1500 })).true;
+        assert(result);
+      } finally {
+        await closeV2Dialogs();
+        await actor.delete();
+      }
     });
   });
 
