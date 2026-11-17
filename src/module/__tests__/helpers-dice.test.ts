@@ -9,6 +9,7 @@ import {
   rollSpecificNumber,
   trashChat,
   waitForInput,
+  waitUntil,
 } from "../../e2e/testUtils";
 import VogelfreiDice from "../helpers-dice";
 
@@ -45,6 +46,26 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       await trashChat();
     });
 
+    it("waits for the chat message to be saved before resolving", async () => {
+      const originalCreate = ChatMessage.create;
+      let saved = false;
+      ChatMessage.create = (async (...args: Parameters<typeof originalCreate>) => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const message = await originalCreate.apply(ChatMessage, args);
+        saved = true;
+        return message;
+      }) as typeof originalCreate;
+      try {
+        await VogelfreiDice.sendRoll({ parts: ["1d20"], data: { roll: { type: "above", target: 10 } } });
+        expect(saved).equal(true);
+      } finally {
+        // Let a prematurely returned create finish before restoring the method
+        // or letting the next test delete its message.
+        await waitUntil(() => saved);
+        ChatMessage.create = originalCreate;
+      }
+    });
+
     it("Can roll with single part", async () => {
       const dice = await VogelfreiDice.sendRoll({
         parts: ["1d10"],
@@ -54,9 +75,9 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       await waitForInput();
       const chatCard = document.querySelector(".chat-message .dice-formula")?.innerHTML;
       expect(Object.keys(dice)).contain("_evaluated");
-      expect(dice._evaluated).equal(true);
+      expect(dice.total).to.be.a("number");
       expect(Object.keys(dice)).contain("_formula");
-      expect(dice._formula).equal("1d10");
+      expect(dice.formula).equal("1d10");
       expect(chatCard).equal("1d10");
     });
 
@@ -69,9 +90,9 @@ export default ({ describe, it, after, afterEach, before, expect }: QuenchMethod
       await waitForInput();
       const chatCard = document.querySelector(".chat-message .dice-formula")?.innerHTML;
       expect(Object.keys(dice)).contain("_evaluated");
-      expect(dice._evaluated).equal(true);
+      expect(dice.total).to.be.a("number");
       expect(Object.keys(dice)).contain("_formula");
-      expect(dice._formula).equal("1d10 + 1d20");
+      expect(dice.formula).equal("1d10 + 1d20");
       expect(chatCard).equal("1d10 + 1d20");
     });
 

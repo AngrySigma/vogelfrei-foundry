@@ -9,7 +9,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.strength.value" type="text" value="{{system.scores.strength.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.strength.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.strength.mod}}</span>
@@ -20,7 +20,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.intelligence.value" type="text" value="{{system.scores.intelligence.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.intelligence.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.intelligence.mod}}</span>
@@ -31,7 +31,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.willpower.value" type="text" value="{{system.scores.willpower.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.willpower.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.willpower.mod}}</span>
@@ -42,7 +42,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.agility.value" type="text" value="{{system.scores.agility.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.agility.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.agility.mod}}</span>
@@ -53,7 +53,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.toughness.value" type="text" value="{{system.scores.toughness.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.toughness.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.toughness.mod}}</span>
@@ -64,7 +64,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.scores.leadership.value" type="text" value="{{system.scores.leadership.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
                 <span class="score-mod" data-tooltip="{{localize 'VF.scores.leadership.effects'}}"
                     aria-label="{{localize 'VF.Modifier'}}">{{mod system.scores.leadership.mod}}</span>
@@ -76,7 +76,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.retainer.loyalty" type="text" value="{{system.retainer.loyalty}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
                 </div>
             </li>
             {{/if}}
@@ -91,17 +91,17 @@
             <div class="flexrow">
                 <div class="health">
                     <input class="health-value health-top" name="system.wounds.value" type="text" value="{{system.wounds.value}}"
-                        data-dtype="Number" placeholder="0" title="{{localize 'VF.Health'}}" />
+                        data-dtype="Number" inputmode="numeric" placeholder="0" title="{{localize 'VF.Health'}}" />
                     <input class="health-value health-bottom" name="system.wounds.max" type="text" value="{{system.wounds.max}}"
-                        data-dtype="Number" placeholder="0" title="{{localize 'VF.HealthMax'}}" />
+                        data-dtype="Number" inputmode="numeric" placeholder="0" title="{{localize 'VF.HealthMax'}}" />
                     <div class="health-empty" style="height:{{counter false system.wounds.value system.wounds.max}}%"></div>
                     <div class="health-full" style="height:{{counter true system.wounds.value system.wounds.max}}%"></div>
                 </div>
                 <div class="health stamina">
                     <input class="health-value health-top" name="system.stamina.value" type="text" value="{{system.stamina.value}}"
-                        data-dtype="Number" placeholder="0" title="{{localize 'VF.Stamina'}}" />
+                        data-dtype="Number" inputmode="numeric" placeholder="0" title="{{localize 'VF.Stamina'}}" />
                     <input class="health-value health-bottom" name="system.stamina.max" type="text" value="{{system.stamina.max}}"
-                        data-dtype="Number" placeholder="0" title="{{localize 'VF.StaminaMax'}}" />
+                        data-dtype="Number" inputmode="numeric" placeholder="0" title="{{localize 'VF.StaminaMax'}}" />
                     <div class="health-empty" style="height:{{counter false system.stamina.value system.stamina.max}}%"></div>
                     <div class="health-full" style="height:{{counter true system.stamina.value system.stamina.max}}%"></div>
                 </div>
@@ -109,20 +109,17 @@
                       after. Wounds are not rolled: 6 + Toughness (a Warrior 7),
                       then +1 at the levels the class table marks.
                       Class and Career.md --}}
-                <div class="health hit-dice">
-                    <div class="die-row" title="{{localize 'VF.StaminaDie'}}">
-                        <span class="die-label">{{localize 'VF.StaminaShort'}}</span>
-                        <select name="system.stamina.die" data-dtype="String">
-                            {{selectOptions staminaDice selected=system.stamina.die}}
-                        </select>
-                        <a class="hit-dice-roll stamina-die-roll" title="{{localize 'VF.roll.staminaDie'}}"><i class="fas fa-dice-d20"></i></a>
-                    </div>
+                <div class="health hit-dice" title="{{localize 'VF.StaminaDie'}}">
+                    <select name="system.stamina.die" data-dtype="String">
+                        {{selectOptions staminaDice selected=system.stamina.die}}
+                    </select>
+                    <a class="hit-dice-roll stamina-die-roll" title="{{localize 'VF.roll.staminaDie'}}"><i class="fas fa-dice-d20"></i></a>
                 </div>
             </div>
             <div class="flexrow resource-labels">
                 <div>{{localize 'VF.Health'}}</div>
                 <div>{{localize 'VF.Stamina'}}</div>
-                <div>{{localize 'VF.Dice'}}</div>
+                <div>{{localize 'VF.HitDie'}}</div>
             </div>
         </div>
         {{!-- The ACs a character carries, one per sheet variant, and the
@@ -160,7 +157,7 @@
                     </h4>
                     <div class="attribute-value">
                         <input name="system.ws" type="text" value="{{system.ws}}" placeholder="0"
-                            data-dtype="Number" />
+                            data-dtype="Number" inputmode="numeric" />
                     </div>
                 </li>
                 <li class="attribute attack" data-attack="missile">
@@ -169,7 +166,7 @@
                     </h4>
                     <div class="attribute-value">
                         <input name="system.bs" type="text" value="{{system.bs}}" placeholder="0"
-                            data-dtype="Number" />
+                            data-dtype="Number" inputmode="numeric" />
                     </div>
                 </li>
                 {{!-- Feeds every AC above. It sits with the skills because the
@@ -180,7 +177,7 @@
                     </h4>
                     <div class="attribute-value">
                         <input name="system.ac.mod" type="text" value="{{system.ac.mod}}" placeholder="0"
-                            data-dtype="Number" />
+                            data-dtype="Number" inputmode="numeric" />
                     </div>
                 </li>
                 {{#if config.initiative}}
@@ -211,7 +208,7 @@
                         {{ localize "VF.movement.exploration.short" }}</h4>
                     <div class="attribute-value flexrow">
                         <input name="system.movement.base" type="text" value="{{@root.system.movement.base}}" placeholder="0"
-                            data-dtype="Number" {{#if system.config.movementAuto}}disabled{{/if}} />
+                            data-dtype="Number" inputmode="numeric" {{#if system.config.movementAuto}}disabled{{/if}} />
                     </div>
                 </li>
                 <li class="attribute attribute-secondaries">
@@ -235,7 +232,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.saves.paralysis.value" type="text" value="{{system.saves.paralysis.value}}"
-                        placeholder="0" data-dtype="Number" />
+                        placeholder="0" data-dtype="Number" inputmode="numeric" />
             </li>
             <li class="attribute saving-throw" data-save="poison">
                 <h4 class="attribute-name box-title">
@@ -243,7 +240,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.saves.poison.value" type="text" value="{{system.saves.poison.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
             </li>
             <li class="attribute saving-throw" data-save="breath">
                 <h4 class="attribute-name box-title">
@@ -251,7 +248,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.saves.breath.value" type="text" value="{{system.saves.breath.value}}"
-                        placeholder="0" data-dtype="Number" />
+                        placeholder="0" data-dtype="Number" inputmode="numeric" />
             </li>
             <li class="attribute saving-throw" data-save="device">
                 <h4 class="attribute-name box-title">
@@ -259,7 +256,7 @@
                 </h4>
                 <div class="attribute-value">
                     <input name="system.saves.device.value" type="text" value="{{system.saves.device.value}}" placeholder="0"
-                        data-dtype="Number" />
+                        data-dtype="Number" inputmode="numeric" />
             </li>
             <li class="attribute saving-throw" data-save="magic">
                 <h4 class="attribute-name box-title">
@@ -269,6 +266,12 @@
                     <input name="system.saves.magic.value" type="text" value="{{system.saves.magic.value}}"
                         placeholder="0" />
             </li>
+            {{#if @root.mobile}}
+        </ul>
+    </div>
+    <div class="attribute-group save-bonuses">
+        <ul class="attributes">
+            {{/if}}
             {{!-- Ability Scores.md: Intelligence is added to saves against
                   Magic-User spells, Willpower to every other save. --}}
             <li class="attribute saving-throw">

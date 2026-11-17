@@ -1,0 +1,39 @@
+<form class="{{cssClass}} mobile-character-form" autocomplete="off">
+  <header class="mobile-character-name">
+    <input name="name" type="text" value="{{name}}" placeholder="{{localize 'VF.details.name'}}" data-dtype="String" />
+  </header>
+
+  <section class="sheet-body mobile-sheet-body">
+    <div class="tab" data-group="primary" data-tab="attributes">
+      {{> (path "/templates/mobile/character-stats.html") }}
+    </div>
+    {{#if isOwnerOrObserver}}
+    <div class="tab" data-group="primary" data-tab="abilities">
+      {{> (path "/templates/actors/partials/character-abilities-tab.html") }}
+    </div>
+    {{#if system.spells.enabled}}
+    <div class="tab" data-group="primary" data-tab="spells">
+      {{> (path "/templates/actors/partials/character-spells-tab.html") }}
+    </div>
+    {{/if}}
+    <div class="tab" data-group="primary" data-tab="inventory">
+      {{> (path "/templates/actors/partials/character-inventory-tab.html") }}
+    </div>
+    {{/if}}
+    <div class="tab" data-group="primary" data-tab="notes">
+      {{> (path "/templates/actors/partials/character-notes-tab.html") }}
+    </div>
+  </section>
+
+  <nav class="sheet-tabs tabs mobile-tabs" data-group="primary">
+    {{#if isOwnerOrObserver}}
+    <a class="item" data-tab="attributes"><i class="fa-solid fa-heart-pulse"></i><span>{{localize "VF.category.attributes"}}</span></a>
+    <a class="item" data-tab="abilities"><i class="fa-solid fa-list-check"></i><span>{{localize "VF.mobile.Skills"}}</span></a>
+    {{#if system.spells.enabled}}
+    <a class="item" data-tab="spells"><i class="fa-solid fa-wand-magic-sparkles"></i><span>{{localize "VF.category.spells"}}</span></a>
+    {{/if}}
+    <a class="item" data-tab="inventory"><i class="fa-solid fa-bag-shopping"></i><span>{{localize "VF.category.inventory"}}</span></a>
+    {{/if}}
+    <a class="item" data-tab="notes"><i class="fa-solid fa-note-sticky"></i><span>{{localize "VF.category.notes"}}</span></a>
+  </nav>
+</form>

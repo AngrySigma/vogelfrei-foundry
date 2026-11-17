@@ -56,18 +56,16 @@ export default class VogelfreiDataModelMonster extends foundry.abstract.TypeData
   }
 
   /**
-   * Use an empty array for system.languages.value
-   * in order to suppress Polyglot errors.
+   * Use empty language arrays in order to suppress Polyglot errors.
    *
    * @param {VogelfreiDataModelMonster} source - Source data to migrate
    */
   static #migrateMonsterLanguages(source) {
     const languages = source.languages ?? {};
+    source.languages = languages;
 
-    // If languages.value isn't an iterable, use an empty array
-    if (typeof languages?.value?.[Symbol.iterator] !== "function") {
-      languages.value = [];
-    }
+    if (!Array.isArray(languages.value)) languages.value = [];
+    if (!Array.isArray(languages.unknown)) languages.unknown = [];
   }
 
   /**

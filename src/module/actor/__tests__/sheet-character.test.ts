@@ -13,6 +13,7 @@ import {
   openDialogs,
   openV2Dialogs,
   openWindows,
+  renderApplication,
   trashChat,
   waitForInput,
   waitUntil,
@@ -79,7 +80,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
-      await waitForInput();
+      expect(await waitUntil(() => openWindows("creator").some((window) => window.rendered), { timeout: 1500 })).true;
 
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
@@ -95,18 +96,30 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
-      await delay(400);
+      expect(await waitUntil(() => openWindows("creator").some((window) => window.rendered), { timeout: 1500 })).true;
 
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
 
       // One button rolls the whole array, in order, rather than a die per
       // ability.
-      $(".creator button.roll-array").trigger("click");
-      await delay(400);
+      const creator = windows[0];
+      if (!creator) throw new Error("Character creator did not open");
+      creator.element.find("button.roll-array").trigger("click");
+      expect(
+        await waitUntil(
+          () =>
+            creator.rendered &&
+            creator.element
+              .find(".score-value")
+              .toArray()
+              .every((cell) => Number(cell.textContent) >= 3),
+          { timeout: 1500 },
+        ),
+      ).true;
 
       for (const score of Object.keys(scores)) {
-        const cell = document.querySelector(`.creator .score-row[data-score="${score}"] .score-value`);
+        const cell = creator.element[0]?.querySelector(`.score-row[data-score="${score}"] .score-value`);
         expect(Number.parseInt(cell?.textContent ?? "0", 10) >= 3).equal(true);
       }
 
@@ -115,29 +128,45 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       }
     });
 
-    // @todo: this needs fixing
     it("saving scores records data to actor", async () => {
       const actor = await createMockActorKey("character", {}, key);
       const sheet = actor?.sheet as unknown as VogelfreiActorSheetCharacter;
 
       sheet.generateScores();
-      await delay(400);
+      expect(await waitUntil(() => openWindows("creator").some((window) => window.rendered), { timeout: 1500 })).true;
 
       const windows = openWindows("creator");
       expect(windows.length).equal(1);
 
-      $(".creator button.roll-array").trigger("click");
-      await delay(400);
+      const creator = windows[0];
+      if (!creator) throw new Error("Character creator did not open");
+      creator.element.find("button.roll-array").trigger("click");
+      expect(
+        await waitUntil(
+          () =>
+            creator.rendered &&
+            creator.element
+              .find(".score-value")
+              .toArray()
+              .every((cell) => Number(cell.textContent) >= 3),
+          { timeout: 1500 },
+        ),
+      ).true;
 
       for (const score of Object.keys(scores)) {
-        const cell = document.querySelector(`.creator .score-row[data-score="${score}"] .score-value`);
+        const cell = creator.element[0]?.querySelector(`.score-row[data-score="${score}"] .score-value`);
         const value = Number.parseInt(cell?.textContent ?? "0", 10);
         expect(value >= 3).equal(true);
         scores[score] = value;
       }
 
-      $(".creator button[type='submit']").trigger("submit");
-      await waitForInput();
+      creator.element.find("button[type='submit']").trigger("click");
+      expect(
+        await waitUntil(
+          () => Object.entries(scores).every(([score, value]) => actor?.system.scores[score].value === value),
+          { timeout: 1500 },
+        ),
+      ).true;
 
       expect(actor?.system.scores.strength.value).equal(scores.strength);
       expect(actor?.system.scores.agility.value).equal(scores.agility);
@@ -148,6 +177,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
     });
 
     afterEach(async () => {
+      await closeDialogs();
       // An array that was rolled but not accepted stays on the user, so clear
       // it or the next test opens the generator holding the previous one.
       await game.user?.unsetFlag(game.system.id, "pendingRoll");
@@ -191,6 +221,15 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       expect(Object.keys(data?.system)).contain("init");
     });
 
+    it("shows only explicitly recorded unknown languages", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: ["Dwarvish"] } });
+
+      const data = await actor?.sheet.getData();
+      expect(data?.unknownLanguages).deep.equal(["Dwarvish"]);
+      expect(CONFIG.VF.languages).not.include.members(["Lawful", "Chaotic", "Neutral"]);
+    });
+
     after(async () => {
       await cleanUpActorsByKey(key);
     });
@@ -222,7 +261,7 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       const actor = await createMockActorKey("character", {}, key);
       // eslint-disable-next-line no-underscore-dangle
       actor?.sheet?._pushLang(table);
-      await waitForInput();
+      expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1000 })).true;
 
       const dialogs = openV2Dialogs();
       expect(dialogs.length).equal(1);
@@ -232,21 +271,47 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
     it("adds language on OK", async () => {
       const actor = await createMockActorKey("character", {}, key);
       // eslint-disable-next-line no-underscore-dangle
-      actor?.sheet?._pushLang(table);
-      // The previous test's dialog may still be closing; wait for this one alone.
-      await waitUntil(() => openV2Dialogs().length === 1, { timeout: 1000 });
-
-      await waitUntil(() => document.querySelector(`button[data-action="ok"]`) !== null);
-      document.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
-      await waitUntil(() => openV2Dialogs().length === 0 && actor?.system.languages.value.length === 1, {
-        timeout: 1000,
-      });
+      const pending = actor?.sheet?._pushLang(table);
+      expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1000 })).true;
+      openV2Dialogs()[0]?.element.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
+      await pending;
+      expect(await waitUntil(() => openV2Dialogs().length === 0, { timeout: 1000 })).true;
 
       const dialogs = openV2Dialogs();
       expect(dialogs.length).equal(0);
 
       expect(actor?.system.languages.value.length).equal(1);
       expect(actor?.system.languages.value[0]).equal("Common");
+    });
+
+    it("moves a language from unknown to known without duplicates", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: [], unknown: ["Common"] } });
+
+      const pending = actor?.sheet?._pushLang(table);
+      expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1000 })).true;
+      openV2Dialogs()[0]?.element.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
+      await pending;
+      expect(await waitUntil(() => openV2Dialogs().length === 0, { timeout: 1000 })).true;
+
+      expect(actor?.system.languages.value).deep.equal(["Common"]);
+      expect(actor?.system.languages.unknown).deep.equal([]);
+    });
+
+    it("adds a failed encounter to unknown only once", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: [] } });
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const pending = actor?.sheet?._pushLang(table, "unknown");
+        expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1000 })).true;
+        openV2Dialogs()[0]?.element.querySelector<HTMLButtonElement>(`button[data-action="ok"]`)?.click();
+        await pending;
+        expect(await waitUntil(() => openV2Dialogs().length === 0, { timeout: 1000 })).true;
+      }
+
+      expect(actor?.system.languages.value).deep.equal([]);
+      expect(actor?.system.languages.unknown).deep.equal(["Common"]);
     });
 
     after(async () => {
@@ -273,6 +338,16 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
       expect(actor?.system.languages.value.length).equal(0);
     });
 
+    it("can remove an unknown language without changing known languages", async () => {
+      const actor = await createMockActorKey("character", {}, key);
+      await actor?.update({ "system.languages": { value: ["Common"], unknown: ["Dwarvish"] } });
+
+      await actor?.sheet?._popLang(table, "Dwarvish", "unknown");
+
+      expect(actor?.system.languages.value).deep.equal(["Common"]);
+      expect(actor?.system.languages.unknown).deep.equal([]);
+    });
+
     after(async () => {
       await cleanUpActorsByKey(key);
     });
@@ -293,11 +368,9 @@ export default ({ describe, it, expect, after, afterEach }: QuenchMethods) => {
           },
         },
       });
-      actor?.sheet?.render(true);
-      await waitForInput();
-
-      $(`.sheet .profile a[data-action="modifiers"]`).trigger("click");
-      await delay(200);
+      const sheet = await renderApplication(actor?.sheet);
+      sheet.element.find('.profile a[data-action="modifiers"]').trigger("click");
+      expect(await waitUntil(() => openDialogs().some((dialog) => dialog.rendered), { timeout: 1500 })).true;
 
       const dialogs = openDialogs();
       expect(dialogs.length).equal(1);

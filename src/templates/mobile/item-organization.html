@@ -1,0 +1,15 @@
+<form class="vf mobile-item-organization" autocomplete="off">
+  {{#if containers.length}}
+  <div class="form-group">
+    <label for="mobile-item-container">{{localize "VF.mobile.Container"}}</label>
+    <div class="form-fields">
+      <select id="mobile-item-container" name="containerId">
+        <option value="">{{localize "VF.mobile.NoContainer"}}</option>
+        {{#each containers}}
+        <option value="{{id}}" {{#if (eq id ../containerId)}}selected{{/if}}>{{name}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  {{/if}}
+</form>

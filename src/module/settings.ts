@@ -139,6 +139,11 @@ const registerSettings = () => {
     scope: "client",
     type: Boolean,
   });
+  game.settings.register(game.system.id, "mobileMode", {
+    default: false,
+    scope: "client",
+    type: Boolean,
+  });
 };
 
 declare global {
@@ -155,6 +160,7 @@ declare global {
       "vogelfrei.applyDamageOption": ApplyDamageOption;
       "vogelfrei.ignoreAttackBonusOnDamageRoll": boolean;
       "vogelfrei.hasPromptedDefaultTokenRing": boolean;
+      "vogelfrei.mobileMode": boolean;
     }
   }
 }

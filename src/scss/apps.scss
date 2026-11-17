@@ -3,6 +3,14 @@
     font-weight: bold;
     text-align: center;
   }
+
+  .form-group {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .unlist {

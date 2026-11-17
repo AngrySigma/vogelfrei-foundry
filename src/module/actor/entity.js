@@ -590,6 +590,11 @@ export default class VogelfreiActor extends Actor {
     // alone; step 4 adds no ability modifier to it.
     const isMissile = options.type === "missile";
     const firearm = isMissile && isFirearm(attData.item);
+    let attackMods = [];
+    if (!firearm) attackMods = isMissile ? [data.bs] : [data.ws];
+
+    // Add weapon bonus to attack roll only (already added to dmgParts)
+    if (attData.item) attackMods.push(attData.item?.system?.bonus);
     const ammunitionType = isMissile ? attData.item?.system?.ammunition : "";
     const ammunition = ammunitionType
       ? this.items
@@ -599,11 +604,6 @@ export default class VogelfreiActor extends Actor {
           )
           .map((item) => ({ id: item.id, name: item.name, quantity: item.system.quantity.value }))
       : [];
-    let attackMods = [];
-    if (!firearm) attackMods = isMissile ? [data.bs] : [data.ws];
-
-    // Add weapon bonus to attack roll only (already added to dmgParts)
-    if (attData.item) attackMods.push(attData.item?.system?.bonus);
 
     rollParts.push(...removeFalsyElements(attackMods));
 
@@ -613,13 +613,13 @@ export default class VogelfreiActor extends Actor {
       itemId: attData.item?._id,
       roll: {
         type: options.type,
-        ammunitionType,
-        ammunition,
         // A shot is answered by the target's firearm AC -- no Agility, and
         // armour only as far as its firearm rating. The dialog can still
         // change it.
         acVariant: firearm ? "firearm" : undefined,
         firearm,
+        ammunitionType,
+        ammunition,
         // Capped against the target's Armour Rating once the target is known,
         // in VogelfreiDice.sendAttackRoll. A gun has none.
         armourModifier: firearm ? 0 : (attData.item?.system?.armourModifier ?? 0),

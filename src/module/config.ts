@@ -209,9 +209,6 @@ export const VF = {
   /** The languages a character may know, as display names. */
   languages: [
     "Common",
-    "Lawful",
-    "Chaotic",
-    "Neutral",
     "Bugbear",
     "Doppelgänger",
     "Dragon",

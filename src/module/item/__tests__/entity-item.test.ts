@@ -12,7 +12,7 @@ import {
   getActiveNotifications,
   openV2Dialogs,
   trashChat,
-  waitForInput,
+  waitUntil,
 } from "../../../e2e/testUtils";
 import { getRollMode, setRollMode } from "../../helpers-message-mode";
 import VogelfreiItem from "../entity";
@@ -29,7 +29,7 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
   const { defaultIcons } = VogelfreiItem;
 
   after(async () => {
-    cleanUpWorldItems();
+    await cleanUpWorldItems();
   });
 
   describe("defaultIcons()", () => {
@@ -47,9 +47,9 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       const bow = { name: "Bow", type: "weapon", system: { tags: [], ammunition: undefined as string | undefined } };
       const arrows = { name: "Arrows", type: "item", system: { ammunition: undefined as string | undefined } };
       const special = { name: "Silver Arrows", type: "item", system: { ammunition: "arrow" } };
-      OseItem.migrateData(bow);
-      OseItem.migrateData(arrows);
-      OseItem.migrateData(special);
+      VogelfreiItem.migrateData(bow);
+      VogelfreiItem.migrateData(arrows);
+      VogelfreiItem.migrateData(special);
       expect(bow.system.ammunition).equal("arrow");
       expect(arrows.system.ammunition).equal("arrow");
       expect(special.system.ammunition).equal("arrow");
@@ -143,26 +143,31 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
       await createActorTestItem(actor, "weapon");
       const weapon: VogelfreiItem = actor?.items.contents[0];
       await weapon?.update({ system: { melee: true, missile: true } });
-      const result = weapon.rollWeapon();
-      await waitForInput();
-      await actor.delete();
-      expect(openV2Dialogs().length).equal(1);
-      assert(result);
-      await closeV2Dialogs();
-      await waitForInput();
-      await waitForInput();
-      await waitForInput();
+      try {
+        const result = weapon.rollWeapon();
+        expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1500 })).true;
+        expect(openV2Dialogs().length).equal(1);
+        assert(result);
+      } finally {
+        await closeV2Dialogs();
+        await actor.delete();
+      }
       expect(openV2Dialogs().length).equal(0);
     });
 
-    it("Actor with weapon with ", async () => {
+    it("Actor with a missile weapon renders an attack dialog", async () => {
       const actor: VogelfreiActor = await createMockActor();
       await createActorTestItem(actor, "weapon");
       const weapon: VogelfreiItem = actor?.items.contents[0];
       await weapon?.update({ system: { missile: true, melee: false } });
-      const result = weapon.rollWeapon();
-      await actor.delete();
-      assert(result);
+      try {
+        const result = weapon.rollWeapon();
+        expect(await waitUntil(() => openV2Dialogs().some((dialog) => dialog.rendered), { timeout: 1500 })).true;
+        assert(result);
+      } finally {
+        await closeV2Dialogs();
+        await actor.delete();
+      }
     });
   });
 
@@ -176,16 +181,21 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
         expect(err.name).equal("Error");
       }
     });
-    it("Casting a spell trigger a dialog", async () => {
-      const item: VogelfreiItem = await createWorldTestItem("spell");
-      await item.update({ system: { roll: "1d20+12" } });
-      await item.rollFormula();
-      await waitForInput();
-      await waitForInput();
-      await waitForInput();
-      expect(openV2Dialogs().length).equal(1);
+    it("Casting a spell rolls its formula and posts to chat without a dialog", async () => {
       await closeV2Dialogs();
       await trashChat();
+      const item: VogelfreiItem = await createWorldTestItem("spell");
+      await item.update({ system: { roll: "1d20+12" } });
+      try {
+        const result = await item.rollFormula();
+        if (!(result instanceof Roll)) throw new Error("Expected a completed spell roll");
+        expect(result.formula).equal("1d20 + 12");
+        expect(openV2Dialogs().length).equal(0);
+        expect(game.messages?.size).equal(1);
+        expect(game.messages?.contents[0]?.content).contain(item.name);
+      } finally {
+        await trashChat();
+      }
     });
     it("A VogelfreiDice.Roll is returned from method", async () => {
       const item: VogelfreiItem = await createWorldTestItem("spell");

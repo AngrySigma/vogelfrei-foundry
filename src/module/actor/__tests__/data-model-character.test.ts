@@ -132,6 +132,7 @@ export default ({ describe, it, expect, after, before }: QuenchMethods) => {
     });
 
     const recursiveFields = [
+      { field: "languages", subFields: ["value", "unknown"] },
       { field: "wounds", subFields: ["hd", "value", "max"] },
       { field: "stamina", subFields: ["value", "max"] },
       {

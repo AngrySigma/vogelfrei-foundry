@@ -64,7 +64,8 @@
           "mod": 0
         },
         "languages": {
-          "value": []
+          "value": [],
+          "unknown": []
         }
       },
       "spellcaster": {

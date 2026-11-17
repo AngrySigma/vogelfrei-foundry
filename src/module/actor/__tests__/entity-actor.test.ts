@@ -13,6 +13,7 @@ import {
   createMockScene,
   createWorldTestItem,
   itemTypes,
+  openV2Dialogs,
   rollSpecificNumber,
   trashChat,
   waitForInput,
@@ -22,7 +23,7 @@ import {
  * @file Contains tests for Actor Entity.
  */
 import type { ExplorationSkill } from "../../config";
-import OseDice from "../../helpers-dice";
+import VogelfreiDice from "../../helpers-dice";
 // eslint-disable-next-line import/no-cycle
 import VogelfreiItem from "../../item/entity";
 import VogelfreiActor from "../entity";
@@ -42,8 +43,8 @@ const createMockActor = async (type: string) =>
 export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.QuenchMethods) => {
   afterEach(async () => {
     await trashChat();
-    cleanUpActorsByKey(key);
-    cleanUpWorldItems();
+    await cleanUpActorsByKey(key);
+    await cleanUpWorldItems();
   });
 
   describe("update(data, options)", () => {
@@ -844,48 +845,91 @@ export default ({ describe, it, expect, after, afterEach, before, assert }: e2e.
       await item?.delete();
     });
 
-    it("Deducts only the selected compatible ammunition", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+    const createArcher = async () => {
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.createEmbeddedDocuments("Item", [
         { name: "Test Bow", type: "weapon", system: { missile: true, melee: false, ammunition: "arrow" } },
-        { name: "Arrows", type: "item", system: { ammunition: "arrow", quantity: { value: 20 } } },
+        // Put silver first so the tests cannot mistake a default choice for
+        // an explicit selection of ordinary arrows.
         { name: "Silver Arrows", type: "item", system: { ammunition: "arrow", quantity: { value: 5 } } },
+        { name: "Arrows", type: "item", system: { ammunition: "arrow", quantity: { value: 20 } } },
         { name: "Crossbow Bolts", type: "item", system: { ammunition: "bolt", quantity: { value: 7 } } },
       ]);
       const bow = actor.items.getName("Test Bow");
       const arrows = actor.items.getName("Arrows");
       const silverArrows = actor.items.getName("Silver Arrows");
       const bolts = actor.items.getName("Crossbow Bolts");
+      if (!bow || !arrows || !silverArrows || !bolts) throw new Error("Missing archer fixture items");
+      return { actor, bow, arrows, silverArrows, bolts };
+    };
 
-      await actor.rollAttack({ roll: {}, item: bow }, { type: "missile", skipDialog: true });
-      expect(arrows?.system.quantity.value).equal(19);
-      expect(silverArrows?.system.quantity.value).equal(5);
-      expect(bolts?.system.quantity.value).equal(7);
+    it("A skipped missile attack consumes exactly one compatible round", async () => {
+      const { actor, bow, arrows, silverArrows, bolts } = await createArcher();
+      try {
+        await actor.rollAttack({ roll: {}, item: bow }, { type: "missile", skipDialog: true });
+        expect(arrows.system.quantity.value).oneOf([19, 20]);
+        expect(silverArrows.system.quantity.value).oneOf([4, 5]);
+        expect(arrows.system.quantity.value + silverArrows.system.quantity.value).equal(24);
+        expect(bolts.system.quantity.value).equal(7);
+      } finally {
+        await actor.delete();
+      }
+    });
 
-      await OseDice.sendAttackRoll({
-        parts: ["1d20"],
-        data: {
-          actor,
-          roll: {
-            type: "missile",
-            dmg: ["1d8"],
-            ammunitionType: "arrow",
-            ammunition: [
-              { id: arrows?.id, name: "Arrows", quantity: 19 },
-              { id: silverArrows?.id, name: "Silver Arrows", quantity: 5 },
-            ],
+    it("Deducts only the selected compatible ammunition", async () => {
+      const { actor, bow, arrows, silverArrows, bolts } = await createArcher();
+      const existingDialogs = new Set(openV2Dialogs());
+      try {
+        const pendingRoll = actor.rollAttack({ roll: {}, item: bow }, { type: "missile", skipDialog: false });
+        expect(
+          await waitUntil(() => openV2Dialogs().some((dialog) => !existingDialogs.has(dialog) && dialog.rendered), {
+            timeout: 1000,
+          }),
+        ).equal(true);
+        const dialog = openV2Dialogs().find((dialog) => !existingDialogs.has(dialog));
+        const ammunition = dialog?.element.querySelector<HTMLSelectElement>('select[name="ammunition"]');
+        const rollButton = dialog?.element.querySelector<HTMLButtonElement>('button[data-action="ok"]');
+        if (!ammunition || !rollButton) throw new Error("Attack dialog did not provide ammunition controls");
+        expect(Array.from(ammunition.options).map((option) => option.value)).to.have.members([
+          arrows.id,
+          silverArrows.id,
+        ]);
+        ammunition.value = arrows.id;
+        rollButton.click();
+        await pendingRoll;
+        expect(arrows.system.quantity.value).equal(19);
+        expect(silverArrows.system.quantity.value).equal(5);
+        expect(bolts.system.quantity.value).equal(7);
+
+        await VogelfreiDice.sendAttackRoll({
+          parts: ["1d20"],
+          data: {
+            actor,
+            roll: {
+              type: "missile",
+              dmg: ["1d8"],
+              ammunitionType: "arrow",
+              ammunition: [
+                { id: arrows.id, name: "Arrows", quantity: 19 },
+                { id: silverArrows.id, name: "Silver Arrows", quantity: 5 },
+              ],
+            },
           },
-        },
-        form: { ammunition: { value: silverArrows?.id } },
-      });
-      expect(arrows?.system.quantity.value).equal(19);
-      expect(silverArrows?.system.quantity.value).equal(4);
-      expect(bolts?.system.quantity.value).equal(7);
-      await actor.delete();
+          form: { ammunition: { value: silverArrows.id } },
+        });
+        expect(arrows.system.quantity.value).equal(19);
+        expect(silverArrows.system.quantity.value).equal(4);
+        expect(bolts.system.quantity.value).equal(7);
+      } finally {
+        for (const dialog of openV2Dialogs()) {
+          if (!existingDialogs.has(dialog)) await dialog.close();
+        }
+        await actor.delete();
+      }
     });
 
     it("Does not fire a mapped weapon without compatible ammunition", async () => {
-      const actor = (await createMockActor("character")) as OseActor;
+      const actor = (await createMockActor("character")) as VogelfreiActor;
       await actor.createEmbeddedDocuments("Item", [
         { name: "Test Bow", type: "weapon", system: { missile: true, melee: false, ammunition: "arrow" } },
         { name: "Crossbow Bolts", type: "item", system: { ammunition: "bolt", quantity: { value: 7 } } },

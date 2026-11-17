@@ -2,4 +2,7 @@
   {{> (path "/templates/actors/partials/item-auto-tags-partial.html")
   tags=system.autoTags}}
   <div>{{{item.system.enrichedDescription}}}</div>
+  {{#if @root.mobile}}
+  <button type="button" class="item-organize"><i class="fa-solid fa-arrows-up-down"></i> {{localize "VF.mobile.Organize"}}</button>
+  {{/if}}
 </div>
