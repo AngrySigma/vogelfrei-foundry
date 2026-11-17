@@ -12,7 +12,6 @@ import {
   getActiveNotifications,
   openV2Dialogs,
   trashChat,
-  waitForInput,
   waitUntil,
 } from "../../../e2e/testUtils";
 import { getRollMode, setRollMode } from "../../helpers-message-mode";
@@ -182,16 +181,21 @@ export default ({ describe, it, expect, after, beforeEach, assert }: QuenchMetho
         expect(err.name).equal("Error");
       }
     });
-    it("Casting a spell trigger a dialog", async () => {
-      const item: VogelfreiItem = await createWorldTestItem("spell");
-      await item.update({ system: { roll: "1d20+12" } });
-      await item.rollFormula();
-      await waitForInput();
-      await waitForInput();
-      await waitForInput();
-      expect(openV2Dialogs().length).equal(1);
+    it("Casting a spell rolls its formula and posts to chat without a dialog", async () => {
       await closeV2Dialogs();
       await trashChat();
+      const item: VogelfreiItem = await createWorldTestItem("spell");
+      await item.update({ system: { roll: "1d20+12" } });
+      try {
+        const result = await item.rollFormula();
+        if (!(result instanceof Roll)) throw new Error("Expected a completed spell roll");
+        expect(result.formula).equal("1d20 + 12");
+        expect(openV2Dialogs().length).equal(0);
+        expect(game.messages?.size).equal(1);
+        expect(game.messages?.contents[0]?.content).contain(item.name);
+      } finally {
+        await trashChat();
+      }
     });
     it("A VogelfreiDice.Roll is returned from method", async () => {
       const item: VogelfreiItem = await createWorldTestItem("spell");

@@ -280,26 +280,30 @@ export default ({ it, expect, beforeEach, afterEach }: QuenchMethods) => {
     const actor = required(await createMockActorKey("character", {}, key));
     const pack = await createMockCompendium("Item");
     const worldItem = required(await createWorldTestItem("weapon"));
-    await pack.importDocument(worldItem);
+    const imported = required(await pack.importDocument(worldItem));
+    await pack.importDocument(worldItem.clone({ name: "A different weapon" }));
 
     const picker = new VogelfreiMobileCompendiumPicker(actor, { type: "weapon" });
-    const data = await picker.getData();
-    expect(data.entries.map((entry) => entry.name)).contain(worldItem.name);
-
     await renderApplication(picker);
+    const selector = `.compendium-add[data-pack="${pack.collection}"][data-entry-id="${imported.id}"]`;
+    expect(picker.element.find(selector)).to.have.length(1);
     const search = required(picker.element.find<HTMLInputElement>(".compendium-search")[0]);
     expect(getComputedStyle(search).fontSize).equal("34px");
     const close = required(picker.element.find<HTMLButtonElement>(".compendium-close")[0]);
     close.click();
-    await waitUntil(() => !close.isConnected);
-    expect(actor.items.getName(worldItem.name)).undefined;
+    expect(await waitUntil(() => !close.isConnected, { timeout: 1000 })).equal(true);
+    expect(actor.items.size).equal(0);
 
     await renderApplication(picker);
-    const button = await waitForElement<HTMLButtonElement>(".mobile-compendium-picker .compendium-add");
-    button?.click();
-    await waitUntil(() => Boolean(actor.items.getName(worldItem.name)));
+    const button = required(picker.element.find<HTMLButtonElement>(selector)[0]);
+    button.click();
+    expect(
+      await waitUntil(() => Boolean(actor.items.getName(worldItem.name)) && !button.isConnected, { timeout: 1000 }),
+    ).equal(true);
 
+    expect(actor.items.size).equal(1);
     expect(actor.items.getName(worldItem.name)?.type).equal("weapon");
+    expect(actor.items.getName("A different weapon")).undefined;
   });
 
   it("reorders items and moves them into and out of containers", async () => {
